@@ -12,6 +12,9 @@ MIPS_LDFLAGS = -nostdlib -Wl,-melf32btsmip -march=mips1 -nostartfiles -mno-check
 MIPS_LDFLAGS += -Wl,--build-id=none
 
 # Compile a c file into a MIPS object file
+%.mips.o : %.s
+	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
+
 %.mips.o : %.c
 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
 
@@ -38,11 +41,7 @@ bin/mips_simulator : src/simulator.cpp
 
 
 # In order to comply with spec
-#simulator : bin/mips_simulator/
-#	g++ -W -Wall src/simulator.cpp -o bin/mips_simulator
-
-simulator : src/simulator.cpp
-	g++ -W -Wall src/simulator.cpp -o bin/mips_simulatoor
+simulator : bin/mips_simulator
 
 ###################################################
 ## Testbench
