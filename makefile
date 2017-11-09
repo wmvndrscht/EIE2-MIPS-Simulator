@@ -11,10 +11,11 @@ MIPS_CPPFLAGS = -W -Wall -O3 -fno-builtin
 MIPS_LDFLAGS = -nostdlib -Wl,-melf32btsmip -march=mips1 -nostartfiles -mno-check-zero-division -Wl,--gpsize=0 -static -Wl,-Bstatic
 MIPS_LDFLAGS += -Wl,--build-id=none
 
-# Compile a c file into a MIPS object file
+# Compile an assembly file into a MIPS object file
 %.mips.o : %.s
 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
 
+# Compile a C file into a MIPS object file
 %.mips.o : %.c
 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
 
