@@ -1,5 +1,26 @@
 //This is the first comment                                                     
-#include <iostream>                                                                                                        
+#include <iostream>
+#include <ifstream>
+
+//include relevant libraries to import binary
+
+//5 arrays of the different memory types
+//ADDR_NULL = 0x4
+//ADDR_INSTR = 0xFFFFFFC
+//ADDR_DATA = 0x4000000
+//ADDR_GETC = 0x4
+//ADDR_PUTC = 0x4
+
+//need to make a binary, how do I do that?
+
+
+unint_t8 ADDR_NULL[0x4];
+unint_t8 ADDR_INSTR[0xFFFFFFC];
+unint_t8 ADDR_DATA[0x4000000];
+unimt_t8 ADDR_GETC[0x4];
+unint_t8 ADDR_PUTC[0x4];
+
+
 uint_t32  pc;
 
 char decode_instruction(uint_t32 instr)
@@ -10,7 +31,7 @@ char decode_instruction(uint_t32 instr)
 	}
 	if(opcode==0x08000000||opcode==0x0C000000){
 		return 'J';
-  }
+  	}
 	return 'I';
 }
 
