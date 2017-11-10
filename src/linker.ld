@@ -5,7 +5,7 @@ SECTIONS
   .text : { *(.entry) }
   .text : { *(.text) }
 
-  . = 0x4000000;
+  . = 0x2000000;
   .data : { *(.data) }
   .bss : { *(.bss) }
 }

@@ -22,7 +22,7 @@ MIPS_LDFLAGS += -Wl,--build-id=none
 # Link a MIPS object file and place it at the locations required in the
 # spec using linker.ld
 %.mips.elf : %.mips.o
-	$(MIPS_CC) $(MIPS_CPPFLAGS) $(MIPS_LDFLAGS) -T src/linker.ld $< -o $@
+	$(MIPS_CC) $(MIPS_CPPFLAGS) $(MIPS_LDFLAGS)  $< -o $@
 
 # Extract just the binary instructions from the object file
 %.mips.bin : %.mips.elf
