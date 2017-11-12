@@ -14,10 +14,16 @@ uint32_t  PC; //PC counter, 32 bits
 
 //Data storage variables ADDR_*
 uint8_t ADDR_NULL[0x4] = {0};
-uint32_t ADDR_INSTR[0xFFFFFFC] = {0};
+uint8_t ADDR_INSTR[0x1000000] = {0};
 uint8_t ADDR_DATA[0x4000000] = {0};
 uint8_t ADDR_GETC[0x4] = {0};
 uint8_t ADDR_PUTC[0x4] = {0};
+uint32_t offset_NULL=0;
+uint32_t offset_ADDR_INSTR=0x10000000;
+uint32_t offset_ADDR_DATA=0x20000000;
+uint32_t offset_ADDR_GETC=0x30000000;
+uint32_t offset_ADDR_PUTC=0x30000004;
+
 
 //Register                                                                                                            
 uint32_t REG[0x20] = {0};; //Size of 32x32
@@ -50,15 +56,15 @@ int main (int argc, char* argv[]) {
 
   if (file.is_open()){
 
-    for(int i=0; i < 16; i++){
+    //for(int i=0; i < 16; i++){
     	// ADDR_INSTR[i] = uint8_t(memblock[i]) ;
     	// std::cout << i<< " == " << memblock[i] << std::endl;
-    	std::cout << i<< " = " << ADDR_INSTR[i] << std::endl;
-    }
+    	//std::cout << i<< " = " << ADDR_INSTR[i] << std::endl;
+    //}
 
   	size = file.tellg(); //number of bytes (end pointer)
 
-  	std::cout << size << std::endl; //prints size
+  	std::cout << "file size: " << size << std::endl; //prints size
 
   	// may need to include size constraint for too large binaries
 
@@ -70,16 +76,17 @@ int main (int argc, char* argv[]) {
 
     // file.read( (char*) &ADDR_INSTR, size);
     // fin.read((char*) &A[0], 4);
-
+	
     file.close();
 
     for(int i=0; i < size; i++){
-    	ADDR_INSTR[i] = (uint32_t) memblock[i] ;
+    	ADDR_INSTR[i] = (uint8_t) memblock[i] ;
     	// std::cout << i<< " == " << memblock[i] << std::endl;
-    	std::cout << i<< " = " << ADDR_INSTR[i] << std::endl;
-    }
-
-
+    	//std::cout << i<< " = " << ADDR_INSTR[i]+0 << std::endl;
+	if(sizeof(ADDR_INSTR[i])!=sizeof(uint8_t))
+		std::cout << "Bad\n"; 
+	}
+	std::cout << "size of uint8_t: " <<  sizeof(uint8_t) << "\n";
 
 		// for(int i=0; i < (int) size; i++){
 		// 	// memblock[i] = ADDR_INSTR[i];
@@ -99,29 +106,19 @@ int main (int argc, char* argv[]) {
   return 0;
 }
 
+/* after we read and store the info from the binary into memory
+PC=offset_ADDR_INSTR  // PC pointing to the first element of 
 
+index=PC-offset_" "_" ";
 
-// int main(){
+uint32_t instr = (ADDR_INSTR[index]<<24) + (ADDR_INSTR[index+1]<<16) + (ADDR_INSTR[index+2]<<8) + ADDR_INSTR[index+3];
 
-// 	std::string binin;
-
-
-
-
-
-// 	return 0;
-// }
+PC=PC+4; // PC=PC+address_offset
 
 
 
 
-
-
-
-
-
-
-
+*/
 
 
 //Declare functions
@@ -161,12 +158,6 @@ int main (int argc, char* argv[]) {
 //  std::cout << "HELLO WIM!" << std::endl;                                        
 //  return 10;                                                                     
 // }      
-
-
-
-// // int main(){
-// // 	return 0;
-// // }
 
 
                                                                                
