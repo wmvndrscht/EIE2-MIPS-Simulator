@@ -1,6 +1,10 @@
 #include <iostream>     
 #include <fstream>
 #include <cstdint>
+#include <typeinfo>
+
+
+#include <type_traits>
 
 //Global variables
 //decided to use arrays as replicate memory (hardware cannot magically grow)
@@ -10,7 +14,7 @@ uint32_t  PC; //PC counter, 32 bits
 
 //Data storage variables ADDR_*
 uint8_t ADDR_NULL[0x4] = {0};
-uint8_t ADDR_INSTR[0xFFFFFFC] = {0};
+uint32_t ADDR_INSTR[0xFFFFFFC] = {0};
 uint8_t ADDR_DATA[0x4000000] = {0};
 uint8_t ADDR_GETC[0x4] = {0};
 uint8_t ADDR_PUTC[0x4] = {0};
@@ -34,6 +38,7 @@ uint32_t REG[0x20] = {0};; //Size of 32x32
 int main (int argc, char* argv[]) {
 
 	std::streampos size;
+	char * memblock;
 
 	std::string binin;
 	binin = argv[1];
@@ -45,25 +50,47 @@ int main (int argc, char* argv[]) {
 
   if (file.is_open()){
 
+    for(int i=0; i < 16; i++){
+    	// ADDR_INSTR[i] = uint8_t(memblock[i]) ;
+    	// std::cout << i<< " == " << memblock[i] << std::endl;
+    	std::cout << i<< " = " << ADDR_INSTR[i] << std::endl;
+    }
+
   	size = file.tellg(); //number of bytes (end pointer)
 
   	std::cout << size << std::endl; //prints size
 
   	// may need to include size constraint for too large binaries
 
-    //memblock = new char [size];
+    memblock = new char [size];
 
-    file.seekg (0, std::ios::beg);
+    file.seekg(0, std::ios::beg);
 
-    file.read (&ADDR_INSTR, size);
+    file.read(memblock, size);
+
+    // file.read( (char*) &ADDR_INSTR, size);
+    // fin.read((char*) &A[0], 4);
 
     file.close();
 
-    // for(int i=0; i++; i<size){
-    // 	std::cout << ADDR_INSTR[i] << std::endl;
-    // }
+    for(int i=0; i < size; i++){
+    	ADDR_INSTR[i] = (uint32_t) memblock[i] ;
+    	// std::cout << i<< " == " << memblock[i] << std::endl;
+    	std::cout << i<< " = " << ADDR_INSTR[i] << std::endl;
+    }
 
-    // std::cout << "the entire file content is in memory" << std::endl;
+
+
+		// for(int i=0; i < (int) size; i++){
+		// 	// memblock[i] = ADDR_INSTR[i];
+		// 	// std::cout << i << std::endl;
+		// 	std::cout << (uint8_t) ADDR_INSTR[i] << std::endl;
+		// }
+
+
+    std::cout << "the entire file content is in memory" << std::endl;
+
+    delete[] memblock;
 
   }
   else{ 
