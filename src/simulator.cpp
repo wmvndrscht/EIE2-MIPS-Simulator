@@ -2,6 +2,12 @@
 #include <fstream>
 #include <cstdint>
 
+//steps
+//1 - INITIALISE MEMORY
+//2 - LOAD IN BINARY
+//3 - SET PC COUNTER TO START
+
+
 uint32_t  PC; //PC counter, 32 bits
 
 //Data storage variables ADDR_*
@@ -60,109 +66,8 @@ int main (int argc, char* argv[]) {
 }
 
 
-
-
-// //Global variables
-// //decided to use arrays as replicate memory (hardware cannot magically grow)
-// //has same functionality as vectors minus dynamic sizing
-
-// uint32_t  PC; //PC counter, 32 bits
-
-// //Data storage variables ADDR_*
-// uint8_t ADDR_NULL[0x4] = {0};
-// uint8_t ADDR_INSTR[0x1000000] = {0};
-// uint8_t ADDR_DATA[0x4000000] = {0};
-// uint8_t ADDR_GETC[0x4] = {0};
-// uint8_t ADDR_PUTC[0x4] = {0};
-
-// uint32_t offset_NULL=0;
-// uint32_t offset_ADDR_INSTR=0x10000000;
-// uint32_t offset_ADDR_DATA=0x20000000;
-// uint32_t offset_ADDR_GETC=0x30000000;
-// uint32_t offset_ADDR_PUTC=0x30000004;
-
-
-// //Register                                                                                                            
-// uint32_t REG[0x20] = {0};; //Size of 32x32
-
-
-// int main (int argc, char* argv[]) {
-
-// 	std::streampos size;
-// 	char * memblock;
-
-// 	std::string binin;
-// 	binin = argv[1];
-// 	std::cout << binin << std::endl;
-
-//   //in - allow input, binary:read direct bin, ate: put pointer to end
-//   std::ifstream file (binin, std::ios::in|std::ios::binary|std::ios::ate);
-
-
-//   if (file.is_open()){
-
-//     //for(int i=0; i < 16; i++){
-//     	// ADDR_INSTR[i] = uint8_t(memblock[i]) ;
-//     	// std::cout << i<< " == " << memblock[i] << std::endl;
-//     	//std::cout << i<< " = " << ADDR_INSTR[i] << std::endl;
-//     //}
-
-//   	size = file.tellg(); //number of bytes (end pointer)
-
-//   	std::cout << "file size: " << size << std::endl; //prints size
-
-//   	// may need to include size constraint for too large binaries
-
-//     memblock = new char [size];
-
-//     file.seekg(0, std::ios::beg);
-
-//     file.read(memblock, size);
-
-//     // file.read( (char*) &ADDR_INSTR, size);
-//     // fin.read((char*) &A[0], 4);
-	
-//     file.close();
-
-//     for(int i=0; i < size; i++){
-//     	ADDR_INSTR[i] = (uint8_t) memblock[i] ;
-//     	// std::cout << i<< " == " << memblock[i] << std::endl;
-//     	//std::cout << i<< " = " << ADDR_INSTR[i]+0 << std::endl;
-// 	if(sizeof(ADDR_INSTR[i])!=sizeof(uint8_t))
-// 		std::cout << "Bad\n"; 
-// 	}
-// 	std::cout << "size of uint8_t: " <<  sizeof(uint8_t) << "\n";
-
-// 		// for(int i=0; i < (int) size; i++){
-// 		// 	// memblock[i] = ADDR_INSTR[i];
-// 		// 	// std::cout << i << std::endl;
-// 		// 	std::cout << (uint8_t) ADDR_INSTR[i] << std::endl;
-// 		// }
-
-
-//     std::cout << "the entire file content is in memory" << std::endl;
-
-//     delete[] memblock;
-
-//   }
-//   else{ 
-//   	std::cout << "Unable to open file" << std::endl;
-//   }
-//   return 0;
-// }
-
 /* after we read and store the info from the binary into memory
 PC=offset_ADDR_INSTR  // PC pointing to the first element of 
-
-index=PC-offset_" "_" ";
-
-uint32_t instr = (ADDR_INSTR[index]<<24) + (ADDR_INSTR[index+1]<<16) + (ADDR_INSTR[index+2]<<8) + ADDR_INSTR[index+3];
-
-PC=PC+4; // PC=PC+address_offset
-
-
-
-
 */
 
 
