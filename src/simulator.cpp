@@ -11,11 +11,11 @@ uint8_t ADDR_DATA[0x4000000] = {0};
 uint8_t ADDR_GETC[0x4] = {0};
 uint8_t ADDR_PUTC[0x4] = {0};
 
-uint32_t offset_NULL=0;
-uint32_t offset_ADDR_INSTR=0x10000000;
-uint32_t offset_ADDR_DATA=0x20000000;
-uint32_t offset_ADDR_GETC=0x30000000;
-uint32_t offset_ADDR_PUTC=0x30000004;
+const uint32_t offset_NULL=0;
+const uint32_t offset_ADDR_INSTR=0x10000000;
+const uint32_t offset_ADDR_DATA=0x20000000;
+const uint32_t offset_ADDR_GETC=0x30000000;
+const uint32_t offset_ADDR_PUTC=0x30000004;
 
 int main (int argc, char* argv[]) {
 
