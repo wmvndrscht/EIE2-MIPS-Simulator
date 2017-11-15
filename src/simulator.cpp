@@ -67,21 +67,21 @@ int main (int argc, char* argv[]) {
 
   while(PC != 0 && PC < 0x11000001){
 
-  	instruction = assemble(const uint32_t& PC);
+  	instruction = assemble(ADDR_INSTR[0x1000000], PC);
 
-  	type = decode_instructionRIJ(const uint32_t& instruction);
+  	type = decode_instructionRIJ(instruction);
 
   	if(type == 'R'){
-  		initialiseR(instructionR& Rtype);
-  		execute_R_type(const instructionJ& Jtype);
+  		initialiseR(instruction, Rtype);
+  		execute_R_type(Rtype);
   	}
   	else if(type == 'I'){
-  		initialiseI(instructionI& Itype);
-  		execute_I_type(const instructionJ& Jtype);
+  		initialiseI(instruction, Itype);
+  		execute_I_type(Itype);
   	}
   	else{
-  		initialiseJ(instructionJ& Jtype);
-  		execute_J_type(const instructionJ& Jtype);
+  		initialiseJ(instruction, Jtype);
+  		execute_J_type(Jtype);
   	}
 
   }
@@ -90,11 +90,6 @@ int main (int argc, char* argv[]) {
   return 0;
 }
 
-
-uint32_t assemble(){
-
-	instruction = 
-}
 
 
 
