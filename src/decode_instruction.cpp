@@ -2,75 +2,85 @@ uint8_t op, rs, rt, rd, shamt, funct;
 uint16_t immediate;
 uint32_t instr_field[6];
 
-string decode_instruction(int32_t instruction)
+string decode_instructionRIJ(const uint32_t& instruction)
 {
-	char type=0;
-	instr_field[0]= instruction >> 26; // Extract the offset
-	
-	// Determine the type of the instruction based on the offset:
-	if(instr_field[0]==0){								
-		type='R';
+
+	uint32_t opcode;
+	opcode = instruction >> 24;
+
+	if(opcode == 0){
+		return 'R';							
 	}
-	else if((instr_field[0]==2)||(instr_field[0]==3)){
-		type='J';
+	else if( opcode == 2  ||  opcode == 3 ){
+		return 'J';
 	}
 	else{
-		type='I';
+		return 'I';
 	}
-	
-	if(type=='R')
-	{
-		instr_field[1]=(instruction << 6)>>27;  // first source register
-		instr_field[2]=(instruction << 11)>>27; // second source register
-		instr_field[3]=(instruction << 16)>>27; // destination register
-		instr_field[4]=(instruction << 21)>>27; // shift amount
-		instr_field[5]=(instruction << 26)>>26;	// function code
+
+}
+
+void execute_R_type(const instructionR& Rtype){
+
+	// if(type=='R')
+	// {
+	// 	instr_field[1]=(instruction << 6)>>27;  // first source register
+	// 	instr_field[2]=(instruction << 11)>>27; // second source register
+	// 	instr_field[3]=(instruction << 16)>>27; // destination register
+	// 	instr_field[4]=(instruction << 21)>>27; // shift amount
+	// 	instr_field[5]=(instruction << 26)>>26;	// function code
+
+	switch(Rtype->opcode)
 		
-		if(instr_field[5]==0b100000)
+		case 0b100000:
 			return "ADD";
-		if(instr_field[5]==0b100001)
+		case 0b100001:
 			return "ADDU";
-		if(instr_field[5]==0b100100)
+		case 0b100100:
 			return "AND";
-		if(instr_field[5]==0b011010)
+		case 0b011010:
 			return "DIV";
-		if(instr_field[5]==0b011011)
+		case 0b011011:
 			return "DIVU";
-		if(instr_field[5]==0b001000)
+		case 0b001000:
 			return "JR";
-		if(instr_field[5]==0b010000)
+		case 0b010000:
 			return "MFHI";
-		if(instr_field[5]==0b010010)
+		case 0b010010:
 			return "MFLO";
-		if(instr_field[5]==011000)
+		case 011000:
 			return "MULT";
-		if(instr_field[5]==0b011001)
+		case 0b011001:
 			return "MULTU";
-		if(instr_field[5]==0b100101)
-			return "OR";
-		if(instr_field[5]==0b000000)			// it might be a NOOP
+		case ==0b100101:
+			return "OR";		// it might be a NOOP
+		case 0b000000:			// it might be a NOOP
 			return "SLL"; 
-		if(instr_field[5]==0b000100)
+		case 0b000100:
 			return "SLLV";
-		if(instr_field[5]==0b101010)
+		case 0b101010:
 			return "SLT";
-		if(instr_field[5]==0b101011)
+		case 0b101011:
 			return "SLTU";
-		if(instr_field[5]==0b000011)
+		case 0b000011:
 			return "SRA";
-		if(instr_field[5]==0b000010)
+		case 0b000010:
 			return "SRL";
-		if(instr_field[5]==0b000110)
+		case 0b000110:
 			return "SRLV";
-		if(instr_field[5]==0b100010)
+		case 0b100010:
 			return "SUB";
-		if(instr_field[5]==0b100011)
+		case 0b100011:
 			return "SUBU";
-		if(instr_field[5]==0b001100)
+		case 0b001100:
 			return "SYSCALL";							// WTF is this?
-		if(instr_field[5]==0b100110)
+		case 0b100110:
 			return "XOR";
-	}
+
+}
+
+
+void execute_I_type(const instructionJ& Jtype){
 	
 	if(type=='I')
 	{
@@ -121,6 +131,9 @@ string decode_instruction(int32_t instruction)
 		
 		return "Invalid instruction";	
 }
+
+
+void execute_J_type(const instructionJ& Jtype){
 	
 	if(type=='J')
 	{
@@ -131,6 +144,7 @@ string decode_instruction(int32_t instruction)
 		if(instr_field[0]==0b000011)
 			return "JAL";
 	}
+
 }
 
 execute_ADD() // check for overflow
@@ -180,8 +194,10 @@ execute_BGEZ()
 
 int main()
 {            
+ 
+
  while(PC!=0){
-	string tp=decode_instruction(MEM[PC]);
+	string tp = decode_instruction(MEM[PC]);
  if(tp=="J")                                          	                                           
  	  execute_J();                                                       
  if(tp=="ADD")
