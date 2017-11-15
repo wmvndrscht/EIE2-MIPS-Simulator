@@ -4,8 +4,8 @@
 #include <cstdint>
 
 struct instructionR{
-	uint32_t data;
-	uint32_t opcode;
+	uint32_t data;		
+	uint32_t opcode;	// why not uint8_t ?
 	uint32_t rs;
 	uint32_t rt;
 	uint32_t rd;
@@ -15,10 +15,10 @@ struct instructionR{
 
 struct instructionI{
 	uint32_t data;
-	uint32_t opcode;
+	uint32_t opcode;	
 	uint32_t rs;
-	uint32_t rt;
-	uint32_t IMM;
+	uint32_t rd;
+	uint32_t IMM;		// uint16_t ?
 };
 
 struct instructionJ{

@@ -15,7 +15,7 @@ int main (int argc, char* argv[]) {
 	uint8_t ADDR_DATA[0x4000000] = {0};
 	uint8_t ADDR_GETC[0x4] = {0};
 	uint8_t ADDR_PUTC[0x4] = {0};
-	uint32_t REG[32] = {0};
+	int32_t REG[32] = {0};
 
 	const uint32_t offset_NULL=0;
 	const uint32_t offset_ADDR_INSTR=0x10000000;
@@ -23,7 +23,7 @@ int main (int argc, char* argv[]) {
 	const uint32_t offset_ADDR_GETC=0x30000000;
 	const uint32_t offset_ADDR_PUTC=0x30000004;
 
-	uint32_t  PC =0x10000000;
+	uint32_t  nextPC = PC =0x10000000;
 	uint32_t instruction = 0;
 
 	instructionR Rtype;
@@ -61,11 +61,17 @@ int main (int argc, char* argv[]) {
   else{ 
 
   	std::cout << "Unable to open file" << std::endl;
+		exit(-21);																				// IO ERROR 
   	return 0;
   }
 
 
-  while(PC != 0 && PC < 0x11000001){
+  while(){								// WHICH IS THE CONDITION??? If it is PC!=0, how do we make PC=0?
+		PC=nextPC;
+		if((PC >= 0x 11000000) || (PC < 0x10000000)){
+			std::cout << "Memory exception";
+			exit(-11); 			
+		}		
 
   	instruction = assemble(ADDR_INSTR[0x1000000], PC);
 
@@ -83,9 +89,7 @@ int main (int argc, char* argv[]) {
   		initialiseJ(instruction, Jtype);
   		execute_J_type(Jtype,REG[32]);
   	}
-
-  }
-
+ }
 
   return 0;
 }

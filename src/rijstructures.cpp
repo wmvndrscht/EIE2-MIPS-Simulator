@@ -16,7 +16,7 @@ void initialiseI(const uint32_t& data, instructionI& Itype){
 	Itype.data = data;
 	Itype.opcode = data >> 26;
 	Itype.rs = (data << 6) >> 27;
-	Itype.rt = (data << 11) >> 27;
+	Itype.rd = (data << 11) >> 27;
 	Itype.IMM = (data & 0xFFFF);
 	return;
 }

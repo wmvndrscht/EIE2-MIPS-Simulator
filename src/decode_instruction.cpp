@@ -5,11 +5,23 @@
 #include "rijstructures.hpp"
 
 
-
+int ERROR_CODE;
 uint32_t assemble(const uint8_t ADDR_INSTR[0x1000000], const uint32_t& PC){
 	uint32_t instruction = (ADDR_INSTR[PC] << 24 | ADDR_INSTR[PC+1] << 16| ADDR_INSTR[PC+2] << 8| ADDR_INSTR[PC+3]);
 	return instruction;
 };
+
+void overflow(const int& result, const int& val1, const int& val2)
+{
+	if((val1 > 0) && (val2 > 0) && (result <= 0)){
+		ERROR_CODE=-10;
+		std::cout << "Arithmetic exception (-10) "; // std::exit(-10)
+	}
+	if((val1 < 0) && (val2 < 0) && (result >= 0)){
+		ERROR_CODE=-10;
+		std::cout << "Arithmetic exception (-10) "; // std::exit(-10)
+	}
+}
 
 std::string decode_instructionRIJ(const uint32_t& instruction)
 {
@@ -129,8 +141,10 @@ std::string execute_I_type(const instructionI& Itype){
 			return "ADDIU";
 		case 0b001000:
 			return "ADDI";
-		
-		return "Invalid instruction";	
+
+		cout << "Invalid instruction \n";
+		ERROR_CODE=-12;			
+		return "Invalid instruction";			// std::exit(-12);
 	}
 }
 
@@ -143,45 +157,96 @@ std::string execute_J_type(const instructionJ& Jtype){
 		case 0b000011:
 			return "JAL";
 	}
-
 	return "Lalala";
-
 }
 
-//** maybe start to add these functions into the case statements above instead of individual functions each time etc
-//or there may be a better way?
-// execute_ADD(){ // check for overflow
-// 	REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
-// 	PC+=4;
-// }
-// execute_ADDI(){ // check for overflow
-// 	REG[instr_field[2]]=REG[instr_field[1]]+instr_field[3];
-// 	PC+=4;
-// }
-// execute_ADDU(){
-// 	REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
-// 	PC+=4;
-// }
-// execute_ADDIU(){
-// 	REG[instr_field[2]]=REG[instr_field[1]]+instr_field[3];
-// 	PC+=4;
-// }
-// execute_AND(){
-// 	REG[instr_field[3]]=REG[instr_field[2]]&REG[instr_field[1]];
-// 	PC+=4;
-// }
-// execute_ANDI(){
-// 	REG[instr_field[2]]=REG[instr_field[1]]&instr_field[3];
-// 	PC+=4;
-// }
-// execute_BEQ(){ //fuck branches
-// 	if(REG[instr_field[1]]==REG[instr_field[2]])
-// 		PC=instr_field[3]<<2;
-// 	else{
-// 		PC+=4;	
-// 	}
-// }
-// execute_BGEZ(){
-// 	if(REG[instr_field[1]]==instr_field[3])
-		
-// }
+
+ ** maybe start to add these functions into the case statements above instead of individual functions each time etc
+or there may be a better way?
+void execute_ADD(const instructionR& instr, uint32_t& nextPC){
+ 	REG[instr.rd]=REG[instr.rs]+REG[instr.rt];
+	overflow(REG[instr.rd],REG[instr.rs],REG[instr.rt])
+ 	nextPC+=4;
+ }
+ void execute_ADDI(const instructionI& instr, uint32_t& nextPC){ // check for overflow
+ 	REG[instr_field[2]]=REG[instr.rs]+instr.IMM;
+	overflow(REG[instr.rd],REG[instr.rs],instr.IMM)
+ 	nextPC+=4;
+ }
+void execute_ADDU(const instructionR& instr, uint32_t& nextPC){
+ 	REG[instr.rd]=REG[instr.rs]+REG[instr.rt];
+ 	nextPC+=4;
+ }
+void execute_ADDIU(const instructionI& instr, uint32_t& nextPC){
+ 	REG[instr.rd]=REG[instr.rs]+instr.IMM;
+ 	nextPC+=4;
+ }
+void execute_AND(const instructionR& instr, uint32_t& nextPC){
+ 	REG[instr.rd]=REG[instr.rs]&REG[instr.rt];
+ 	nextPC+=4;
+ }
+void execute_ANDI(const instructionI& instr, uint32_t& nextPC){
+ 	REG[instr.rd]=REG[instr.rs]&instr.IMM;
+ 	nextPC+=4;
+ }
+void execute_BEQ(const instructionI& instr, uint32_t& nextPC){ 
+ 	if(REG[instr.rs]==REG[instr.rt])
+ 		nextPC=instr.IMM;
+ 	else{
+ 		nextPC+=4;	
+ 	}
+ }
+void execute_BGEZ(const instructionI& instr, uint32_t& nextPC){
+ 	if(REG[instr.rs]>=0)
+		nextPC=instr.IMM;
+	else{
+		nextPC+=4;}	
+ }
+void execute_BGEZAL(const instructionI& instr, uint32_t& nextPC){
+	if(REG[instr.rs]>=0){
+		REG[31]=PC+8; // ????
+		nextPC=instr.IMM;
+	}
+	else
+	 	nextPC+=4;
+}
+void execute_BGTZ(const instructionI& instr, uint32_t& nextPC){
+	if(REG[instr.rs]>0)
+		nextPC=instr.IMM;
+	else
+		nextPC+=4;
+}
+void execute_BLEZ(const instructionI& instr, uint32_t& nextPC){
+	if(REG[instr.rs]<=0)
+		nextPC=instr.IMM;
+	else
+		nextPC+=4;
+}
+void execute_BLTZ(const instructionI& instr, uint32_t& nextPC){
+	if(REG[instr.rs]<0)
+		nextPC=instr.IMM;
+	else
+		nextPC+=4;
+}
+void execute_BLTZAL(const instructionI& instr, uint32_t& nextPC){
+	if(REG[instr.rs]<0)
+		nextPC=instr.IMM;
+	else
+		nextPC+=4;
+}
+void execute_BNE(const instructionI& instr, uint32_t& nextPC){
+	if(REG[instr.rs]!=REG[instr.rd])
+		nextPC=instr.IMM;
+	else
+		nextPC+=4;
+}
+/*void execute_DIV(const instructionR& instr, uint32_t& nextPC, uint32_t& LO, uint32_t& HI){	//signed division
+	LO=instr.rs/instr.rt;	
+	HO=instr.rs%instr.rt;
+	nextPC+=4;
+}*/
+void execute_DIVU(const instructionR& instr, uint32_t& nextPC){
+	LO=instr.rs/instr.rt;	
+	HO=instr.rs%instr.rt;
+	nextPC+=4;
+} 
