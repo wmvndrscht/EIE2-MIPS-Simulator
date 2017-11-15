@@ -1,29 +1,40 @@
-uint8_t op, rs, rt, rd, shamt, funct;
-uint16_t immediate;
-uint32_t instr_field[6];
 
-string decode_instructionRIJ(const uint32_t& instruction)
+
+#include <cstdint>
+#include <string>
+#include "rijstructures.hpp"
+
+
+
+uint32_t assemble(const uint8_t ADDR_INSTR[0x1000000], const uint32_t& PC){
+	uint32_t instruction = (ADDR_INSTR[PC] << 24 | ADDR_INSTR[PC+1] << 16| ADDR_INSTR[PC+2] << 8| ADDR_INSTR[PC+3]);
+	return instruction;
+};
+
+std::string decode_instructionRIJ(const uint32_t& instruction)
 {
 
 	uint32_t opcode;
 	opcode = instruction >> 24;
 
 	if(opcode == 0){
-		return 'R';							
+		return "R";							
 	}
 	else if( opcode == 2  ||  opcode == 3 ){
-		return 'J';
+		return "J";
 	}
 	else{
-		return 'I';
+		return "I";
 	}
 
 }
 
-void execute_R_type(const instructionR& Rtype){
+std::string execute_R_type(const instructionR& Rtype, const uint32_t REG[32], ){
 
 	switch(Rtype.opcode){
 		case 0b100000:
+			// check for overflow
+			REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
 			return "ADD";
 		case 0b100001:
 			return "ADDU";
@@ -69,10 +80,12 @@ void execute_R_type(const instructionR& Rtype){
 			return "XOR";
 		}
 
+		return "Lalala";
+
 }
 
 
-void execute_I_type(const instructionI& Jtype){
+std::string execute_I_type(const instructionI& Itype){
 	
 	switch(Itype.opcode){
 		case 0b001110:
@@ -96,19 +109,19 @@ void execute_I_type(const instructionI& Jtype){
 		case 0b000101:
 			return "BNE";
 		case 0b000001:
-			if(opcode.rt == 0b10000)
+			if(Itype.rt == 0b10000)
 				return "BLTZAL";
-			if(opcode.rt == 0b0)
+			if(Itype.rt == 0b0)
 				return "BLTZ"; 
-			if(opcode.rt == 0b10001)
-				return "BGEZAL"
-			if(opcode.rt == 0b00001)
-				return "BGEZ"
+			if(Itype.rt == 0b10001)
+				return "BGEZAL";
+			if(Itype.rt == 0b00001)
+				return "BGEZ";
 		case 0b000111:
 			return "BGTZ";
 		case 0b000110:
 			return "BLEZ";
-		case 0b000100: //cool
+		case 0b000100:
 			return "BEQ";
 		case 0b001100:
 			return "ANDI";
@@ -118,91 +131,57 @@ void execute_I_type(const instructionI& Jtype){
 			return "ADDI";
 		
 		return "Invalid instruction";	
+	}
 }
 
 
-void execute_J_type(const instructionJ& Jtype){
-	switch(Jtype->opcode){
+std::string execute_J_type(const instructionJ& Jtype){
+
+	switch(Jtype.opcode){
 		case 0b000010:
 			return "J";
 		case 0b000011:
 			return "JAL";
 	}
 
+	return "Lalala";
+
 }
 
-execute_ADD(){ // check for overflow
-	REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
-	PC+=4;
-}
-execute_ADDI(){ // check for overflow
-	REG[instr_field[2]]=REG[instr_field[1]]+instr_field[3];
-	PC+=4;
-}
-execute_ADDU(){
-	REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
-	PC+=4;
-}
-execute_ADDIU(){
-	REG[instr_field[2]]=REG[instr_field[1]]+instr_field[3];
-	PC+=4;
-}
-execute_AND(){
-	REG[instr_field[3]]=REG[instr_field[2]]&REG[instr_field[1]];
-	PC+=4;
-}
-execute_ANDI(){
-	REG[instr_field[2]]=REG[instr_field[1]]&instr_field[3];
-	PC+=4;
-}
-execute_BEQ(){ //fuck branches
-	if(REG[instr_field[1]]==REG[instr_field[2]])
-		PC=instr_field[3]<<2;
-	else{
-		PC+=4;	
-	}
-}
-execute_BGEZ(){
-	if(REG[instr_field[1]]==instr_field[3])
+//** maybe start to add these functions into the case statements above instead of individual functions each time etc
+//or there may be a better way?
+// execute_ADD(){ // check for overflow
+// 	REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
+// 	PC+=4;
+// }
+// execute_ADDI(){ // check for overflow
+// 	REG[instr_field[2]]=REG[instr_field[1]]+instr_field[3];
+// 	PC+=4;
+// }
+// execute_ADDU(){
+// 	REG[instr_field[3]]=REG[instr_field[1]]+REG[instr_field[2]];
+// 	PC+=4;
+// }
+// execute_ADDIU(){
+// 	REG[instr_field[2]]=REG[instr_field[1]]+instr_field[3];
+// 	PC+=4;
+// }
+// execute_AND(){
+// 	REG[instr_field[3]]=REG[instr_field[2]]&REG[instr_field[1]];
+// 	PC+=4;
+// }
+// execute_ANDI(){
+// 	REG[instr_field[2]]=REG[instr_field[1]]&instr_field[3];
+// 	PC+=4;
+// }
+// execute_BEQ(){ //fuck branches
+// 	if(REG[instr_field[1]]==REG[instr_field[2]])
+// 		PC=instr_field[3]<<2;
+// 	else{
+// 		PC+=4;	
+// 	}
+// }
+// execute_BGEZ(){
+// 	if(REG[instr_field[1]]==instr_field[3])
 		
-}
-
-
-// int main()
-// {            
- 
-
-//  while(PC!=0){
-// 	string tp = decode_instruction(MEM[PC]);
-//  if(tp=="J")                                          	                                           
-//  	  execute_J();                                                       
-//  if(tp=="ADD")
-// 		execute_ADD();
-// if(tp=="ADDI")
-// 	execute_ADDI();
-// if(tp=="ADDU")
-// 	execute_ADDU();
-// if(tp=="ADDIU")
-// 	execute_ADDIU();
-	
-
-//  		if(decode_instruction(MEM[PC])=='R'){
-//  			execute_R_type(MEM[PC]);			
-//  		}
-//  		if(decode_instruction(MEM[PC])=='I'){
-//  			execute_I_type(MEM[PC]);
-//  		}
-//  	}                                                                               
-//   std::cout << "HELLO ANDREI" << std::endl;                                      
-//   std::cout << "HELLO WIM!" << std::endl;                                        
-// return 10; }      
-
-  
-
-	// if(type=='R')
-	// {
-	// 	instr_field[1]=(instruction << 6)>>27;  // first source register
-	// 	instr_field[2]=(instruction << 11)>>27; // second source register
-	// 	instr_field[3]=(instruction << 16)>>27; // destination register
-	// 	instr_field[4]=(instruction << 21)>>27; // shift amount
-	// 	instr_field[5]=(instruction << 26)>>26;	// function code
+// }

@@ -31,7 +31,7 @@ int main (int argc, char* argv[]) {
 	instructionR Jtype;
 
 
-	string type;
+	string rijtype;
 
 	std::streampos size;
 	std::string binin;
@@ -73,15 +73,15 @@ int main (int argc, char* argv[]) {
 
   	if(type == 'R'){
   		initialiseR(instruction, Rtype);
-  		execute_R_type(Rtype);
+  		execute_R_type(Rtype,REG[32]);
   	}
   	else if(type == 'I'){
   		initialiseI(instruction, Itype);
-  		execute_I_type(Itype);
+  		execute_I_type(Itype,REG[32]);
   	}
   	else{
   		initialiseJ(instruction, Jtype);
-  		execute_J_type(Jtype);
+  		execute_J_type(Jtype,REG[32]);
   	}
 
   }

@@ -1,38 +1,5 @@
 #include <cstdint>
-
-
-uint32_t assemble(const uint8_t& ADDR_INSTR[0x1000000], const uint32_t& PC){
-	uint32_t instruction = (ADDR_INSTR[PC] << 24 | ADDR_INSTR[PC+1] << 16| ADDR_INSTR[PC+2] << 8| ADDR_INSTR[PC+3]);
-	return instruction;
-}
-
-
-struct instructionR{
-	uint32_t data;
-	uint32_t opcode;
-	uint32_t rs;
-	uint32_t rt;
-	uint32_t rd;
-	uint32_t shamt;
-	uint32_t funct;
-
-};
-
-
-struct instructionI{
-	uint32_t data;
-	uint32_t opcode;
-	uint32_t rs;
-	uint32_t rt;
-	uint32_t IMM;
-};
-
-
-struct instructionJ{
-	uint32_t data;
-	uint32_t opcode;
-	uint32_t address;
-};
+#include "rijstructures.hpp"
 
 void initialiseR(const uint32_t& data, instructionR& Rtype){
 	Rtype.data = data;
