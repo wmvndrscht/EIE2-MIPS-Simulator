@@ -66,8 +66,13 @@ int main (int argc, char* argv[]) {
   }
 
 
-  while(){								// WHICH IS THE CONDITION??? If it is PC!=0, how do we make PC=0?
-		PC=nextPC;
+  while(){					
+    if(delay2==1)			// WHICH IS THE CONDITION??? If it is PC!=0, how do we make PC=0?
+		  PC=nextPC;
+    if(delay1==1){
+      delay2=1;
+      delay1=0;
+    }
 		if((PC >= 0x 11000000) || (PC < 0x10000000)){
 			std::cout << "Memory exception";
 			exit(-11); 			
@@ -89,6 +94,7 @@ int main (int argc, char* argv[]) {
   		initialiseJ(instruction, Jtype);
   		execute_J_type(Jtype,REG[32]);
   	}
+    PC+=4;
  }
 
   return 0;
