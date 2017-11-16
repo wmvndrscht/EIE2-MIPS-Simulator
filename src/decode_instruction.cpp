@@ -91,9 +91,7 @@ std::string execute_R_type(const instructionR& Rtype, const uint32_t REG[32], ){
 		case 0b100110:
 			return "XOR";
 		}
-
-		return "Lalala";
-
+		std::exit(-12);	
 }
 
 
@@ -142,10 +140,9 @@ std::string execute_I_type(const instructionI& Itype){
 		case 0b001000:
 			return "ADDI";
 
-		cout << "Invalid instruction \n";
-		ERROR_CODE=-12;			
-		return "Invalid instruction";			// std::exit(-12);
-	}
+		cout << "Invalid instruction \n";			
+		std::exit(-12);			
+		}
 }
 
 
@@ -157,7 +154,7 @@ std::string execute_J_type(const instructionJ& Jtype){
 		case 0b000011:
 			return "JAL";
 	}
-	return "Lalala";
+	std::exit(-12);
 }
 
 

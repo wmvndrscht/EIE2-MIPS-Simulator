@@ -61,21 +61,24 @@ int main (int argc, char* argv[]) {
   else{ 
 
   	std::cout << "Unable to open file" << std::endl;
-		exit(-21);																				// IO ERROR 
+		std::exit(-21);																				// IO ERROR 
   	return 0;
   }
 
 
-  while(){					
-    if(delay2==1)			// WHICH IS THE CONDITION??? If it is PC!=0, how do we make PC=0?
+  while(PC!=0){					//if the program runs 
+    if(delay2==1){		
 		  PC=nextPC;
+      nextPC=0;
+      delay2=0;
+    }
     if(delay1==1){
       delay2=1;
       delay1=0;
     }
 		if((PC >= 0x 11000000) || (PC < 0x10000000)){
 			std::cout << "Memory exception";
-			exit(-11); 			
+			std::exit(-11); 			
 		}		
 
   	instruction = assemble(ADDR_INSTR[0x1000000], PC);
@@ -96,6 +99,8 @@ int main (int argc, char* argv[]) {
   	}
     PC+=4;
  }
+ uint8_t result=REG[2]&0x000000FF;
+ std::exit(result);
 
   return 0;
 }
