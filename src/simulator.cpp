@@ -2,6 +2,9 @@
 #include <fstream>
 #include <cstdint>
 
+#include "decode_instruction.cpp"
+#include "rijstructures.cpp"
+
 //steps
 //1 - INITIALISE MEMORY
 //2 - LOAD IN BINARY
@@ -17,13 +20,15 @@ int main (int argc, char* argv[]) {
 	uint8_t ADDR_PUTC[0x4] = {0};
 	int32_t REG[32] = {0};
 
-	const uint32_t offset_NULL=0;
-	const uint32_t offset_ADDR_INSTR=0x10000000;
-	const uint32_t offset_ADDR_DATA=0x20000000;
-	const uint32_t offset_ADDR_GETC=0x30000000;
-	const uint32_t offset_ADDR_PUTC=0x30000004;
+	const uint32_t offset_N  = 0;
+	const uint32_t offset_AI = 0x10000000;
+	const uint32_t offset_AD = 0x20000000;
+	const uint32_t offset_GC = 0x30000000;
+	const uint32_t offset_AP = 0x30000004;
 
-	uint32_t  nextPC = PC =0x10000000;
+	control ctrl;
+	initialise_control(ctrl, offset_AI);
+
 	uint32_t instruction = 0;
 
 	instructionR Rtype;
@@ -66,22 +71,9 @@ int main (int argc, char* argv[]) {
   }
 
 
-  while(PC!=0){					//if the program runs 
-    if(delay2==1){		
-		  PC=nextPC;
-      nextPC=0;
-      delay2=0;
-    }
-    if(delay1==1){
-      delay2=1;
-      delay1=0;
-    }
-		if((PC >= 0x 11000000) || (PC < 0x10000000)){
-			std::cout << "Memory exception";
-			std::exit(-11); 			
-		}		
+  while( check_PC(ctrl) ){					//if the program runs 
 
-  	instruction = assemble(ADDR_INSTR[0x1000000], PC);
+  	instruction = assemble(ADDR_INSTR[0x1000000], ctrl, offset_AI);
 
   	type = decode_instructionRIJ(instruction);
 
@@ -97,76 +89,12 @@ int main (int argc, char* argv[]) {
   		initialiseJ(instruction, Jtype);
   		execute_J_type(Jtype,REG[32]);
   	}
-    PC+=4;
+  	
+    ctrl.PC += 4;
  }
- uint8_t result=REG[2]&0x000000FF;
+
+ uint8_t result = REG[2] & 0x000000FF;
  std::exit(result);
 
   return 0;
 }
-
-
-
-
-/* after we read and store the info from the binary into memory
-PC=offset_ADDR_INSTR  // PC pointing to the first element of 
-*/
-
-
-//Declare functions
-
-// void execute_J_type(uint32_t instr[])
-// {
-// 	uint32_t offset=instr&0x3FFFFFF;
-// 	offset=offset<<2;
-
-// 	if(offset&0x8000000){
-// 		offset+=0xF0000000;
-// 	}
-// 	PC=(PC&0xF0000000)+offset;
-// }
-
-// void execute_R_type(uint32_t instr[]){
-// }
-
-// void execute_I_type(uint32_t instr[]){}
-
-// int main(){            
-// 	while(PC!=0){
-
-// 	  if(decode_instruction(MEM[PC])=='J'){                                            	                                               
-// 	    execute_J_type(MEM[PC]);                                                       
-// 		}
-
-// 		if(decode_instruction(MEM[PC])=='R'){
-// 			execute_R_type(MEM[PC]);			
-// 		}
-
-// 		if(decode_instruction(MEM[PC])=='I'){
-// 			execute_I_type(MEM[PC]);
-// 		}
-// 	}                                                                               
-//  std::cout << "HELLO ANDREI" << std::endl;                                      
-//  std::cout << "HELLO WIM!" << std::endl;                                        
-//  return 10;                                                                     
-// }      
-
-
-                                                                               
-// int main(){            
-// while(PC!=0)
-// {
-// 	if(decode_instruction(MEM[PC])=='J'){                                            	                                               
-//     execute_J_type(MEM[PC]);                                                       
-// 	}
-// 	if(decode_instruction(MEM[PC])=='R'){
-// 		execute_R_type(MEM[PC]);			
-// 	}
-// 	if(decode_instruction(MEM[PC])=='I'){
-// 		execute_I_type(MEM[PC]);
-// 	}
-// }                                                                               
-//  std::cout << "HELLO ANDREI" << std::endl;                                      
-//  std::cout << "HELLO WIM!" << std::endl;                                        
-//  return 10;                                                                     
-// }            
