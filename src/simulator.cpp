@@ -2,8 +2,8 @@
 #include <fstream>
 #include <cstdint>
 
-#include "decode_instruction.cpp"
-#include "rijstructures.cpp"
+#include "decode_instruction.hpp"
+#include "rijstructures.hpp"
 
 //steps
 //1 - INITIALISE MEMORY

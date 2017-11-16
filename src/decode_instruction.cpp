@@ -14,9 +14,13 @@ decode_instruction.cpp:215:2: error: ‘HO’ was not declared in this scope
   HO=Rtype.rs%Rtype.rt;
   ^
 */
+const int Arithmetic_Exception = -10;
+const int Memory_Exception = -11;
+const int Invalid_Instruction_Exception = -12;
+const int Internal_Error = -20; 
+const int IO_Error = -21;
 
-
-int ERROR_CODE;
+int HI, LO;
 
 uint32_t assemble(const uint8_t ADDR_INSTR[0x1000000], const control& ctrl, const uint32_t& offset_AI){
 	
@@ -34,8 +38,7 @@ bool check_PC(control& ctrl, const uint32_t& offset_AI){
 		return false;
 	}
 	else if( ctrl.PC <  offset_AI || ctrl.PC >  0x11000000){
-		std::cout << "Memory Exception";
-		std::exit(-11);
+		std::exit(Memory_Exception);
 	}
 	else{
 
@@ -66,12 +69,10 @@ void initialise_control(control& ctrl, const uint32_t& offset_AI){
 void overflow(const int& result, const int& val1, const int& val2){
 
 	if((val1 > 0) && (val2 > 0) && (result <= 0)){
-		ERROR_CODE=-10;
-		std::cout << "Arithmetic exception (-10) "; // std::exit(-10)
+		std::exit(Arithmetic_Exception);
 	}
 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
-		ERROR_CODE=-10;
-		std::cout << "Arithmetic exception (-10) "; // std::exit(-10)
+		std::exit(Arithmetic_Exception);
 	}
 }
 
@@ -188,9 +189,8 @@ std::string execute_I_type(const instructionI& Itype, uint32_t REG[32], control&
 			execute_ADDIU(Itype, REG, ctrl);
 		case 0b001000:
 			execute_ADDI(Itype, REG, ctrl);
-
-		std::cout << "Invalid instruction \n";			
-		std::exit(-12);			
+			
+		std::exit(Invalid_Instruction_Exception);			
 	}
 }
 
@@ -201,7 +201,7 @@ std::string execute_J_type(const instructionJ& Jtype, control& ctrl){
 			// execute_J();
 		case 0b000011:
 			// execute_JAL(Jtype, REG);
-		std::exit(-12);
+		std::exit(Invalid_Instruction_Exception);
 	}
 }
 
