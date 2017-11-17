@@ -13,7 +13,11 @@ MIPS_LDFLAGS += -Wl,--build-id=none
 
 # Compile an assembly file into a MIPS object file
 %.mips.o : %.s
-	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
+	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
+
+# %.mips.o : %.s
+# 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
+
 
 # Compile a C file into a MIPS object file
 %.mips.o : %.c
@@ -35,11 +39,18 @@ MIPS_LDFLAGS += -Wl,--build-id=none
 ###################################################
 ## Simulator
 
+src/%.o: src/%.cpp
+	g++ -W -Wall --std=c++11 -c -o $@ $<
+
+OBJ_FILES=src/decode_instruction.o src/rijstructures.o src/simulator.o
+	
 # Build the simulation binary
-bin/mips_simulator : src/simulator.cpp
-	#mkdir -p bin/
-	# g++ -W -Wall --std=c++11 -c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
-	g++ -W -Wall --std=c++11 src/simulator.cpp -o bin/mips_simulator #added the --std=c++11
+bin/mips_simulator : $(OBJ_FILES)
+	mkdir -p bin/
+	g++ $^ -o bin/mips_simulator
+
+
+	# g++ -W -Wall --std=c++11 src/simulator.cpp -o bin/mips_simulator #added the --std=c++11
 
 
 # In order to comply with spec

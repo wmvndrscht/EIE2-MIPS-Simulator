@@ -5,6 +5,8 @@
 #include "decode_instruction.hpp"
 #include "rijstructures.hpp"
 
+#include <string>
+
 //steps
 //1 - INITIALISE MEMORY
 //2 - LOAD IN BINARY
@@ -36,7 +38,7 @@ int main (int argc, char* argv[]) {
 	instructionR Jtype;
 
 
-	string rijtype;
+	std::string rijtype;
 
 	std::streampos size;
 	std::string binin;

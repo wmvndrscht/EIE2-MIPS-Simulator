@@ -2,7 +2,10 @@
 #define _DECODE_INSTRUCTION
 
 #include <cstdint>
+#include "rijstructures.hpp"
 
+
+//change uint32_t REG to int32_t
 
 struct control{
 	uint32_t PC;
