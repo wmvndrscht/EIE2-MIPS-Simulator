@@ -1,13 +1,18 @@
 #include <iostream>     
 #include <fstream>
 #include <cstdint>
-
 #include "decode_instruction.hpp"
 #include "rijstructures.hpp"
-
 #include <string>
 
-//steps
+const int Arithmetic_Exception = -10;
+const int Memory_Exception = -11;
+const int Invalid_Instruction_Exception = -12;
+const int Internal_Error = -20; 
+const int IO_Error = -21;
+
+// GETC, PUTC ???
+// how do we deal with $0?
 //1 - INITIALISE MEMORY
 //2 - LOAD IN BINARY
 //3 - SET PC COUNTER TO START
@@ -60,15 +65,15 @@ int main (int argc, char* argv[]) {
 	
     file.close();
 
-    std::cout << ADDR_INSTR[0] << ADDR_INSTR[1] << ADDR_INSTR[2] << ADDR_INSTR[3] << std::endl;
-    std::cout << instruction1 << std::endl;
+    //std::cout << ADDR_INSTR[0] << ADDR_INSTR[1] << ADDR_INSTR[2] << ADDR_INSTR[3] << std::endl;
+    //std::cout << instruction1 << std::endl;
     std::cout << "the entire file content is in memory" << std::endl;
 
   }
   else{ 
 
   	std::cout << "Unable to open file" << std::endl;
-		std::exit(-21);																				// IO ERROR 
+		exit(IO_Error);																				// IO ERROR 
   	return 0;
   }
 
@@ -96,7 +101,18 @@ int main (int argc, char* argv[]) {
  }
 
  uint8_t result = REG[2] & 0x000000FF;
- std::exit(result);
+ exit(result);
 
   return 0;
 }
+/* list of cases, errors, exceptions to consider:
+1) two branches one after the other???
+2) do we insert a NOP after a branch???
+3) do we get an error if we try to modify REG[0]??
+4) exception when PC points to : 
+- a memory address which is not in the executable memory?
+- a memory address which is in the executable memory, but doesn't contain an instruction???
+5) when we try to load/store from/to a memory location that is not in ADDR_DATA[]?
+6) when we can't open the file? 
+7) 
+*/

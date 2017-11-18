@@ -20,7 +20,7 @@ const int Invalid_Instruction_Exception = -12;
 const int Internal_Error = -20; 
 const int IO_Error = -21;
 
-int HI, LO;
+int32_t HI, LO;
 
 uint32_t assemble(const uint8_t ADDR_INSTR[0x1000000], const control& ctrl, const uint32_t& offset_AI){
 	
@@ -66,14 +66,18 @@ void initialise_control(control& ctrl, const uint32_t& offset_AI){
 }
 
 
-void overflow(const int& result, const int& val1, const int& val2){
+void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
 
 	if((val1 > 0) && (val2 > 0) && (result <= 0)){
-		std::exit(Arithmetic_Exception);
+		exit(Arithmetic_Exception);
 	}
 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
-		std::exit(Arithmetic_Exception);
+		exit(Arithmetic_Exception);
 	}
+	if((val1>>31) && (val2>>31) && (!(result>>31))				//this should work
+		exit(Arithmetic_Exception);
+	if((!(val1>>31)) && (!(val2>>31)) && (result>>31))
+		exit(Arithmetic_Exception);
 }
 
 std::string decode_instructionRIJ(const uint32_t& instruction){
@@ -93,7 +97,7 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 
 }
 
-std::string execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
+std::string execute_R_type(const instructionR& Rtype, int32_t REG[32] ){
 
 	switch(Rtype.opcode){
 		case 0b100000:
@@ -137,15 +141,15 @@ std::string execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
 		case 0b100011:
 			// execute_SUBU();
 		case 0b001100:
-			// execute_SYSCALL();							// WTF is this?
+			// execute_SYSCALL();							
 		case 0b100110:
 			// execute_XOR();
-		std::exit(-12);	
+		exit(Invalid_Instruction_Exception);	
 	}
 }
 
 
-std::string execute_I_type(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	
 	switch(Itype.opcode){
 		case 0b001110:
@@ -190,7 +194,7 @@ std::string execute_I_type(const instructionI& Itype, uint32_t REG[32], control&
 		case 0b001000:
 			execute_ADDI(Itype, REG, ctrl);
 			
-		std::exit(Invalid_Instruction_Exception);			
+		exit(Invalid_Instruction_Exception);			
 	}
 }
 
@@ -201,51 +205,50 @@ std::string execute_J_type(const instructionJ& Jtype, control& ctrl){
 			// execute_J();
 		case 0b000011:
 			// execute_JAL(Jtype, REG);
-		std::exit(Invalid_Instruction_Exception);
+		exit(Invalid_Instruction_Exception);
 	}
 }
 
 
 //Rtype
-void execute_ADD(const instructionR& Rtype, uint32_t REG[32]){
+void execute_ADD(const instructionR& Rtype, int32_t REG[32], control& ctrl){
  	REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
 	overflow(REG[Rtype.rd],REG[Rtype.rs],REG[Rtype.rt]);
 }
 
-
-void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){
+void execute_ADDU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
  	REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
 }
 
-void execute_AND(const instructionR& Rtype, uint32_t REG[32]){
+void execute_AND(const instructionR& Rtype, int32_t REG[32], control& ctrl){
  	REG[Rtype.rd]=REG[Rtype.rs]&REG[Rtype.rt];
 }
 
-void execute_DIVU(const instructionR& Rtype, uint32_t REG[32]){
-	LO=Rtype.rs/Rtype.rt;	
-	HO=Rtype.rs%Rtype.rt;
+void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	LO=REG[Rtype.rs]/REG[Rtype.rt];	
+	HI=REG[Rtype.rs]%REG[Rtype.rt];
 } 
 
-/*void execute_DIV(const instructionR& instr, uint32_t& LO, uint32_t& HI){	//signed division
+/*void execute_DIV(const instructionR& Rtype, int32_t REG[32] control& ctrl){	//signed division
 	LO=instr.rs/instr.rt;	
 	HO=instr.rs%instr.rt;
 }*/
 
 //Itype
-void execute_ADDI(const instructionI& Itype, uint32_t REG[32], control& ctrl){ // check for overflow
+void execute_ADDI(const instructionI& Itype, int32_t REG[32], control& ctrl){ // check for overflow
  	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
 	overflow(REG[Itype.rd],REG[Itype.rs],Itype.IMM);
 }
 
-void execute_ADDIU(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_ADDIU(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
 }
 
-void execute_ANDI(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_ANDI(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	REG[Itype.rd]=REG[Itype.rs]&Itype.IMM;
 }
 
-void execute_BEQ(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BEQ(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	if(REG[Itype.rs]==REG[Itype.rd]){
  		ctrl.nPC=Itype.IMM;
  		ctrl.delay1=1;
@@ -253,14 +256,14 @@ void execute_BEQ(const instructionI& Itype, uint32_t REG[32], control& ctrl){
  	
 }
 
-void execute_BGEZ(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	if(REG[Itype.rs]>=0){
 		ctrl.nPC=Itype.IMM;
 		ctrl.delay1=1;
  	}
 }
 
-void execute_BGEZAL(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	if(REG[Itype.rs]>=0){
 		REG[31]=ctrl.PC+8; // ????
 		ctrl.nPC=Itype.IMM;
@@ -268,35 +271,35 @@ void execute_BGEZAL(const instructionI& Itype, uint32_t REG[32], control& ctrl){
 	}
 }
 
-void execute_BGTZ(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BGTZ(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	if(REG[Itype.rs]>0){
 		ctrl.nPC=Itype.IMM;
 		ctrl.delay1=1;
 	}
 }
 
-void execute_BLEZ(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BLEZ(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	if(REG[Itype.rs]<=0){
 		ctrl.nPC=Itype.IMM;
 		ctrl.delay1=1;
 	}
 }
 
-void execute_BLTZ(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BLTZ(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	if(REG[Itype.rs]<0){
 		ctrl.nPC=Itype.IMM;
 		ctrl.delay1=1;
 	}
 }
 
-void execute_BLTZAL(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BLTZAL(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	if(REG[Itype.rs]<0){
 		ctrl.nPC=Itype.IMM;
 		ctrl.delay1=1;
 	}
 }
 
-void execute_BNE(const instructionI& Itype, uint32_t REG[32], control& ctrl){
+void execute_BNE(const instructionI& Itype, int32_t REG[32], control& ctrl){
 	if(REG[Itype.rs]!=REG[Itype.rd]){
 		ctrl.nPC=Itype.IMM;
 		ctrl.delay1=1;
@@ -304,7 +307,7 @@ void execute_BNE(const instructionI& Itype, uint32_t REG[32], control& ctrl){
 }
 
 
-// void execute_JR(const instructionR& instr, uint32_t& nextPC){
+// void execute_JR(const instructionR& instr, int32_t& nextPC){
 
 // }
 
@@ -313,11 +316,11 @@ void execute_BNE(const instructionI& Itype, uint32_t REG[32], control& ctrl){
 
 
 //Jtype
-// void execute_J(const instructionJ& instr, uint32_t& nextPC){
+// void execute_J(){
 
 // }
 
-// void execute_JAL(const instructionJ& instr, uint32_t& nextPC){
+// void execute_JAL(){
 
 // }
 
