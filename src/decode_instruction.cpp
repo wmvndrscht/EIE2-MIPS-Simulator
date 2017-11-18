@@ -68,16 +68,20 @@ void initialise_control(control& ctrl, const uint32_t& offset_AI){
 
 void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
 
-	if((val1 > 0) && (val2 > 0) && (result <= 0)){
+	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
 		exit(Arithmetic_Exception);
 	}
 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
 		exit(Arithmetic_Exception);
 	}
-	if((val1>>31) && (val2>>31) && (!(result>>31))				//this should work
+	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
 		exit(Arithmetic_Exception);
-	if((!(val1>>31)) && (!(val2>>31)) && (result>>31))
+	}
+
+	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
 		exit(Arithmetic_Exception);
+	}
+
 }
 
 std::string decode_instructionRIJ(const uint32_t& instruction){
