@@ -20,11 +20,8 @@ const int IO_Error = -21;
 int main (int argc, char* argv[]) {
 
 	//Data storage variables ADDR_*
-	uint8_t ADDR_NULL[0x4] = {0};
 	uint8_t ADDR_INSTR[0x1000000] = {0};
 	uint8_t ADDR_DATA[0x4000000] = {0};
-	uint8_t ADDR_GETC[0x4] = {0};
-	uint8_t ADDR_PUTC[0x4] = {0};
 	int32_t REG[32] = {0};
 
 	const uint32_t offset_N  = 0;
@@ -33,22 +30,11 @@ int main (int argc, char* argv[]) {
 	const uint32_t offset_GC = 0x30000000;
 	const uint32_t offset_AP = 0x30000004;
 
-	control ctrl;
-	initialise_control(ctrl, offset_AI);
-
-	uint32_t instruction = 0;
-
-	instructionR Rtype;
-	instructionR Itype;
-	instructionR Jtype;
-
-
-	std::string rijtype;
 
 	std::streampos size;
 	std::string binin;
 	binin = argv[1];
-	std::cout << "File name: " << binin << std::endl;
+	std::cerr << "File name: " << binin << std::endl;
 
 	//in - allow input, binary:read direct bin, ate: put pointer to end
   std::ifstream file (binin, std::ios::in|std::ios::binary|std::ios::ate);
@@ -56,7 +42,7 @@ int main (int argc, char* argv[]) {
   if (file.is_open()){
 
   	size = file.tellg();
-  	std::cout << "file size: " << size << std::endl; //prints size
+  	std::cerr << "file size: " << size << std::endl; //prints size
   	// may need to include size constraint for too large binaries
 
     file.seekg(0, std::ios::beg);
@@ -65,36 +51,44 @@ int main (int argc, char* argv[]) {
 	
     file.close();
 
-    //std::cout << ADDR_INSTR[0] << ADDR_INSTR[1] << ADDR_INSTR[2] << ADDR_INSTR[3] << std::endl;
-    //std::cout << instruction1 << std::endl;
-    std::cout << "the entire file content is in memory" << std::endl;
+    //std::cerr << ADDR_INSTR[0] << ADDR_INSTR[1] << ADDR_INSTR[2] << ADDR_INSTR[3] << std::endl;
+    //std::cerr << instruction1 << std::endl;
+    std::cerr << "the entire file content is in memory" << std::endl;
 
   }
   else{ 
 
-  	std::cout << "Unable to open file" << std::endl;
+  	std::cerr << "Unable to open file" << std::endl;
 		exit(IO_Error);																				// IO ERROR 
   	return 0;
   }
 
+  control ctrl;
+  initialise_control(ctrl, offset_AI);
 
-  while( check_PC(ctrl) ){					//if the program runs 
 
-  	instruction = assemble(ADDR_INSTR[0x1000000], ctrl, offset_AI);
+  while( ctrl.PC != 0  ){					//if the program runs 
 
-  	type = decode_instructionRIJ(instruction);
+    uint32_t instruction = 0;
+    std::string rijtype;
+  	instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
 
-  	if(type == 'R'){
+  	rijtype = decode_instructionRIJ(instruction);
+
+  	if(rijtype == "R"){
+      instructionR Rtype;
   		initialiseR(instruction, Rtype);
-  		execute_R_type(Rtype,REG[32]);
+  		execute_R_type(Rtype,REG);
   	}
-  	else if(type == 'I'){
+  	else if(rijtype == "I"){
+      instructionI Itype;
   		initialiseI(instruction, Itype);
-  		execute_I_type(Itype,REG[32]);
+  		execute_I_type(Itype,REG,ctrl);
   	}
   	else{
+      instructionJ Jtype;
   		initialiseJ(instruction, Jtype);
-  		execute_J_type(Jtype,REG[32]);
+  		execute_J_type(Jtype,ctrl);
   	}
   	
     ctrl.PC += 4;
