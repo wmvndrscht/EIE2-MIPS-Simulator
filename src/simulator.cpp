@@ -4,6 +4,7 @@
 #include "decode_instruction.hpp"
 #include "rijstructures.hpp"
 #include <string>
+#include "externgv.h"
 
 const int Arithmetic_Exception = -10;
 const int Memory_Exception = -11;
@@ -11,18 +12,26 @@ const int Invalid_Instruction_Exception = -12;
 const int Internal_Error = -20; 
 const int IO_Error = -21;
 
+uint8_t ADDR_INSTR[0x1000000] = {0};
+uint8_t ADDR_DATA[0x4000000] = {0};
+
 // GETC, PUTC ???
 // how do we deal with $0?
 //1 - INITIALISE MEMORY
 //2 - LOAD IN BINARY
 //3 - SET PC COUNTER TO START
 
-int main (int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
-	//Data storage variables ADDR_*
-	uint8_t ADDR_INSTR[0x1000000] = {0};
-	uint8_t ADDR_DATA[0x4000000] = {0};
-	int32_t REG[32] = {0};
+  std::cerr << "START" << std::endl;
+  if( argc < 2){
+    std::cerr << "No input binary  :: END PROGRAM" << std::endl;
+    exit(IO_Error); //just for the moment
+  }
+
+ //  uint8_t ADDR_INSTR[0x1000000];
+	// uint8_t ADDR_DATA[0x4000000];
+	uint32_t REG[32] = {0};
 
 	const uint32_t offset_N  = 0;
 	const uint32_t offset_AI = 0x10000000;
@@ -51,8 +60,6 @@ int main (int argc, char* argv[]) {
 	
     file.close();
 
-    //std::cerr << ADDR_INSTR[0] << ADDR_INSTR[1] << ADDR_INSTR[2] << ADDR_INSTR[3] << std::endl;
-    //std::cerr << instruction1 << std::endl;
     std::cerr << "the entire file content is in memory" << std::endl;
 
   }
@@ -62,6 +69,28 @@ int main (int argc, char* argv[]) {
 		exit(IO_Error);																				// IO ERROR 
   	return 0;
   }
+  
+//TEST FOR ctrl initialise = PASS -----------------------------------------------------------
+  // control ctrl;
+  // initialise_control(ctrl, offset_AI);
+  // std::cerr << "ctrl.PC = " << ctrl.PC <<std::endl;
+  // std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
+  // std::cerr << "ctrl.target = " << ctrl.target << std::endl;
+  // std::cerr << "ctrl.delay1 = " << ctrl.delay1 << std::endl;
+  // std::cerr << "ctrl.delay2 = " << ctrl.delay2 << std::endl;
+
+//TEST FOR instruction initialise = PASS----------------------------------------------------
+
+  // uint32_t instruction2 = 0;
+  // instruction2 = (ADDR_INSTR[0] << 24 | ADDR_INSTR[1] 
+  //   << 16| ADDR_INSTR[2] << 8| ADDR_INSTR[3]);
+
+  // std::cerr << "instruction2 = " << instruction2 << std::endl;
+
+  // uint32_t instruction = 0;
+  // instruction = assemble_instruction(ctrl, offset_AI);
+
+//-----------------------------------------------------------------------------------------------
 
   control ctrl;
   initialise_control(ctrl, offset_AI);
@@ -71,27 +100,48 @@ int main (int argc, char* argv[]) {
 
     uint32_t instruction = 0;
     std::string rijtype;
-  	instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
+  	instruction = assemble_instruction(ctrl, offset_AI);
 
   	rijtype = decode_instructionRIJ(instruction);
+    std::cerr << "RIJTYPE = " << rijtype << std::endl;
 
   	if(rijtype == "R"){
       instructionR Rtype;
   		initialiseR(instruction, Rtype);
-  		execute_R_type(Rtype,REG);
+      std::cerr << "Rtype.data = " <<Rtype.data << std::endl;
+      std::cerr << "Rtype.opcode = " << Rtype.opcode << std::endl;
+      std::cerr << "Rtype.rs = " << Rtype.rs << std::endl;
+      std::cerr << "Rtype.rt = " << Rtype.rt << std::endl;
+      std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
+      std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
+      std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
+      REG[Rtype.rs] = 1;
+      REG[Rtype.rt] = 1;
+
+  		execute_R_type(Rtype, REG);
   	}
   	else if(rijtype == "I"){
+      std::cerr << "Detected I" << std::endl;
       instructionI Itype;
   		initialiseI(instruction, Itype);
-  		execute_I_type(Itype,REG,ctrl);
+      std::cerr << "Itype.data = " << Itype.data << std::endl;
+      std::cerr << "Itype.opcode = " << Itype.opcode << std::endl;
+      std::cerr << "Itype.rs = " << Itype.rs << std::endl;
+      std::cerr << "Rtype.rd = " << Itype.rd << std::endl;
+      std::cerr << "Rtype.IMM = " << Itype.IMM << std::endl;
+  		// execute_I_type(Itype,REG,ctrl);
   	}
   	else{
-      instructionJ Jtype;
-  		initialiseJ(instruction, Jtype);
-  		execute_J_type(Jtype,ctrl);
+      std::cerr << "Detected J" << std::endl;
+//--------------------------currently can't assemble j and jal instructions :( need to find out more)
+    //   instructionJ Jtype;
+  		// initialiseJ(instruction, Jtype);
+  		// execute_J_type(Jtype,ctrl);
   	}
   	
     ctrl.PC += 4;
+    ctrl.PC = 0;
+    std::cerr << "End of while loop hopefully" << std::endl;
  }
 
  uint8_t result = REG[2] & 0x000000FF;

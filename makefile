@@ -12,11 +12,11 @@ MIPS_LDFLAGS = -nostdlib -Wl,-melf32btsmip -march=mips1 -nostartfiles -mno-check
 MIPS_LDFLAGS += -Wl,--build-id=none
 
 # Compile an assembly file into a MIPS object file
-%.mips.o : %.s
-	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
-
 # %.mips.o : %.s
-# 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
+# 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
+
+%.mips.o : %.s
+	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
 
 
 # Compile a C file into a MIPS object file
@@ -48,6 +48,7 @@ OBJ_FILES=src/decode_instruction.o src/rijstructures.o src/simulator.o
 bin/mips_simulator : $(OBJ_FILES)
 	mkdir -p bin/
 	g++ $^ -o bin/mips_simulator
+
 
 
 	# g++ -W -Wall --std=c++11 src/simulator.cpp -o bin/mips_simulator #added the --std=c++11
