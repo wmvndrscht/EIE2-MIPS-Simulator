@@ -1,0 +1,24 @@
+1)  Test jump: Out should stay the same
+j 0
+nop // once with this and once without
+addi $v0, $v0, 0x100
+   
+2) Test load upper immediate: Out=0x10000
+lui $v0, 0x1
+j 0
+nop // test without as well
+
+3) Test ADD for overflow ('-' + '-' = '+'): Out = 0x80010000+0x80010000 = 0x20000;
+lui $s0, 0x8001
+add $v0, $s0, $s0
+j 0
+
+4) Test ADD for overflow('+' + '+' = '-'): Out = 0x7FFF0000+0x7FFF0000 = 0xFFFE0000;
+lui $s0, 0x7FFF
+add $v0, $s0, $s0
+j 0
+
+5) Test ADD : Out=0x10000+0x10000=0x20000
+lui $s0, 0x1
+j 0
+
