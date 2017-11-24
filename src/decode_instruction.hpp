@@ -14,8 +14,7 @@ struct control{
 	int delay2;
 };
 
-// uint32_t assemble_instruction(const uint8_t ADDR_INSTR[0x1000000], const control &ctrl, const uint32_t& offset_AI);
-uint32_t assemble_instruction(const control &ctrl, const uint32_t& offset_AI);
+uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, const uint32_t& offset_AI);
 
 bool check_PC(control &ctrl, const uint32_t& offset_AI);
 void initialise_control(control &ctrl, const uint32_t& offset_AI);

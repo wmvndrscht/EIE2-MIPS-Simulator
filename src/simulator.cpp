@@ -4,16 +4,12 @@
 #include "decode_instruction.hpp"
 #include "rijstructures.hpp"
 #include <string>
-#include "externgv.h"
 
 const int Arithmetic_Exception = -10;
 const int Memory_Exception = -11;
 const int Invalid_Instruction_Exception = -12;
 const int Internal_Error = -20; 
 const int IO_Error = -21;
-
-uint8_t ADDR_INSTR[0x1000000] = {0};
-uint8_t ADDR_DATA[0x4000000] = {0};
 
 // GETC, PUTC ???
 // how do we deal with $0?
@@ -29,8 +25,12 @@ int main(int argc, char *argv[]) {
     exit(IO_Error); //just for the moment
   }
 
- //  uint8_t ADDR_INSTR[0x1000000];
-	// uint8_t ADDR_DATA[0x4000000];
+  uint8_t* ADDR_INSTR;
+  ADDR_INSTR = new uint8_t[0x1000000];
+  uint8_t* ADDR_DATA;
+  ADDR_DATA = new uint8_t[0x4000000];
+
+
 	uint32_t REG[32] = {0};
 
 	const uint32_t offset_N  = 0;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     file.seekg(0, std::ios::beg);
 
-    file.read( (char*) &ADDR_INSTR, size);
+    file.read( (char*) ADDR_INSTR, size);
 	
     file.close();
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 
     uint32_t instruction = 0;
     std::string rijtype;
-  	instruction = assemble_instruction(ctrl, offset_AI);
+  	instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
 
   	rijtype = decode_instructionRIJ(instruction);
     std::cerr << "RIJTYPE = " << rijtype << std::endl;
@@ -142,10 +142,15 @@ int main(int argc, char *argv[]) {
     ctrl.PC += 4;
     ctrl.PC = 0;
     std::cerr << "End of while loop hopefully" << std::endl;
- }
+  }
 
- uint8_t result = REG[2] & 0x000000FF;
- exit(result);
+  delete[] ADDR_INSTR;
+  delete[] ADDR_DATA;
+  ADDR_INSTR = NULL;
+  ADDR_DATA = NULL;
+
+  uint8_t result = REG[2] & 0x000000FF;
+  exit(result);
 
   return 0;
 }
