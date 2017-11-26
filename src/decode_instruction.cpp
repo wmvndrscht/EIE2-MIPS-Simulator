@@ -33,19 +33,27 @@ void initialise_control(control &ctrl, const uint32_t& offset_AI){
 }
 
 void PC_advance(control& ctrl){
+
   if( ctrl.branch_delay == 0 ){  //if no branch_delay, carry on iterating
     ctrl.PC = ctrl.PC + 4;
-    return;
   }
   else if(ctrl.branch_delay == 1){  //if branch_delay just occured do the branch stored in nPC, no longer branch delay
     ctrl.PC = ctrl.nPC;
     ctrl.branch_delay = 0;
-    return;
   }
   else{   //if branch delay set to 2, carry on as normal but - branch delay by 1
     ctrl.PC = ctrl.PC + 4;
-    ctrl.branch_delay = ctrl.branch_delay -1;
+    ctrl.branch_delay = 1;
   }
+
+  if(ctrl.PC < 0 || ctrl.PC > 0x11000000){
+  	exit(-11);  //memory exception or undefined behaviour?? ****** need exact code
+  }
+
+  if(!( (ctrl.PC & 0x3) == 0x0) ){
+  	exit(-11);  //memory exception
+  }
+
 }
 
 
@@ -114,7 +122,7 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 
 }
 
-void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
+void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 
 	switch(Rtype.funct){
 		case 0b100000:
@@ -129,7 +137,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
 		case 0b011011:
 			// execute_DIVU(Rtype, REG); //4
 		case 0b001000:
-			// execute_JR(); //1
+			execute_JR(); //1
 		case 0b010000:
 			// execute_MFHI(); //3
 		case 0b010010:
@@ -147,7 +155,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
 		case 0b101010:
 			// execute_SLT();  //2
 		case 0b101011:
-			// execute_SLTU(); //1
+			execute_SLTU(); //1
 		case 0b000011:
 			// execute_SRA(); //2
 		case 0b000010:
@@ -259,6 +267,24 @@ void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //need to test
 void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //need to test
 	REG[Rtype.rd] = REG[Rtype.rs] -1 REG[Rtype.rt];
 }
+
+void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	ctrl.nPC = REG[Rtype.rs];
+	ctrl.branch_delay = 2;
+}
+
+void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){
+	if( (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtyep.rt] ){
+		REG[Rtype.rd] = 1;
+	}
+	else{
+		REG[Rtype.rd] = 0;
+	}
+}
+
+
+
+
 
 //  void execute_DIVU(const instructionR& Rtype, int32_t REG[32]){
 //  	LO=REG[Rtype.rs]/REG[Rtype.rt];	
