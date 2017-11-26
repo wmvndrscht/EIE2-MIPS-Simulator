@@ -108,6 +108,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "RIJTYPE = " << rijtype << std::endl;
 
   	if(rijtype == "R"){
+      std::cerr << "Detected I" << std::endl;
       instructionR Rtype;
   		initialiseR(instruction, Rtype);
       std::cerr << "Rtype.data = " <<Rtype.data << std::endl;

@@ -101,50 +101,48 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
 
 	switch(Rtype.funct){
 		case 0b100000:
-			// execute_ADD(Rtype, REG);
+			// execute_ADD(Rtype, REG); //2
 		case 0b100001:
-			execute_ADDU(Rtype, REG);
+			execute_ADDU(Rtype, REG); //1
 			std::cerr << "Case ADDU" << std::endl;
 		case 0b100100:
-			// execute_AND(Rtype, REG);
+			execute_AND(Rtype, REG); //1
 		case 0b011010:
-			// execute_DIV(Rtype, REG);
+			// execute_DIV(Rtype, REG); //4
 		case 0b011011:
-			// execute_DIVU(Rtype, REG);
+			// execute_DIVU(Rtype, REG); //4
 		case 0b001000:
-			// execute_JR();
+			// execute_JR(); //1
 		case 0b010000:
-			// execute_MFHI();
+			// execute_MFHI(); //3
 		case 0b010010:
-			// execute_MFLO();
+			// execute_MFLO(); //3
 		case 011000:
-			// execute_MULT();
+			// execute_MULT();  //4
 		case 0b011001:
-			// execute_MULTU();
+			// execute_MULTU();  //4
 		case 0b100101:
-			// execute_OR();		// it might be a NOOP
+			execute_OR();	//1	// it might be a NOOP
 		case 0b000000:			// it might be a NOOP
-			// execute_SLL(); 
+			// execute_SLL(); //2 
 		case 0b000100:
-			// execute_SLLV();
+			// execute_SLLV(); //3
 		case 0b101010:
-			// execute_SLT();
+			// execute_SLT();  //2
 		case 0b101011:
-			// execute_SLTU();
+			// execute_SLTU(); //1
 		case 0b000011:
-			// execute_SRA();
+			// execute_SRA(); //2
 		case 0b000010:
-			// execute_SRL();
+			// execute_SRL();  //2
 		case 0b000110:
-			// execute_SRLV();
+			// execute_SRLV(); //3
 		case 0b100010:
-			// execute_SUB();
+			// execute_SUB(); //2
 		case 0b100011:
-			// execute_SUBU();
-		case 0b001100:
-			// execute_SYSCALL();							
+			execute_SUBU(); //1					
 		case 0b100110:
-			// execute_XOR();
+			execute_XOR();  //1
 		// exit(Invalid_Instruction_Exception);	
 		std::cerr << "LALA" << std::endl;
 	}
@@ -213,7 +211,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
 // }
 
 
-//Rtype
+//-------------------------------Rtype--------------------------------------
 // void execute_ADD(const instructionR& Rtype, int32_t REG){ //
 //  	REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
 // 	overflow(REG[Rtype.rd],REG[Rtype.rs],REG[Rtype.rt]);
@@ -229,21 +227,33 @@ void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){
  	std::cerr << "After we have, signed REG[" << Rtype.rd << "] = " << (int32_t)REG[Rtype.rd] << std::endl;
 }
 
-/* void execute_AND(const instructionR& Rtype, int32_t REG[32]){
-  	REG[Rtype.rd]=REG[Rtype.rs]&REG[Rtype.rt];
- }
-
- void execute_DIVU(const instructionR& Rtype, int32_t REG[32]){
- 	LO=REG[Rtype.rs]/REG[Rtype.rt];	
- 	HI=REG[Rtype.rs]%REG[Rtype.rt];
- } 
-
-void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
-	LO=instr.rs/instr.rt;	
-	HO=instr.rs%instr.rt;
+void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] & REG[Rtype.rt];
 }
 
-		//Itype
+void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] | REG[Rtype.rt];
+}
+
+void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] ^ REG[Rtype.rt];
+}
+
+void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] -1 REG[Rtype.rt];
+}
+
+//  void execute_DIVU(const instructionR& Rtype, int32_t REG[32]){
+//  	LO=REG[Rtype.rs]/REG[Rtype.rt];	
+//  	HI=REG[Rtype.rs]%REG[Rtype.rt];
+//  } 
+
+// void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
+// 	LO=instr.rs/instr.rt;	
+// 	HO=instr.rs%instr.rt;
+// }
+
+		//-------------------------------------------Itype-----------------------------------------------------
 		// void execute_ADDI(const instructionI& Itype, int32_t REG[32], control &ctrl){ // check for overflow
 		//  if(Itype.IMM & 0x8000)
 		//	 	Itype.IMM = 0xFFFF|Itype.IMM;	
@@ -366,7 +376,7 @@ void execute_JR(const instructionR& instr, int32_t& nextPC){
 
 
 
-// //Jtype
+// //-----------------------------------------------Jtype----------------------------------------------
 void execute_J(const instructionJ& Jtype, control &ctrl){
 	ctrl.delay1=1;
 	ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
@@ -378,4 +388,4 @@ void execute_JAL(){	\\ these might me right
 		REG[31]=ctrl.PC+8;
 		ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
 }
-*/
+
