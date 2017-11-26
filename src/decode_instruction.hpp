@@ -21,7 +21,8 @@ bool check_PC(control& ctrl, const uint32_t& offset_AI);
 void PC_advance(control& ctrl);
 void initialise_control(control &ctrl, const uint32_t& offset_AI);
 // void overflow(const int& result, const int& val1, const int& val2);
-bool overflow(const int32_t& val1, const int32_t& val2)
+bool overflow_add(const int32_t& rs, const int32_t& rt);
+bool overflow_sub(const int32_t& rs, const int32_t& rt);
 
 std::string decode_instructionRIJ(const uint32_t& instruction);
 void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl);

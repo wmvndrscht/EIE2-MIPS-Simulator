@@ -3,6 +3,7 @@
 #include <iostream>
 #include "rijstructures.hpp"
 #include "decode_instruction.hpp"
+#include <cmath>
 
 const int Arithmetic_Exception = -10;
 const int Memory_Exception = -11;
@@ -110,7 +111,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 
 	switch(Rtype.funct){
 		case 0b100000:
-			// execute_ADD(Rtype, REG); //2
+			execute_ADD(Rtype, REG); //2
 		case 0b100001:
 			execute_ADDU(Rtype, REG); //1
 			std::cerr << "Case ADDU" << std::endl;
@@ -133,21 +134,21 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 		case 0b100101:
 			execute_OR();	//1	// it might be a NOOP
 		case 0b000000:
-			// execute_SLL(); //2 
+			execute_SLL(); //2 
 		case 0b000100:
-			// execute_SLLV(); //3
+			execute_SLLV(); //3
 		case 0b101010:
-			// execute_SLT();  //2
+			execute_SLT();  //2
 		case 0b101011:
 			execute_SLTU(); //1
 		case 0b000011:
-			// execute_SRA(); //2
+			execute_SRA(); //2
 		case 0b000010:
-			// execute_SRL();  //2
+			execute_SRL();  //2
 		case 0b000110:
-			// execute_SRLV(); //3
+			execute_SRLV(); //3
 		case 0b100010:
-			// execute_SUB(); //2
+			execute_SUB(); //2
 		case 0b100011:
 			execute_SUBU(); //1					
 		case 0b100110:
@@ -240,9 +241,9 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 //	return false;
 // }
 
-bool overflow(const int32_t& val1, const int32_t& val2){
+bool overflow_add(const int32_t& rs, const int32_t& rt){
 
-	uint64_t check = (uint64_t)val1 + (uint64_t)val2;
+	uint64_t check = (uint64_t)rs + (uint64_t)rt;
 
 	if(check > 0xFFFFFFFF){
 		return true;
@@ -253,8 +254,19 @@ bool overflow(const int32_t& val1, const int32_t& val2){
 
 }
 
+bool overflow_sub(const int32_t& rs, const int32_t& rt){
+	uint64_t check = (uint64_t)rs - (uint64_t)rt;
+
+	if(check > 0xFFFFFFFF){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 void execute_ADD(const instructionR& Rtype, int32_t REG){ //
-	if( overflow(Rtype.rs, Rtype.rt) ){
+	if( overflow_add(Rtype.rs, Rtype.rt) ){
 		exit(Arithmetic_Exception);
 	}
 	else{
@@ -294,7 +306,7 @@ void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 }
 
 void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){
-	if( (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtyep.rt] ){
+	if( (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtype.rt] ){
 		REG[Rtype.rd] = 1;
 	}
 	else{
@@ -302,8 +314,59 @@ void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){
 	}
 }
 
+void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
+	if( overflow_sub(Rtype.rs, Rtype.rt)){
+		exit(Arithmetic_Exception);
+	}
+	else{
+		REG[Rtype.rd]=REG[Rtype.rs]-REG[Rtype.rt];
+	}
+}
+
+void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //says arithmetic comparison does not cause Integer Overflow??
+	if( REG[Rtype.rs] < REG[Rtype.rt] ){
+		REG[Rtype.rd] = 1;
+	}
+	else{
+		0;
+	}
+}
+
+void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
+
+	if( !( REG[Rtype.rt] >> 31 ) ){
+		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	}
+	else{
+		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+		REG[Rtype.rd] = REG[Rtype.rd] | ((pow(2, Rtype.shamt) -1) << 32-Rtype.shamt );
+	}
+
+}
 
 
+void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
+
+	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
+
+
+}
+
+void execute_SLL(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] << Rtype.shamt;
+}
+
+void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] << (REG[Rtype.rs] & 0x1F);
+}
+
+void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
+	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
+
+
+}
 
 
 //  void execute_DIVU(const instructionR& Rtype, int32_t REG[32]){
