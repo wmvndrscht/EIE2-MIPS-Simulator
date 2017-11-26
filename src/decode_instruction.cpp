@@ -122,7 +122,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 		case 0b011011:
 			// execute_DIVU(Rtype, REG); //4
 		case 0b001000:
-			execute_JR(); //1
+			execute_JR(Rtype, REG, ctrl); //1
 		case 0b010000:
 			// execute_MFHI(); //3
 		case 0b010010:
@@ -132,27 +132,27 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 		case 0b011001:
 			// execute_MULTU();  //4
 		case 0b100101:
-			execute_OR();	//1	// it might be a NOOP
+			execute_OR(Rtype, REG);	//1	// it might be a NOOP
 		case 0b000000:
-			execute_SLL(); //2 
+			execute_SLL(Rtype, REG); //2 
 		case 0b000100:
-			execute_SLLV(); //3
+			execute_SLLV(Rtype, REG); //3
 		case 0b101010:
-			execute_SLT();  //2
+			execute_SLT(Rtype, REG);  //2
 		case 0b101011:
-			execute_SLTU(); //1
+			execute_SLTU(Rtype, REG); //1
 		case 0b000011:
-			execute_SRA(); //2
+			execute_SRA(Rtype, REG); //2
 		case 0b000010:
-			execute_SRL();  //2
+			execute_SRL(Rtype, REG);  //2
 		case 0b000110:
-			execute_SRLV(); //3
+			execute_SRLV(Rtype, REG); //3
 		case 0b100010:
-			execute_SUB(); //2
+			execute_SUB(Rtype, REG); //2
 		case 0b100011:
-			execute_SUBU(); //1					
+			execute_SUBU(Rtype, REG); //1					
 		case 0b100110:
-			execute_XOR();  //1
+			execute_XOR(Rtype, REG);  //1
 		// exit(Invalid_Instruction_Exception);	
 		std::cerr << "LALA" << std::endl;
 	}

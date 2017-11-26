@@ -30,16 +30,22 @@ std::string execute_I_type(const instructionI& Itype, uint32_t REG[32], control 
 std::string execute_J_type(const instructionJ& Jtype, control &ctrl);
 
 //Rtype
-void execute_DIVU(const instructionR& Rtype, uint32_t REG[32]);
 void execute_ADD(const instructionR& Rtype, uint32_t REG[32]);
 void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]);
 void execute_AND(const instructionR& Rtype, uint32_t REG[32]);
+void execute_DIVU(const instructionR& Rtype, uint32_t REG[32]);
 void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl);
+void execute_OR(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLL(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLLV(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLT(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLTU(const instructionR& Rtype, int32_t REG[32]);
+void execute_SRA(const instructionR& Rtype, int32_t REG[32]);
+void execute_SRL(const instructionR& Rtype, int32_t REG[32]);
+void execute_SRLV(const instructionR& Rtype, int32_t REG[32]);
+void execute_SUB(const instructionR& Rtype, int32_t REG[32]);
 void execute_SUBU(const instructionR& Rtype, int32_t REG[32]);
 void execute_XOR(const instructionR& Rtype, int32_t REG[32]);
-void execute_OR(const instructionR& Rtype, int32_t REG[32]);
-void execute_SLTU(const instructionR& Rtype, int32_t REG[32])
-
 
 //Itype
 void execute_ADDI(const instructionI& Itype, uint32_t REG[32], control &ctrl);
