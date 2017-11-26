@@ -141,13 +141,12 @@ int main(int argc, char *argv[]) {
   		// initialiseJ(instruction, Jtype);
   		// execute_J_type(Jtype,ctrl);
   	}
-  	
-    ctrl.PC += 4;
-    ctrl.PC = 0;
+
+    PC_advance(ctrl);
     std::cerr << "End of while loop hopefully" << std::endl;
   }
 
-  delete[] ADDR_INSTR;
+  delete[] ADDR_INSTR;  //deleting dynamic memory
   delete[] ADDR_DATA;
   ADDR_INSTR = NULL;
   ADDR_DATA = NULL;

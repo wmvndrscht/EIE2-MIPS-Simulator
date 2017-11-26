@@ -26,9 +26,26 @@ uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, co
 void initialise_control(control &ctrl, const uint32_t& offset_AI){
 	ctrl.PC = offset_AI;
 	ctrl.nPC = offset_AI;
+	ctrl.branch_delay = 0;
 	ctrl.target = 0;
 	ctrl.delay1 = 0;
 	ctrl.delay2 = 0;
+}
+
+void PC_advance(control& ctrl){
+  if( ctrl.branch_delay == 0 ){  //if no branch_delay, carry on iterating
+    ctrl.PC = ctrl.PC + 4;
+    return;
+  }
+  else if(ctrl.branch_delay == 1){  //if branch_delay just occured do the branch stored in nPC, no longer branch delay
+    ctrl.PC = ctrl.nPC;
+    ctrl.branch_delay = 0;
+    return;
+  }
+  else{   //if branch delay set to 2, carry on as normal but - branch delay by 1
+    ctrl.PC = ctrl.PC + 4;
+    ctrl.branch_delay = ctrl.branch_delay -1;
+  }
 }
 
 
@@ -345,7 +362,7 @@ void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //need to test
 // }
 // void execute_SB(const instructionI& Itype, int32_t REG[32], control& ctrl){
 // 	ADDR_DATA[REG[Itype.rs]+Itype.IMM]=REG[Itype.rd]&0xFF;
-}
+// }
 void execute_SLTI(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	if(REG[Itype.rs]<Itype.IMM) // sign extension needed
  		REG[Itype.rd]=1;

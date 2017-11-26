@@ -9,6 +9,7 @@
 struct control{
 	uint32_t PC;
 	uint32_t nPC;
+	int branch_delay;
 	uint32_t target;
 	int delay1;
 	int delay2;
