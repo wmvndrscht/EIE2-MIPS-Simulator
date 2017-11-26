@@ -11,8 +11,6 @@ const int Invalid_Instruction_Exception = -12;
 const int Internal_Error = -20; 
 const int IO_Error = -21;
 
-int32_t HI, LO;
-
 
 uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, const uint32_t& offset_AI){
 	
@@ -28,9 +26,11 @@ void initialise_control(control &ctrl, const uint32_t& offset_AI){
 	ctrl.PC = offset_AI;
 	ctrl.nPC = offset_AI;
 	ctrl.branch_delay = 0;
-	ctrl.target = 0;
-	ctrl.delay1 = 0;
-	ctrl.delay2 = 0;
+	// ctrl.target = 0;
+	// ctrl.delay1 = 0;
+	// ctrl.delay2 = 0;
+	ctrl.HI = 0;
+	ctrl.LO = 0;
 }
 
 void PC_advance(control& ctrl){
@@ -118,19 +118,19 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 		case 0b100100:
 			execute_AND(Rtype, REG); //1
 		case 0b011010:
-			// execute_DIV(Rtype, REG); //4
+			execute_DIV(Rtype, REG); //4
 		case 0b011011:
-			// execute_DIVU(Rtype, REG); //4
+			execute_DIVU(Rtype, REG); //4
 		case 0b001000:
 			execute_JR(Rtype, REG, ctrl); //1
 		case 0b010000:
-			// execute_MFHI(); //3
+			execute_MFHI(Rtype, REG, ctrl); //3
 		case 0b010010:
-			// execute_MFLO(); //3
+			execute_MFLO(Rtype, REG, ctrl); //3
 		case 011000:
-			// execute_MULT();  //4
+			execute_MULT(Rtype, REG, ctrl);  //4
 		case 0b011001:
-			// execute_MULTU();  //4
+			execute_MULTU(Rtype, REG, ctrl);  //4
 		case 0b100101:
 			execute_OR(Rtype, REG);	//1	// it might be a NOOP
 		case 0b000000:
@@ -368,16 +368,38 @@ void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){
 
 }
 
+void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	REG[Rtype.rd] = ctrl.HI;  //this seems too simple hmmmm
+}
 
-//  void execute_DIVU(const instructionR& Rtype, int32_t REG[32]){
-//  	LO=REG[Rtype.rs]/REG[Rtype.rt];	
-//  	HI=REG[Rtype.rs]%REG[Rtype.rt];
-//  } 
+void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	REG[Rtype.rd] = ctrl.LO;  //this seems too simple hmmmm
+}
 
-// void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
-// 	LO=instr.rs/instr.rt;	
-// 	HO=instr.rs%instr.rt;
-// }
+
+
+
+void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
+	ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
+} 
+
+void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
+	ctrl.LO = Rtype.rs/Rtype.rt;	//what does arithmetic result is undefined really mean??
+	ctrl.HO = Rtype.rs%Rtype.rt;
+}
+
+void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	uint64_t temp = (uint32_t)REG[Rtype.rs] * (uint32_t)REG[Rtype.rt];
+	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
+	ctrl.HI = (uint32_t) (temp >> 32);
+}
+
+void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	uint64_t temp = REG[Rtype.rs] * REG[Rtype.rt];
+	ctrl.LO = (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
+	ctrl.HI = (temp >> 32);
+}
 
 		//-------------------------------------------Itype-----------------------------------------------------
 		// void execute_ADDI(const instructionI& Itype, int32_t REG[32], control &ctrl){ // check for overflow
@@ -462,9 +484,9 @@ void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){
 // }
 // void execute_LW(const instructionI& Itype, int32_t REG[32], control& ctrl){
 // 	REG[Itype.rd]=ADDR_DATA[REG[Itype.rs]+Itype.IMM]<<24; // Load byte by byte
-	REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+1]<<16;
-	REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+2]<<8;
-	REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+3];
+	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+1]<<16;
+	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+2]<<8;
+	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+3];
 // }
 // void execute_ORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
 // 	REG[Itype.rd]=REG[Itype.rs]|Itype.IMM;
