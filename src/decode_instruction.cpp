@@ -84,23 +84,7 @@ void PC_advance(control& ctrl){
 // }
 
 
-// void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
 
-// 	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
-// 		exit(Arithmetic_Exception);
-// 	}
-// 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
-// 		exit(Arithmetic_Exception);
-// 	}
-// 	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
-// 		exit(Arithmetic_Exception);
-// 	}
-
-// 	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
-// 		exit(Arithmetic_Exception);
-// 	}
-
-// }
 
 std::string decode_instructionRIJ(const uint32_t& instruction){
 
@@ -148,7 +132,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 			// execute_MULTU();  //4
 		case 0b100101:
 			execute_OR();	//1	// it might be a NOOP
-		case 0b000000:			// it might be a NOOP
+		case 0b000000:
 			// execute_SLL(); //2 
 		case 0b000100:
 			// execute_SLLV(); //3
@@ -237,10 +221,46 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 
 
 //-------------------------------Rtype--------------------------------------
-// void execute_ADD(const instructionR& Rtype, int32_t REG){ //
-//  	REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
-// 	overflow(REG[Rtype.rd],REG[Rtype.rs],REG[Rtype.rt]);
+
+// void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
+
+// 	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
+// 		return true;
+// 	}
+// 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
+// 		return true;
+// 	}
+// 	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
+// 		return true;
+// 	}
+
+// 	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
+// 		return true;
+// 	}
+//	return false;
 // }
+
+bool overflow(const int32_t& val1, const int32_t& val2){
+
+	uint64_t check = (uint64_t)val1 + (uint64_t)val2;
+
+	if(check > 0xFFFFFFFF){
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
+
+void execute_ADD(const instructionR& Rtype, int32_t REG){ //
+	if( overflow(Rtype.rs, Rtype.rt) ){
+		exit(Arithmetic_Exception);
+	}
+	else{
+		REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
+	}
+}
 
 void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){
 	std::cerr << "execute_ADDU !! \n BEFORE we have \n";
@@ -411,10 +431,6 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	REG[Itype.rd]=REG[Itype.rs]^Itype.IMM;
 }
 
-void execute_JR(const instructionR& instr, int32_t& nextPC){
-
-}
-
 
 
 
@@ -426,7 +442,7 @@ void execute_J(const instructionJ& Jtype, control &ctrl){
 }
 
 
-void execute_JAL(){	\\ these might me right
+void execute_JAL(){	// these might me right
 		ctrl.delay1=1;
 		REG[31]=ctrl.PC+8;
 		ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);

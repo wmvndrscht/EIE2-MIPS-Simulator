@@ -20,7 +20,8 @@ uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, co
 bool check_PC(control& ctrl, const uint32_t& offset_AI);
 void PC_advance(control& ctrl);
 void initialise_control(control &ctrl, const uint32_t& offset_AI);
-void overflow(const int& result, const int& val1, const int& val2);
+// void overflow(const int& result, const int& val1, const int& val2);
+bool overflow(const int32_t& val1, const int32_t& val2)
 
 std::string decode_instructionRIJ(const uint32_t& instruction);
 void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl);
