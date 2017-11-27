@@ -12,7 +12,7 @@ const int Internal_Error = -20;
 const int IO_Error = -21;
 
 
-// Signed, put values in  
+// Signed operations, careful with ADDR_DATA, jumps, tests
 // GETC, PUTC ???
 // how do we deal with $0?
 //1 - INITIALISE MEMORY

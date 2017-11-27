@@ -2,7 +2,7 @@
 j 0
 nop // once with this and once without
 addi $v0, $v0, 0x100
-   
+ 
 2) Test load upper immediate: Out=0x10000
 lui $v0, 0x1
 j 0
