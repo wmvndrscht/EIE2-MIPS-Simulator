@@ -9,28 +9,50 @@
 struct control{
 	uint32_t PC;
 	uint32_t nPC;
-	uint32_t target;
-	int delay1;
-	int delay2;
+	int branch_delay;
+	// uint32_t target;
+	// int delay1;
+	// int delay2;
+	int32_t HI;
+	int32_t LO;
 };
 
 uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, const uint32_t& offset_AI);
 
-bool check_PC(control &ctrl, const uint32_t& offset_AI);
+bool check_PC(control& ctrl, const uint32_t& offset_AI);
+void PC_advance(control& ctrl);
 void initialise_control(control &ctrl, const uint32_t& offset_AI);
-void overflow(const int& result, const int& val1, const int& val2);
+// void overflow(const int& result, const int& val1, const int& val2);
+bool overflow_add(const int32_t& rs, const int32_t& rt);
+bool overflow_sub(const int32_t& rs, const int32_t& rt);
 
 std::string decode_instructionRIJ(const uint32_t& instruction);
-void execute_R_type(const instructionR& Rtype, uint32_t REG[32]);
+void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl);
 std::string execute_I_type(const instructionI& Itype, uint32_t REG[32], control &ctrl);
 std::string execute_J_type(const instructionJ& Jtype, control &ctrl);
 
 //Rtype
-void execute_DIVU(const instructionR& Rtype, uint32_t REG[32]);
 void execute_ADD(const instructionR& Rtype, uint32_t REG[32]);
 void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]);
 void execute_AND(const instructionR& Rtype, uint32_t REG[32]);
-
+void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl)
+void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl);
+void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl);
+void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl);
+void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl);
+void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl);
+void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl);
+void execute_OR(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLL(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLLV(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLT(const instructionR& Rtype, int32_t REG[32]);
+void execute_SLTU(const instructionR& Rtype, int32_t REG[32]);
+void execute_SRA(const instructionR& Rtype, int32_t REG[32]);
+void execute_SRL(const instructionR& Rtype, int32_t REG[32]);
+void execute_SRLV(const instructionR& Rtype, int32_t REG[32]);
+void execute_SUB(const instructionR& Rtype, int32_t REG[32]);
+void execute_SUBU(const instructionR& Rtype, int32_t REG[32]);
+void execute_XOR(const instructionR& Rtype, int32_t REG[32]);
 
 //Itype
 void execute_ADDI(const instructionI& Itype, uint32_t REG[32], control &ctrl);

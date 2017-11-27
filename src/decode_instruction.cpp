@@ -3,14 +3,13 @@
 #include <iostream>
 #include "rijstructures.hpp"
 #include "decode_instruction.hpp"
+#include <cmath>
 
 const int Arithmetic_Exception = -10;
 const int Memory_Exception = -11;
 const int Invalid_Instruction_Exception = -12;
 const int Internal_Error = -20; 
 const int IO_Error = -21;
-
-int32_t HI, LO;
 
 
 uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, const uint32_t& offset_AI){
@@ -26,9 +25,36 @@ uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, co
 void initialise_control(control &ctrl, const uint32_t& offset_AI){
 	ctrl.PC = offset_AI;
 	ctrl.nPC = offset_AI;
-	ctrl.target = 0;
-	ctrl.delay1 = 0;
-	ctrl.delay2 = 0;
+	ctrl.branch_delay = 0;
+	// ctrl.target = 0;
+	// ctrl.delay1 = 0;
+	// ctrl.delay2 = 0;
+	ctrl.HI = 0;
+	ctrl.LO = 0;
+}
+
+void PC_advance(control& ctrl){
+
+  if( ctrl.branch_delay == 0 ){  //if no branch_delay, carry on iterating
+    ctrl.PC = ctrl.PC + 4;
+  }
+  else if(ctrl.branch_delay == 1){  //if branch_delay just occured do the branch stored in nPC, no longer branch delay
+    ctrl.PC = ctrl.nPC;
+    ctrl.branch_delay = 0;
+  }
+  else{   //if branch delay set to 2, carry on as normal but - branch delay by 1
+    ctrl.PC = ctrl.PC + 4;
+    ctrl.branch_delay = 1;
+  }
+
+  if(ctrl.PC < 0 || ctrl.PC > 0x11000000){
+  	exit(-11);  //memory exception or undefined behaviour?? ****** need exact code
+  }
+
+  if(!( (ctrl.PC & 0x3) == 0x0) ){
+  	exit(-11);  //memory exception
+  }
+
 }
 
 
@@ -59,23 +85,7 @@ void initialise_control(control &ctrl, const uint32_t& offset_AI){
 // }
 
 
-// void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
 
-// 	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
-// 		exit(Arithmetic_Exception);
-// 	}
-// 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
-// 		exit(Arithmetic_Exception);
-// 	}
-// 	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
-// 		exit(Arithmetic_Exception);
-// 	}
-
-// 	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
-// 		exit(Arithmetic_Exception);
-// 	}
-
-// }
 
 std::string decode_instructionRIJ(const uint32_t& instruction){
 
@@ -97,54 +107,52 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 
 }
 
-void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
+void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 
 	switch(Rtype.funct){
 		case 0b100000:
-			// execute_ADD(Rtype, REG);
+			execute_ADD(Rtype, REG); //2
 		case 0b100001:
-			execute_ADDU(Rtype, REG);
+			execute_ADDU(Rtype, REG); //1
 			std::cerr << "Case ADDU" << std::endl;
 		case 0b100100:
-			// execute_AND(Rtype, REG);
+			execute_AND(Rtype, REG); //1
 		case 0b011010:
-			// execute_DIV(Rtype, REG);
+			execute_DIV(Rtype, REG); //4
 		case 0b011011:
-			// execute_DIVU(Rtype, REG);
+			execute_DIVU(Rtype, REG); //4
 		case 0b001000:
-			// execute_JR();
+			execute_JR(Rtype, REG, ctrl); //1
 		case 0b010000:
-			// execute_MFHI();
+			execute_MFHI(Rtype, REG, ctrl); //3
 		case 0b010010:
-			// execute_MFLO();
+			execute_MFLO(Rtype, REG, ctrl); //3
 		case 011000:
-			// execute_MULT();
+			execute_MULT(Rtype, REG, ctrl);  //4
 		case 0b011001:
-			// execute_MULTU();
+			execute_MULTU(Rtype, REG, ctrl);  //4
 		case 0b100101:
-			// execute_OR();		// it might be a NOOP
-		case 0b000000:			// it might be a NOOP
-			// execute_SLL(); 
+			execute_OR(Rtype, REG);	//1	// it might be a NOOP
+		case 0b000000:
+			execute_SLL(Rtype, REG); //2 
 		case 0b000100:
-			// execute_SLLV();
+			execute_SLLV(Rtype, REG); //3
 		case 0b101010:
-			// execute_SLT();
+			execute_SLT(Rtype, REG);  //2
 		case 0b101011:
-			// execute_SLTU();
+			execute_SLTU(Rtype, REG); //1
 		case 0b000011:
-			// execute_SRA();
+			execute_SRA(Rtype, REG); //2
 		case 0b000010:
-			// execute_SRL();
+			execute_SRL(Rtype, REG);  //2
 		case 0b000110:
-			// execute_SRLV();
+			execute_SRLV(Rtype, REG); //3
 		case 0b100010:
-			// execute_SUB();
+			execute_SUB(Rtype, REG); //2
 		case 0b100011:
-			// execute_SUBU();
-		case 0b001100:
-			// execute_SYSCALL();							
+			execute_SUBU(Rtype, REG); //1					
 		case 0b100110:
-			// execute_XOR();
+			execute_XOR(Rtype, REG);  //1
 		// exit(Invalid_Instruction_Exception);	
 		std::cerr << "LALA" << std::endl;
 	}
@@ -213,11 +221,58 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32] ){
 // }
 
 
-//Rtype
-// void execute_ADD(const instructionR& Rtype, int32_t REG){ //
-//  	REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
-// 	overflow(REG[Rtype.rd],REG[Rtype.rs],REG[Rtype.rt]);
+//-------------------------------Rtype--------------------------------------
+
+// void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
+
+// 	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
+// 		return true;
+// 	}
+// 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
+// 		return true;
+// 	}
+// 	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
+// 		return true;
+// 	}
+
+// 	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
+// 		return true;
+// 	}
+//	return false;
 // }
+
+bool overflow_add(const int32_t& rs, const int32_t& rt){
+
+	uint64_t check = (uint64_t)rs + (uint64_t)rt;
+
+	if(check > 0xFFFFFFFF){
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
+
+bool overflow_sub(const int32_t& rs, const int32_t& rt){
+	uint64_t check = (uint64_t)rs - (uint64_t)rt;
+
+	if(check > 0xFFFFFFFF){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+void execute_ADD(const instructionR& Rtype, int32_t REG){ //
+	if( overflow_add(Rtype.rs, Rtype.rt) ){
+		exit(Arithmetic_Exception);
+	}
+	else{
+		REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
+	}
+}
 
 void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){
 	std::cerr << "execute_ADDU !! \n BEFORE we have \n";
@@ -229,21 +284,124 @@ void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){
  	std::cerr << "After we have, signed REG[" << Rtype.rd << "] = " << (int32_t)REG[Rtype.rd] << std::endl;
 }
 
-/* void execute_AND(const instructionR& Rtype, int32_t REG[32]){
-  	REG[Rtype.rd]=REG[Rtype.rs]&REG[Rtype.rt];
- }
-
- void execute_DIVU(const instructionR& Rtype, int32_t REG[32]){
- 	LO=REG[Rtype.rs]/REG[Rtype.rt];	
- 	HI=REG[Rtype.rs]%REG[Rtype.rt];
- } 
-
-void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
-	LO=instr.rs/instr.rt;	
-	HO=instr.rs%instr.rt;
+void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] & REG[Rtype.rt];
 }
 
-		//Itype
+void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] | REG[Rtype.rt];
+}
+
+void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] ^ REG[Rtype.rt];
+}
+
+void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //need to test
+	REG[Rtype.rd] = REG[Rtype.rs] -1 REG[Rtype.rt];
+}
+
+void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	ctrl.nPC = REG[Rtype.rs];
+	ctrl.branch_delay = 2;
+}
+
+void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){
+	if( (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtype.rt] ){
+		REG[Rtype.rd] = 1;
+	}
+	else{
+		REG[Rtype.rd] = 0;
+	}
+}
+
+void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
+	if( overflow_sub(Rtype.rs, Rtype.rt)){
+		exit(Arithmetic_Exception);
+	}
+	else{
+		REG[Rtype.rd]=REG[Rtype.rs]-REG[Rtype.rt];
+	}
+}
+
+void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //says arithmetic comparison does not cause Integer Overflow??
+	if( REG[Rtype.rs] < REG[Rtype.rt] ){
+		REG[Rtype.rd] = 1;
+	}
+	else{
+		0;
+	}
+}
+
+void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
+
+	if( !( REG[Rtype.rt] >> 31 ) ){
+		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	}
+	else{
+		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+		REG[Rtype.rd] = REG[Rtype.rd] | ((pow(2, Rtype.shamt) -1) << 32-Rtype.shamt );
+	}
+
+}
+
+
+void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
+
+	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
+
+
+}
+
+void execute_SLL(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] << Rtype.shamt;
+}
+
+void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] << (REG[Rtype.rs] & 0x1F);
+}
+
+void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
+	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
+
+
+}
+
+void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	REG[Rtype.rd] = ctrl.HI;  //this seems too simple hmmmm
+}
+
+void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	REG[Rtype.rd] = ctrl.LO;  //this seems too simple hmmmm
+}
+
+
+
+
+void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
+	ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
+} 
+
+void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
+	ctrl.LO = Rtype.rs/Rtype.rt;	//what does arithmetic result is undefined really mean??
+	ctrl.HO = Rtype.rs%Rtype.rt;
+}
+
+void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	uint64_t temp = (uint32_t)REG[Rtype.rs] * (uint32_t)REG[Rtype.rt];
+	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
+	ctrl.HI = (uint32_t) (temp >> 32);
+}
+
+void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	uint64_t temp = REG[Rtype.rs] * REG[Rtype.rt];
+	ctrl.LO = (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
+	ctrl.HI = (temp >> 32);
+}
+
+		//-------------------------------------------Itype-----------------------------------------------------
 		// void execute_ADDI(const instructionI& Itype, int32_t REG[32], control &ctrl){ // check for overflow
 		//  if(Itype.IMM & 0x8000)
 		//	 	Itype.IMM = 0xFFFF|Itype.IMM;	
@@ -326,16 +484,16 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 // }
 // void execute_LW(const instructionI& Itype, int32_t REG[32], control& ctrl){
 // 	REG[Itype.rd]=ADDR_DATA[REG[Itype.rs]+Itype.IMM]<<24; // Load byte by byte
-	REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+1]<<16;
-	REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+2]<<8;
-	REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+3];
+	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+1]<<16;
+	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+2]<<8;
+	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+3];
 // }
 // void execute_ORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
 // 	REG[Itype.rd]=REG[Itype.rs]|Itype.IMM;
 // }
 // void execute_SB(const instructionI& Itype, int32_t REG[32], control& ctrl){
 // 	ADDR_DATA[REG[Itype.rs]+Itype.IMM]=REG[Itype.rd]&0xFF;
-}
+// }
 void execute_SLTI(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	if(REG[Itype.rs]<Itype.IMM) // sign extension needed
  		REG[Itype.rd]=1;
@@ -358,24 +516,20 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
  	REG[Itype.rd]=REG[Itype.rs]^Itype.IMM;
 }
 
-void execute_JR(const instructionR& instr, int32_t& nextPC){
-
-}
 
 
 
 
-
-// //Jtype
+// //-----------------------------------------------Jtype----------------------------------------------
 void execute_J(const instructionJ& Jtype, control &ctrl){
 	ctrl.delay1=1;
 	ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
 }
 
 
-void execute_JAL(){	\\ these might me right
+void execute_JAL(){	// these might me right
 		ctrl.delay1=1;
 		REG[31]=ctrl.PC+8;
 		ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
 }
-*/
+
