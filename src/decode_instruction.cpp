@@ -204,8 +204,20 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 // 			execute_ADDIU(Itype, REG, ctrl);
 // 		case 0b001000:
 // 			execute_ADDI(Itype, REG, ctrl);
-			
-// 		exit(Invalid_Instruction_Exception);			
+	/*	case 0b :
+			execute_LWL();
+		case 0b :
+			execute_LWR();
+		case 0b :
+			execute_LHU();
+		case 0b :
+			execute_LH();
+		case 0b :
+			execute_SH();
+		case ob :
+			execute_LBU();
+	*/
+//	exit(Invalid_Instruction_Exception);			
 // 	}
 // }
 
