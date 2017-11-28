@@ -197,7 +197,7 @@ void execute_ADD(const instructionR& Rtype, int32_t REG){ //
 		exit(Arithmetic_Exception);
 	}
 	else{
-		REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
+		REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
 	}
 }
 
@@ -220,7 +220,7 @@ void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //need to test
 }
 
 void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //need to test
-	REG[Rtype.rd] = REG[Rtype.rs] ^ REG[Rtype.rt];
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] ^ (uint32_t)REG[Rtype.rt];
 }
 
 void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //need to test
@@ -309,25 +309,35 @@ void execute_MTLI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 }
 
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
-	ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
-	ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
+	if(Rtype.rt != 0 ){
+		ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
+		ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
+	}
+	else{
+		exit(-12); //invalid instruction, divide by zero
+	}
 } 
 
 void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
-	ctrl.LO = Rtype.rs/Rtype.rt;	//what does arithmetic result is undefined really mean??
-	ctrl.HO = Rtype.rs%Rtype.rt;
+	if(Rtype.rt != 0 ){
+		ctrl.LO = Rtype.rs/Rtype.rt;	//what does arithmetic result is undefined really mean??
+		ctrl.HO = Rtype.rs%Rtype.rt;
+	}
+	else{
+		exit(-12); //invalid instruction as divide by zero
+	}
 }
 
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	uint64_t temp = (uint32_t)REG[Rtype.rs] * (uint32_t)REG[Rtype.rt];
+	uint64_t temp = (uint64_t)REG[Rtype.rs] * (uint64_t)REG[Rtype.rt];
 	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
-	ctrl.HI = (uint32_t) (temp >> 32);
+	ctrl.HI = (uint32_t) (temp >> 32) & 0xFFFFFFFF;
 }
 
 void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	uint64_t temp = REG[Rtype.rs] * REG[Rtype.rt];
-	ctrl.LO = (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
-	ctrl.HI = (temp >> 32);
+	uint64_t temp = (int64_t)REG[Rtype.rs] * (int64_t)REG[Rtype.rt];
+	ctrl.LO = (int32_t)(temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
+	ctrl.HI = (int32_t) ((temp >> 32)& 0xFFFFFFFF);
 }
 
 void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
