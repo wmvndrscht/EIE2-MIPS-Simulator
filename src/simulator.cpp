@@ -128,7 +128,6 @@ int main(int argc, char *argv[]) {
       std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
       REG[Rtype.rs] = 1;
       REG[Rtype.rt] = 1;
-
   		execute_R_type(Rtype, REG);
   	}
   	else if(rijtype == "I"){
@@ -140,14 +139,16 @@ int main(int argc, char *argv[]) {
       std::cerr << "Itype.rs = " << Itype.rs << std::endl;
       std::cerr << "Rtype.rd = " << Itype.rd << std::endl;
       std::cerr << "Rtype.IMM = " << Itype.IMM << std::endl;
-  		// execute_I_type(Itype,REG,ctrl);
+  		execute_I_type(Itype,REG,ctrl);
   	}
   	else{
       std::cerr << "Detected J" << std::endl;
-//--------------------------currently can't assemble j and jal instructions :( need to find out more)
-    //   instructionJ Jtype;
-  		// initialiseJ(instruction, Jtype);
-  		// execute_J_type(Jtype,ctrl);
+      instructionJ Jtype;
+  		initialiseJ(instruction, Jtype);
+      std::cerr << "Jtype.data = " << Jtype.data << endl;
+      std::cerr << "Jtype.opcode = " << Jtype.opcode << endl;
+      std::cerr << "Jtype.address = " << Jtype.address << endl;
+  		execute_J_type(Jtype, REG, ctrl);
   	}
 
     PC_advance(ctrl);

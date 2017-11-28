@@ -61,14 +61,14 @@ void execute_XOR(const instructionR& Rtype, int32_t REG[32]);
 //------------------------------Itype-------------------------------
 
 void execute_XORI(const instructionI& Itype, int32_t REG[32]);
-void execute_SW(const instructionI& Itype, int32_t REG[32]);
+void execute_SW(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[4000000]);
 void execute_SLTIU(const instructionI& Itype, int32_t REG[32]);
 void execute_SLTI(const instructionI& Itype, int32_t REG[32]);
-void execute_SB(const instructionI& Itype, int32_t REG[32]);
+void execute_SB(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[4000000]);
 void execute_ORI(const instructionI& Itype, int32_t REG[32]);
-void execute_LW(const instructionI& Itype, int32_t REG[32]);
-void execute_LUI(const instructionI& Itype, int32_t REG[32]);
-void execute_LB(const instructionI& Itype, int32_t REG[32]);
+void execute_LW(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[4000000]);
+void execute_LUI(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[4000000]);
+void execute_LB(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[4000000]);
 void execute_BNE(const instructionI& Itype, uint32_t REG[32], control &ctrl);
 void execute_BLTZAL(const instructionI& Itype, uint32_t REG[32], control &ctrl);
 void execute_BLTZ(const instructionI& Itype, uint32_t REG[32], control &ctrl);

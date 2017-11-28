@@ -337,13 +337,13 @@ void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 }
 
 
-void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl){
+void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, const uint8_t* ADDR_DATA[4000000]){
 	
 	switch(Itype.opcode){
 		case 0b001110:
 			execute_XORI(Itype, REG);
 		case 0b101011:
-			execute_SW(Itype, REG);
+			execute_SW(Itype, REG, ADDR_DATA);
 		case 0b001011:
 			execute_SLTIU(Itype, REG);
 		case 0b001010:
@@ -353,11 +353,11 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl){
 		case 0b001101:
 			execute_ORI(Itype, REG);
 		case 0b100011:
-			execute_LW(Itype, REG);	
+			execute_LW(Itype, REG, ADDR_DATA);	
 		case 0b001111:
-			execute_LUI(Itype, REG);
+			execute_LUI(Itype, REG, ADDR_DATA);
 		case 0b100000:
-			execute_LB(Itype, REG);
+			execute_LB(Itype, REG, ADDR_DATA);
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
 		case 0b000001:
@@ -409,15 +409,15 @@ void execute_ADDI(const instructionI& Itype, int32_t REG[32]){ // check for over
  if(Itype.IMM & 0x8000)   //?
 	 	Itype.IMM = 0xFFFF | Itype.IMM;	
 		REG[Itype.rd] = REG[Itype.rs] + Itype.IMM;
-		overflow(REG[Itype.rd], REG[Itype.rs], Itype.IMM);
+		overflow_add(REG[Itype.rs], Itype.IMM);
 }
 
 void execute_ADDIU(const instructionI& Itype, int32_t REG[32]){
- 	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
+ 	REG[Itype.rd] = REG[Itype.rs] + Itype.IMM;
 }
 
 void execute_ANDI(const instructionI& Itype, int32_t REG[32]){
- 	REG[Itype.rd]=REG[Itype.rs]&Itype.IMM;
+ 	REG[Itype.rd] = REG[Itype.rs] & Itype.IMM;
 }
 
 void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){
@@ -437,21 +437,21 @@ void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
 void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
 	if(REG[Itype.rs] >= 0){
 		REG[31] = ctrl.PC + 8; // ????
-		ctrl.nPC=Itype.IMM << 2;
+		ctrl.nPC = Itype.IMM << 2;
 		ctrl.branch_delay = 2;
 	}
 }
 
 void execute_BGTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
 	if(REG[Itype.rs] > 0){
-		ctrl.nPC=Itype.IMM << 2;
+		ctrl.nPC = Itype.IMM << 2;
 		ctrl.branch_delay = 2;
 	}
 }
 
 void execute_BLEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
 	if(REG[Itype.rs] <= 0){
-		ctrl.nPC=Itype.IMM << 2;
+		ctrl.nPC = Itype.IMM << 2;
 		ctrl.branch_delay = 2;
 	}
 }
@@ -479,25 +479,26 @@ void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
 }
 
 void execute_LB(const instructionI& Itype, int32_t REG[32]){
-	REG[Itype.rd] = ADDR_DATA[REG[Itype.rs] + Itype.IMM];
+	REG[Itype.rd] = ADDR_DATA[ REG[Itype.rs] + Itype.IMM - 0x20000000];
 }
+
 void execute_LUI(const instructionI& Itype, int32_t REG[32]){
 	REG[Itype.rd] = Itype.IMM << 16;
 }
 
 void execute_LW(const instructionI& Itype, int32_t REG[32]){
-	REG[Itype.rd] = ADDR_DATA[REG[Itype.rs] + Itype.IMM] << 24; // Load byte by byte
-	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM+1] << 16;
-	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM+2] << 8;
-	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM+3];
+	REG[Itype.rd] = ADDR_DATA[REG[Itype.rs] + Itype.IMM - 0x20000000] << 24; // Load byte by byte
+	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM + 1 - 0x20000000] << 16;
+	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM + 2 - 0x20000000] << 8;
+	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM + 3 - 0x20000000];
 }
 
 void execute_ORI(const instructionI& Itype, int32_t REG[32]){
-	REG[Itype.rd]=REG[Itype.rs]|Itype.IMM;
+	REG[Itype.rd] = REG[Itype.rs] | Itype.IMM;
 }
 
 void execute_SB(const instructionI& Itype, int32_t REG[32]){
-	ADDR_DATA[REG[Itype.rs]+Itype.IMM]=REG[Itype.rd]&0xFF;
+	ADDR_DATA[ REG[Itype.rs] + Itype.IMM - 0x20000000] = REG[Itype.rd] & 0xFF;
 }
 
 void execute_SLTI(const instructionI& Itype, int32_t REG[32]){
@@ -517,10 +518,10 @@ void execute_SLTIU(const instructionI& Itype, int32_t REG[32]){
 }
 
 void execute_SW(const instructionI& Itype, int32_t REG[32]){
- 	ADDR_DATA[REG[Itype.rs] + Itype.IMM] = REG[Itype.rd] >> 24;			// this might cause problems
-	ADDR_DATA[REG[Itype.rs] + Itype.IMM+1] = (REG[Itype.rd] << 8) >> 24; 
-	ADDR_DATA[REG[Itype.rs] + Itype.IMM+2] = (REG[Itype.rd] << 16) >> 24; 
-	ADDR_DATA[REG[Itype.rs] + Itype.IMM+3] = (REG[Itype.rd] << 24) >> 24;
+ 	ADDR_DATA[REG[Itype.rs] + Itype.IMM - 0x20000000] = REG[Itype.rd] >> 24;			// this might cause problems
+	ADDR_DATA[REG[Itype.rs] + Itype.IMM+1- 0x20000000] = (REG[Itype.rd] << 8) >> 24; 
+	ADDR_DATA[REG[Itype.rs] + Itype.IMM+2- 0x20000000] = (REG[Itype.rd] << 16) >> 24; 
+	ADDR_DATA[REG[Itype.rs] + Itype.IMM+3- 0x20000000] = (REG[Itype.rd] << 24) >> 24;
 }
 
 void execute_XORI(const instructionI& Itype, int32_t REG[32]){
@@ -540,7 +541,7 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32]){
 
 // //-----------------------------------------------Jtype----------------------------------------------
 
-void execute_J_type(const instructionJ& Jtype, control &ctrl){
+void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 	switch(Jtype.opcode){
 		case 0b000010:
 			execute_J(Jtype,ctrl);
