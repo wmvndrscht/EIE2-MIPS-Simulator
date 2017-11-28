@@ -112,169 +112,86 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 	switch(Rtype.funct){
 		case 0b100000:
 			execute_ADD(Rtype, REG); //2
+			break;
 		case 0b100001:
 			execute_ADDU(Rtype, REG); //1
 			std::cerr << "Case ADDU" << std::endl;
+			break;
 		case 0b100100:
 			execute_AND(Rtype, REG); //1
+			break;
 		case 0b011010:
 			execute_DIV(Rtype, REG); //4
+			break;
 		case 0b011011:
 			execute_DIVU(Rtype, REG); //4
+			break;
 		case 0b001000:
 			execute_JR(Rtype, REG, ctrl); //1
+			break;
+		case 0b001001:
+			execute_JALR();
+			break;
 		case 0b010000:
 			execute_MFHI(Rtype, REG, ctrl); //3
+			break;
 		case 0b010010:
 			execute_MFLO(Rtype, REG, ctrl); //3
-		case 011000:
+			break;
+		case 0b010001:
+			execute_MTHI();
+			break;
+		case 0b010011:
+			execute_MTLO();
+			break;
+		case 0b011000:
 			execute_MULT(Rtype, REG, ctrl);  //4
+			break;
 		case 0b011001:
 			execute_MULTU(Rtype, REG, ctrl);  //4
+			break;
 		case 0b100101:
 			execute_OR(Rtype, REG);	//1	// it might be a NOOP
+			break;
 		case 0b000000:
 			execute_SLL(Rtype, REG); //2 
+			break;
 		case 0b000100:
 			execute_SLLV(Rtype, REG); //3
+			break;
 		case 0b101010:
 			execute_SLT(Rtype, REG);  //2
+			break;
 		case 0b101011:
 			execute_SLTU(Rtype, REG); //1
+			break;
 		case 0b000011:
 			execute_SRA(Rtype, REG); //2
+			break;
 		case 0b000010:
 			execute_SRL(Rtype, REG);  //2
+			break;
+		case 0b000111:
+			execute_SRAV();
+			break;
 		case 0b000110:
 			execute_SRLV(Rtype, REG); //3
+			break;
 		case 0b100010:
 			execute_SUB(Rtype, REG); //2
+			break;
 		case 0b100011:
-			execute_SUBU(Rtype, REG); //1					
+			execute_SUBU(Rtype, REG); //1	
+			break;				
 		case 0b100110:
 			execute_XOR(Rtype, REG);  //1
-		// exit(Invalid_Instruction_Exception);	
+			break;
+		default:
+			exit(-12); //invalid instrution type
+		// exit(Invalid_Instruction_Exception);
 		std::cerr << "LALA" << std::endl;
 	}
 	std::cerr << "Outside switch" << std::endl;
-}
-
-
-// std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl){
-	
-// 	switch(Itype.opcode){
-// 		case 0b001110:
-// 			// execute_XORI();
-// 		case 0b101011:
-// 			// execute_SW();
-// 		case 0b001011:
-// 			// execute_SLTIU();
-// 		case 0b001010:
-// 			// execute_SLTI();
-// 		case 0b101000:
-// 			// execute_SB();
-// 		case 0b001101:
-// 			// execute_ORI();
-// 		case 0b100011:
-// 			// execute_LW();	
-// 		case 0b001111:
-// 			// execute_LUI();
-// 		case 0b100000:
-// 			// execute_LB();
-// 		case 0b000101:
-// 			execute_BNE(Itype, REG, ctrl);
-// 		case 0b000001:
-// 			if(Itype.rd == 0b10000)
-// 				execute_BLTZAL(Itype, REG, ctrl);
-// 			if(Itype.rd == 0b0)
-// 				execute_BLTZ(Itype, REG, ctrl); 
-// 			if(Itype.rd == 0b10001)
-// 				execute_BGEZAL(Itype, REG, ctrl);
-// 			if(Itype.rd == 0b00001)
-// 				execute_BGEZ(Itype, REG, ctrl);
-// 		case 0b000111:
-// 			execute_BGTZ(Itype, REG, ctrl);
-// 		case 0b000110:
-// 			execute_BLEZ(Itype, REG, ctrl);
-// 		case 0b000100:
-// 			execute_BEQ(Itype, REG, ctrl);
-// 		case 0b001100:
-// 			execute_ANDI(Itype, REG, ctrl);
-// 		case 0b001001:
-// 			execute_ADDIU(Itype, REG, ctrl);
-// 		case 0b001000:
-// 			execute_ADDI(Itype, REG, ctrl);
-	/*	case 0b :
-			execute_LWL();
-		case 0b :
-			execute_LWR();
-		case 0b :
-			execute_LHU();
-		case 0b :
-			execute_LH();
-		case 0b :
-			execute_SH();
-		case ob :
-			execute_LBU();
-	*/
-//	exit(Invalid_Instruction_Exception);			
-// 	}
-// }
-
-
-// std::string execute_J_type(const instructionJ& Jtype, control &ctrl){
-// 	switch(Jtype.opcode){
-// 		case 0b000010:
-// 			// execute_J();
-// 		case 0b000011:
-// 			// execute_JAL(Jtype, REG);
-// 		exit(Invalid_Instruction_Exception);
-// 	}
-// }
-
-
-//-------------------------------Rtype--------------------------------------
-
-// void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
-
-// 	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
-// 		return true;
-// 	}
-// 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
-// 		return true;
-// 	}
-// 	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
-// 		return true;
-// 	}
-
-// 	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
-// 		return true;
-// 	}
-//	return false;
-// }
-
-bool overflow_add(const int32_t& rs, const int32_t& rt){
-
-	uint64_t check = (uint64_t)rs + (uint64_t)rt;
-
-	if(check > 0xFFFFFFFF){
-		return true;
-	}
-	else{
-		return false;
-	}
-
-}
-
-bool overflow_sub(const int32_t& rs, const int32_t& rt){
-	uint64_t check = (uint64_t)rs - (uint64_t)rt;
-
-	if(check > 0xFFFFFFFF){
-		return true;
-	}
-	else{
-		return false;
-	}
 }
 
 void execute_ADD(const instructionR& Rtype, int32_t REG){ //
@@ -345,7 +262,6 @@ void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //says arithmetic
 }
 
 void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
-
 	if( !( REG[Rtype.rt] >> 31 ) ){
 		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
 	}
@@ -356,13 +272,10 @@ void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
 
 }
 
-
 void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
 
 	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
 	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
-
-
 }
 
 void execute_SLL(const instructionR& Rtype, int32_t REG[32]){
@@ -376,8 +289,6 @@ void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){
 void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){
 	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
 	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
-
-
 }
 
 void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
@@ -387,9 +298,6 @@ void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	REG[Rtype.rd] = ctrl.LO;  //this seems too simple hmmmm
 }
-
-
-
 
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
@@ -413,58 +321,127 @@ void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 	ctrl.HI = (temp >> 32);
 }
 
-		//-------------------------------------------Itype-----------------------------------------------------
-		// void execute_ADDI(const instructionI& Itype, int32_t REG[32], control &ctrl){ // check for overflow
-		//  if(Itype.IMM & 0x8000)
-		//	 	Itype.IMM = 0xFFFF|Itype.IMM;	
-		//	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
-		// 	overflow(REG[Itype.rd],REG[Itype.rs],Itype.IMM);
-		// }
+//void execute_JALR();
+//void execute_MTHI();
+//void execute_MTLO();
+//void execute_SRAV();
 
-		// void execute_ADDIU(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		//  	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
-		// }
 
-		// void execute_ANDI(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		//  	REG[Itype.rd]=REG[Itype.rs]&Itype.IMM;
-		// }
+std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	
+	switch(Itype.opcode){
+		case 0b001110:
+			execute_XORI();
+		case 0b101011:
+			execute_SW();
+		case 0b001011:
+			execute_SLTIU();
+		case 0b001010:
+			execute_SLTI();
+		case 0b101000:
+			execute_SB();
+		case 0b001101:
+			execute_ORI();
+		case 0b100011:
+			execute_LW();	
+		case 0b001111:
+			execute_LUI();
+		case 0b100000:
+			execute_LB();
+		case 0b000101:
+			execute_BNE(Itype, REG, ctrl);
+		case 0b000001:
+			if(Itype.rd == 0b10000)
+				execute_BLTZAL(Itype, REG, ctrl);
+				break;
+			if(Itype.rd == 0b0)
+				execute_BLTZ(Itype, REG, ctrl); 
+			if(Itype.rd == 0b10001)
+				execute_BGEZAL(Itype, REG, ctrl);
+			if(Itype.rd == 0b00001)
+				execute_BGEZ(Itype, REG, ctrl);
+		case 0b000111:
+			execute_BGTZ(Itype, REG, ctrl);
+		case 0b000110:
+			execute_BLEZ(Itype, REG, ctrl);
+		case 0b000100:
+			execute_BEQ(Itype, REG, ctrl);
+		case 0b001100:
+			execute_ANDI(Itype, REG, ctrl);
+		case 0b001001:
+			execute_ADDIU(Itype, REG, ctrl);
+		case 0b001000:
+			execute_ADDI(Itype, REG, ctrl);
+		case 0b100010:
+			execute_LWL();
+		case 0b100110:
+			execute_LWR();
+		case 0b100101:
+			execute_LHU();
+		case 0b100001:
+			execute_LH();
+		case 0b101001:
+			execute_SH();
+		case 0b100100:
+			execute_LBU();
+		default:
+			exit(-12); //invalid instrution type
+	//exit(Invalid_Instruction_Exception);			
+	}
+}
 
-		// void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		//  	if(REG[Itype.rs]==REG[Itype.rd]){
-		//  		ctrl.nPC=Itype.IMM<<2;
-		//  		ctrl.delay1=1;
-		//  	}
-		 	
-		// }
+//-------------------------------------------Itype-----------------------------------------------------
+// void execute_ADDI(const instructionI& Itype, int32_t REG[32], control &ctrl){ // check for overflow
+//  if(Itype.IMM & 0x8000)
+//	 	Itype.IMM = 0xFFFF|Itype.IMM;	
+//	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
+// 	overflow(REG[Itype.rd],REG[Itype.rs],Itype.IMM);
+// }
 
-		// void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		//  	if(REG[Itype.rs]>=0){
-		// 		ctrl.nPC=Itype.IMM<<2;
-		// 		ctrl.delay1=1;
-		//  	}
-		// }
+// void execute_ADDIU(const instructionI& Itype, int32_t REG[32], control &ctrl){
+//  	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
+// }
 
-		// void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		// 	if(REG[Itype.rs]>=0){
-		// 		REG[31]=ctrl.PC+8; // ????
-		// 		ctrl.nPC=Itype.IMM<<2;
-		// 		ctrl.delay1=1;
-		// 	}
-		// }
+// void execute_ANDI(const instructionI& Itype, int32_t REG[32], control &ctrl){
+//  	REG[Itype.rd]=REG[Itype.rs]&Itype.IMM;
+// }
 
-		// void execute_BGTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		// 	if(REG[Itype.rs]>0){
-		// 		ctrl.nPC=Itype.IMM<<2;
-		// 		ctrl.delay1=1;
-		// 	}
-		// }
+// void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+//  	if(REG[Itype.rs]==REG[Itype.rd]){
+//  		ctrl.nPC=Itype.IMM<<2;
+//  		ctrl.delay1=1;
+//  	}
+ 	
+// }
 
-		// void execute_BLEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-		// 	if(REG[Itype.rs]<=0){
-		// 		ctrl.nPC=Itype.IMM<<2;
-		// 		ctrl.delay1=1;
-		// 	}
-		// }
+// void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+//  	if(REG[Itype.rs]>=0){
+// 		ctrl.nPC=Itype.IMM<<2;
+// 		ctrl.delay1=1;
+//  	}
+// }
+
+// void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
+// 	if(REG[Itype.rs]>=0){
+// 		REG[31]=ctrl.PC+8; // ????
+// 		ctrl.nPC=Itype.IMM<<2;
+// 		ctrl.delay1=1;
+// 	}
+// }
+
+// void execute_BGTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+// 	if(REG[Itype.rs]>0){
+// 		ctrl.nPC=Itype.IMM<<2;
+// 		ctrl.delay1=1;
+// 	}
+// }
+
+// void execute_BLEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+// 	if(REG[Itype.rs]<=0){
+// 		ctrl.nPC=Itype.IMM<<2;
+// 		ctrl.delay1=1;
+// 	}
+// }
 
 // void execute_BLTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
 // 	if(REG[Itype.rs]<0){
@@ -529,10 +506,29 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
 }
 
 
-
+//add:
+//	lbu
+//	lh
+// 	lhu
+//	lwl
+//	lwr
+//	sh
+//
 
 
 // //-----------------------------------------------Jtype----------------------------------------------
+
+// std::string execute_J_type(const instructionJ& Jtype, control &ctrl){
+// 	switch(Jtype.opcode){
+// 		case 0b000010:
+// 			// execute_J();
+// 		case 0b000011:
+// 			// execute_JAL(Jtype, REG);
+// 		exit(Invalid_Instruction_Exception);
+// 	}
+// }
+
+
 void execute_J(const instructionJ& Jtype, control &ctrl){
 	ctrl.delay1=1;
 	ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
@@ -545,3 +541,46 @@ void execute_JAL(){	// these might me right
 		ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
 }
 
+
+
+// void overflow(const int32_t& result, const int32_t& val1, const int32_t& val2){
+
+// 	if( (val1 > 0) && (val2 > 0) && (result <= 0)){
+// 		return true;
+// 	}
+// 	if((val1 < 0) && (val2 < 0) && (result >= 0)){
+// 		return true;
+// 	}
+// 	if((val1>>31) && (val2>>31) && (!(result>>31)) ){				//this should work
+// 		return true;
+// 	}
+
+// 	if((!(val1>>31)) && (!(val2>>31)) && (result>>31)){
+// 		return true;
+// 	}
+//	return false;
+// }
+
+bool overflow_add(const int32_t& rs, const int32_t& rt){
+
+	uint64_t check = (uint64_t)rs + (uint64_t)rt;
+
+	if(check > 0xFFFFFFFF){
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
+
+bool overflow_sub(const int32_t& rs, const int32_t& rt){
+	uint64_t check = (uint64_t)rs - (uint64_t)rt;
+
+	if(check > 0xFFFFFFFF){
+		return true;
+	}
+	else{
+		return false;
+	}
+}

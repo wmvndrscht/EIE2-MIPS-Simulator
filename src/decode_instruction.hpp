@@ -38,6 +38,7 @@ void execute_AND(const instructionR& Rtype, uint32_t REG[32]);
 void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl)
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl);
 void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl);
+execute_JALR();
 void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl);
 void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl);
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl);
