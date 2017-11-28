@@ -60,7 +60,6 @@ void PC_advance(control& ctrl){
 
 
 // bool check_PC(control &ctrl, const uint32_t& offset_AI){
-
 // 	if( ctrl.PC == 0){
 // 		return false;
 // 	}
@@ -81,7 +80,6 @@ void PC_advance(control& ctrl){
 
 //     return true;
 // 	}
-
 // }
 
 
@@ -130,7 +128,7 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 			execute_JR(Rtype, REG, ctrl); //1
 			break;
 		case 0b001001:
-			execute_JALR();
+			execute_JALR(Rtype, REG, ctrl);
 			break;
 		case 0b010000:
 			execute_MFHI(Rtype, REG, ctrl); //3
@@ -139,10 +137,10 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 			execute_MFLO(Rtype, REG, ctrl); //3
 			break;
 		case 0b010001:
-			execute_MTHI();
+			execute_MTHI(Rtype, REG, ctrl);
 			break;
 		case 0b010011:
-			execute_MTLO();
+			execute_MTLO(Rtype, REG, ctrl);
 			break;
 		case 0b011000:
 			execute_MULT(Rtype, REG, ctrl);  //4
@@ -168,11 +166,11 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 		case 0b000011:
 			execute_SRA(Rtype, REG); //2
 			break;
+		case 0b000111:
+			execute_SRAV(Rtype, REG);
+			break;
 		case 0b000010:
 			execute_SRL(Rtype, REG);  //2
-			break;
-		case 0b000111:
-			execute_SRAV();
 			break;
 		case 0b000110:
 			execute_SRLV(Rtype, REG); //3
@@ -269,12 +267,15 @@ void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
 		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
 		REG[Rtype.rd] = REG[Rtype.rd] | ((pow(2, Rtype.shamt) -1) << 32-Rtype.shamt );
 	}
+}
 
+void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){
+	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	REG[Rtype.rd] = REG[Rtype.rd] | (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1);
 }
 
 void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
-
-	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
 	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
 }
 
@@ -299,6 +300,14 @@ void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	REG[Rtype.rd] = ctrl.LO;  //this seems too simple hmmmm
 }
 
+void execute_MTHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	ctrl.HI = REG[Rtype.rs];
+}
+
+void execute_MTLI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	ctrl.LO = REG[Rtype.rs];
+}
+
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
 	ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
@@ -321,33 +330,34 @@ void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 	ctrl.HI = (temp >> 32);
 }
 
-//void execute_JALR();
-//void execute_MTHI();
-//void execute_MTLO();
-//void execute_SRAV();
+void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	ctrl.nPC = REG[Rtype.rs];
+	REG[Rtype.rd] = ctrl.PC + 8;
+	ctrl.branch_delay = 2;
+}
 
 
-std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl){
+void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl){
 	
 	switch(Itype.opcode){
 		case 0b001110:
-			execute_XORI();
+			execute_XORI(Itype, REG);
 		case 0b101011:
-			execute_SW();
+			execute_SW(Itype, REG);
 		case 0b001011:
-			execute_SLTIU();
+			execute_SLTIU(Itype, REG);
 		case 0b001010:
-			execute_SLTI();
+			execute_SLTI(Itype, REG);
 		case 0b101000:
-			execute_SB();
+			execute_SB(Itype, REG);
 		case 0b001101:
-			execute_ORI();
+			execute_ORI(Itype, REG);
 		case 0b100011:
-			execute_LW();	
+			execute_LW(Itype, REG);	
 		case 0b001111:
-			execute_LUI();
+			execute_LUI(Itype, REG);
 		case 0b100000:
-			execute_LB();
+			execute_LB(Itype, REG);
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
 		case 0b000001:
@@ -355,11 +365,14 @@ std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control &
 				execute_BLTZAL(Itype, REG, ctrl);
 				break;
 			if(Itype.rd == 0b0)
-				execute_BLTZ(Itype, REG, ctrl); 
+				execute_BLTZ(Itype, REG, ctrl);
+				break;
 			if(Itype.rd == 0b10001)
 				execute_BGEZAL(Itype, REG, ctrl);
+				break;
 			if(Itype.rd == 0b00001)
 				execute_BGEZ(Itype, REG, ctrl);
+			break;
 		case 0b000111:
 			execute_BGTZ(Itype, REG, ctrl);
 		case 0b000110:
@@ -367,23 +380,23 @@ std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control &
 		case 0b000100:
 			execute_BEQ(Itype, REG, ctrl);
 		case 0b001100:
-			execute_ANDI(Itype, REG, ctrl);
+			execute_ANDI(Itype, REG);
 		case 0b001001:
-			execute_ADDIU(Itype, REG, ctrl);
+			execute_ADDIU(Itype, REG);
 		case 0b001000:
-			execute_ADDI(Itype, REG, ctrl);
+			execute_ADDI(Itype, REG);
 		case 0b100010:
-			execute_LWL();
+			execute_LWL();  //need to be completed
 		case 0b100110:
-			execute_LWR();
+			execute_LWR();	//need to be completed
 		case 0b100101:
-			execute_LHU();
+			execute_LHU();	//need to be completed
 		case 0b100001:
-			execute_LH();
+			execute_LH();		//need to be completed
 		case 0b101001:
-			execute_SH();
+			execute_SH();		//need to be completed
 		case 0b100100:
-			execute_LBU();
+			execute_LBU();	//need to be completed
 		default:
 			exit(-12); //invalid instrution type
 	//exit(Invalid_Instruction_Exception);			
@@ -391,118 +404,127 @@ std::string execute_I_type(const instructionI& Itype, int32_t REG[32], control &
 }
 
 //-------------------------------------------Itype-----------------------------------------------------
-// void execute_ADDI(const instructionI& Itype, int32_t REG[32], control &ctrl){ // check for overflow
-//  if(Itype.IMM & 0x8000)
-//	 	Itype.IMM = 0xFFFF|Itype.IMM;	
-//	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
-// 	overflow(REG[Itype.rd],REG[Itype.rs],Itype.IMM);
-// }
 
-// void execute_ADDIU(const instructionI& Itype, int32_t REG[32], control &ctrl){
-//  	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
-// }
+void execute_ADDI(const instructionI& Itype, int32_t REG[32]){ // check for overflow
+ if(Itype.IMM & 0x8000)   //?
+	 	Itype.IMM = 0xFFFF | Itype.IMM;	
+		REG[Itype.rd] = REG[Itype.rs] + Itype.IMM;
+		overflow(REG[Itype.rd], REG[Itype.rs], Itype.IMM);
+}
 
-// void execute_ANDI(const instructionI& Itype, int32_t REG[32], control &ctrl){
-//  	REG[Itype.rd]=REG[Itype.rs]&Itype.IMM;
-// }
+void execute_ADDIU(const instructionI& Itype, int32_t REG[32]){
+ 	REG[Itype.rd]=REG[Itype.rs]+Itype.IMM;
+}
 
-// void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-//  	if(REG[Itype.rs]==REG[Itype.rd]){
-//  		ctrl.nPC=Itype.IMM<<2;
-//  		ctrl.delay1=1;
-//  	}
- 	
-// }
+void execute_ANDI(const instructionI& Itype, int32_t REG[32]){
+ 	REG[Itype.rd]=REG[Itype.rs]&Itype.IMM;
+}
 
-// void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-//  	if(REG[Itype.rs]>=0){
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-//  	}
-// }
+void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+ 	if(REG[Itype.rs] == REG[Itype.rd]){
+ 		ctrl.nPC = Itype.IMM << 2;
+ 		ctrl.branch_delay = 2;
+ 	}
+}
 
-// void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
-// 	if(REG[Itype.rs]>=0){
-// 		REG[31]=ctrl.PC+8; // ????
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-// 	}
-// }
+void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+ 	if(REG[Itype.rs] >= 0){
+			ctrl.nPC = Itype.IMM << 2;
+			ctrl.branch_delay = 2;
+ 	}
+}
 
-// void execute_BGTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-// 	if(REG[Itype.rs]>0){
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-// 	}
-// }
+void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	if(REG[Itype.rs] >= 0){
+		REG[31] = ctrl.PC + 8; // ????
+		ctrl.nPC=Itype.IMM << 2;
+		ctrl.branch_delay = 2;
+	}
+}
 
-// void execute_BLEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-// 	if(REG[Itype.rs]<=0){
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-// 	}
-// }
+void execute_BGTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	if(REG[Itype.rs] > 0){
+		ctrl.nPC=Itype.IMM << 2;
+		ctrl.branch_delay = 2;
+	}
+}
 
-// void execute_BLTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
-// 	if(REG[Itype.rs]<0){
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-// 	}
-// }
+void execute_BLEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	if(REG[Itype.rs] <= 0){
+		ctrl.nPC=Itype.IMM << 2;
+		ctrl.branch_delay = 2;
+	}
+}
 
-// void execute_BLTZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
-// 	if(REG[Itype.rs]<0){
-//		REG[31]=ctrl.PC+8;
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-// 	}
-// }
+void execute_BLTZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	if(REG[Itype.rs] < 0){
+		ctrl.nPC = Itype.IMM << 2;
+		ctrl.branch_delay = 2;
+	}
+}
 
-// void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
-// 	if(REG[Itype.rs]!=REG[Itype.rd]){
-// 		ctrl.nPC=Itype.IMM<<2;
-// 		ctrl.delay1=1;
-// 	}
-// }
+void execute_BLTZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	if(REG[Itype.rs] < 0){
+		REG[31] = ctrl.PC + 8;
+		ctrl.nPC = Itype.IMM << 2;
+		ctrl.branch_delay = 2;
+	}
+}
 
-// void execute_LB(const instructionI& Itype, int32_t REG[32], control& ctrl){
-// 	REG[Itype.rd]=ADDR_DATA[REG[Itype.rs]+Itype.IMM];
-// }
-// void execute_LUI(const instructionI& Itype, int32_t REG[32], control& ctrl){
-// 	REG[Itype.rd]=Itype.IMM<<16;
-// }
-// void execute_LW(const instructionI& Itype, int32_t REG[32], control& ctrl){
-// 	REG[Itype.rd]=ADDR_DATA[REG[Itype.rs]+Itype.IMM]<<24; // Load byte by byte
-	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+1]<<16;
-	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+2]<<8;
-	// REG[Itype.rd]=+ADDR_DATA[REG[Itype.rs]+Itype.IMM+3];
-// }
-// void execute_ORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
-// 	REG[Itype.rd]=REG[Itype.rs]|Itype.IMM;
-// }
-// void execute_SB(const instructionI& Itype, int32_t REG[32], control& ctrl){
-// 	ADDR_DATA[REG[Itype.rs]+Itype.IMM]=REG[Itype.rd]&0xFF;
-// }
-void execute_SLTI(const instructionI& Itype, int32_t REG[32], control& ctrl){
- 	if(REG[Itype.rs]<Itype.IMM) // sign extension needed
- 		REG[Itype.rd]=1;
+void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
+	if(REG[Itype.rs] != REG[Itype.rd]){
+		ctrl.nPC = Itype.IMM << 2;
+		ctrl.branch_delay = 2;
+	}
+}
+
+void execute_LB(const instructionI& Itype, int32_t REG[32]){
+	REG[Itype.rd] = ADDR_DATA[REG[Itype.rs] + Itype.IMM];
+}
+void execute_LUI(const instructionI& Itype, int32_t REG[32]){
+	REG[Itype.rd] = Itype.IMM << 16;
+}
+
+void execute_LW(const instructionI& Itype, int32_t REG[32]){
+	REG[Itype.rd] = ADDR_DATA[REG[Itype.rs] + Itype.IMM] << 24; // Load byte by byte
+	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM+1] << 16;
+	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM+2] << 8;
+	REG[Itype.rd] =+ ADDR_DATA[REG[Itype.rs] + Itype.IMM+3];
+}
+
+void execute_ORI(const instructionI& Itype, int32_t REG[32]){
+	REG[Itype.rd]=REG[Itype.rs]|Itype.IMM;
+}
+
+void execute_SB(const instructionI& Itype, int32_t REG[32]){
+	ADDR_DATA[REG[Itype.rs]+Itype.IMM]=REG[Itype.rd]&0xFF;
+}
+
+void execute_SLTI(const instructionI& Itype, int32_t REG[32]){
+ 	if(REG[Itype.rs] < Itype.IMM){ // sign extension needed
+ 		REG[Itype.rd] = 1;
+ 	}
+ 	else{
+ 		REG[Itype.rd] = 0;
+ 	}
+}
+
+void execute_SLTIU(const instructionI& Itype, int32_t REG[32]){
+ 	if(REG[Itype.rs] < Itype.IMM)
+ 		REG[Itype.rd] = 1;
  	else 
- 		REG[Itype.rd]=0;
+ 		REG[Itype.rd] = 0;
 }
-void execute_SLTIU(const instructionI& Itype, int32_t REG[32], control &ctrl){
- 	if(REG[Itype.rs]<Itype.IMM)
- 		REG[Itype.rd]=1;
- 	else 
- 		REG[Itype.rd]=0;
+
+void execute_SW(const instructionI& Itype, int32_t REG[32]){
+ 	ADDR_DATA[REG[Itype.rs] + Itype.IMM] = REG[Itype.rd] >> 24;			// this might cause problems
+	ADDR_DATA[REG[Itype.rs] + Itype.IMM+1] = (REG[Itype.rd] << 8) >> 24; 
+	ADDR_DATA[REG[Itype.rs] + Itype.IMM+2] = (REG[Itype.rd] << 16) >> 24; 
+	ADDR_DATA[REG[Itype.rs] + Itype.IMM+3] = (REG[Itype.rd] << 24) >> 24;
 }
-void execute_SW(const instructionI& Itype, int32_t REG[32], control &ctrl){
- 	ADDR_DATA[REG[Itype.rs]+Itype.IMM]= REG[Itype.rd]>>24;			// this might cause problems
-	ADDR_DATA[REG[Itype.rs]+Itype.IMM+1]=(REG[Itype.rd]<<8)>>24; 
-	ADDR_DATA[REG[Itype.rs]+Itype.IMM+2]=(REG[Itype.rd]<<16)>>24; 
-	ADDR_DATA[REG[Itype.rs]+Itype.IMM+3]=(REG[Itype.rd]<<24)>>24;
-}
-void execute_XORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
- 	REG[Itype.rd]=REG[Itype.rs]^Itype.IMM;
+
+void execute_XORI(const instructionI& Itype, int32_t REG[32]){
+ 	REG[Itype.rd] = REG[Itype.rs] ^ Itype.IMM;
 }
 
 
@@ -518,27 +540,31 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32], control& ctrl){
 
 // //-----------------------------------------------Jtype----------------------------------------------
 
-// std::string execute_J_type(const instructionJ& Jtype, control &ctrl){
-// 	switch(Jtype.opcode){
-// 		case 0b000010:
-// 			// execute_J();
-// 		case 0b000011:
-// 			// execute_JAL(Jtype, REG);
-// 		exit(Invalid_Instruction_Exception);
-// 	}
-// }
-
-
-void execute_J(const instructionJ& Jtype, control &ctrl){
-	ctrl.delay1=1;
-	ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
+void execute_J_type(const instructionJ& Jtype, control &ctrl){
+	switch(Jtype.opcode){
+		case 0b000010:
+			execute_J(Jtype,ctrl);
+			break;
+		case 0b000011:
+			execute_JAL(Jtype, REG);
+			break;
+		default:
+			exit(-12); //invalid instruction type
+		//exit(Invalid_Instruction_Exception);
+	}
 }
 
 
-void execute_JAL(){	// these might me right
-		ctrl.delay1=1;
-		REG[31]=ctrl.PC+8;
-		ctrl.nextPC=(ctrl.PC&0xF0000000)|(Jtype.address<<2);
+void execute_J(const instructionJ& Jtype, control &ctrl){
+	ctrl.branch_delay = 2;
+	ctrl.nextPC = (ctrl.PC & 0xF0000000) | (Jtype.address << 2);
+}
+
+
+void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// these might me right
+	ctrl.branch_delay = 2;
+	REG[31] = ctrl.PC + 8;
+	ctrl.nPC = (ctrl.PC & 0xF0000000) | (Jtype.address << 2);
 }
 
 
@@ -562,7 +588,6 @@ void execute_JAL(){	// these might me right
 // }
 
 bool overflow_add(const int32_t& rs, const int32_t& rt){
-
 	uint64_t check = (uint64_t)rs + (uint64_t)rt;
 
 	if(check > 0xFFFFFFFF){
@@ -571,12 +596,10 @@ bool overflow_add(const int32_t& rs, const int32_t& rt){
 	else{
 		return false;
 	}
-
 }
 
 bool overflow_sub(const int32_t& rs, const int32_t& rt){
 	uint64_t check = (uint64_t)rs - (uint64_t)rt;
-
 	if(check > 0xFFFFFFFF){
 		return true;
 	}

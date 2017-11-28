@@ -19,6 +19,14 @@ const int IO_Error = -21;
 //2 - LOAD IN BINARY
 //3 - SET PC COUNTER TO START
 
+
+//------------------------To do--------------------------------
+//1. Check all instructions, comment edge cases
+//2. NOOP: r, i, or j, or undefined etc
+//3. Memory offset
+//4. Ensure no out of bounds
+//5. Testbench interface + layout
+
 int main(int argc, char *argv[]) {
 
   std::cerr << "START" << std::endl;
