@@ -19,6 +19,7 @@ struct instructionI{
 	uint32_t rs;
 	uint32_t rd;
 	uint32_t IMM;		// uint16_t ?
+	int32_t IMMs;
 };
 
 struct instructionJ{
