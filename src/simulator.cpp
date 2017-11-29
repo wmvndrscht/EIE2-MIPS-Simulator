@@ -32,13 +32,13 @@ int main(int argc, char *argv[]) {
   std::cerr << "START" << std::endl;
   if( argc < 2){
     std::cerr << "No input binary  :: END PROGRAM" << std::endl;
-    exit(IO_Error); //just for the moment
+    std::exit(IO_Error); //just for the moment
   }
 
   uint8_t* ADDR_INSTR;
-  ADDR_INSTR = new uint8_t[0x1000000];
+  ADDR_INSTR = new uint8_t[0x1000000]();
   uint8_t* ADDR_DATA;
-  ADDR_DATA = new uint8_t[0x4000000];
+  ADDR_DATA = new uint8_t[0x4000000]();
 
 
 	uint32_t REG[32] = {0};
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
   else{ 
 
   	std::cerr << "Unable to open file" << std::endl;
-		exit(IO_Error);																				// IO ERROR 
+		std::exit(IO_Error);																				// IO ERROR 
   	return 0;
   }
   
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
   ADDR_DATA = NULL;
 
   uint8_t result = REG[2] & 0x000000FF;
-  exit(result);
+  std::exit(result);
 
   return 0;
 }
