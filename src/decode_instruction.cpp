@@ -337,6 +337,8 @@ void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 	ctrl.branch_delay = 2;
 }
 
+//17:19------------------------------------------
+
 
 void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, const uint8_t* ADDR_DATA[4000000]){
 	
@@ -406,24 +408,26 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, c
 
 //-------------------------------------------Itype-----------------------------------------------------
 
-void execute_ADDI(const instructionI& Itype, int32_t REG[32]){ // check for overflow
- if(Itype.IMM & 0x8000)   //?
-	 	Itype.IMM = 0xFFFF | Itype.IMM;	
-		REG[Itype.rd] = REG[Itype.rs] + Itype.IMM;
-		overflow(REG[Itype.rs], Itype.IMM);
+void execute_ADDI(const instructionI& Itype, int32_t REG[32]){ // check for overflow, correct imm etc
+	int32_t IMMs  = sign_extend_IMM(Itype.IMM);
+	if( overflow(REG[Itype.rs], IMMs) ){
+		exit(-10); //arithmetic overflow exception
+	}
+	REG[Itype.rd] = REG[Itype.rs] + IMMs;
 }
 
-void execute_ADDIU(const instructionI& Itype, int32_t REG[32]){
- 	REG[Itype.rd] = REG[Itype.rs] + Itype.IMM;
+void execute_ADDIU(const instructionI& Itype, int32_t REG[32]){  //is it wrap around or not? does not trap overflow!!!!!
+ 	REG[Itype.rd] = REG[Itype.rs] + sign_extend_IMM(Itype.IMM);
 }
 
-void execute_ANDI(const instructionI& Itype, int32_t REG[32]){
- 	REG[Itype.rd] = REG[Itype.rs] & Itype.IMM;
+void execute_ANDI(const instructionI& Itype, int32_t REG[32]){  //simple, make sure immediate is zero-extended
+ 	REG[Itype.rd] = REG[Itype.rs] & (uint32_t)Itype.IMM;
 }
 
-void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){
+void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){  //18-bit signed, hmmmm ???
  	if(REG[Itype.rs] == REG[Itype.rd]){
- 		ctrl.nPC = Itype.IMM << 2;
+ 		IMMs = sign_extend_IMM(Itype.IMM)
+ 		ctrl.nPC = (int32_t)ctrl.PC + (IMMs << 2);  //adding the relative offset right?
  		ctrl.branch_delay = 2;
  	}
 }
@@ -598,4 +602,12 @@ bool overflow(const int32_t& rs, const int32_t& rt){
 	else{
 		return false;
 	}
+}
+
+int32_t sign_extend_IMM(const uint32_t& IMM){
+	int32_t IMMs = IMM;
+	if(IMM & 0x8000){   //?
+		IMMs = (0xFFFF0000 | IMM);	
+	}
+	return IMMs;
 }
