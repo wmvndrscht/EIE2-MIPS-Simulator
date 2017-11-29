@@ -531,11 +531,35 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32]){
  	REG[Itype.rd] = REG[Itype.rs] ^ Itype.IMM;
 }
 
+void execute_LBU(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+	REG[Itype.rd] = (int32_t) ADDR_DATA[ (int32_t)REG[Itype.rs] + Itype.IMMs - 0x20000000];  //may need to check address is in range
+}
+
+void execute_LH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+	offset_PC = (int32_t)REG[Itype.rs] + Itype.IMMs;
+	if(offset_PC%2 != 0){
+		std::exit(-11); //address error exception
+	}
+	offset_PC -= 0x20000000;
+	REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+	REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);
+}
+
+void execute_LHU(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+	offset_PC = (int32_t)REG[Itype.rs] + Itype.IMMs;
+	if(offset_PC%2 != 0){
+		std::exit(-11); //address error exception
+	}
+	offset_PC -= 0x20000000;
+	REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+}
+
+// void execute_SH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+
+// }
+
 
 //add:
-//	lbu
-//	lh
-// 	lhu
 //	lwl
 //	lwr
 //	sh
@@ -605,8 +629,16 @@ bool overflow(const int32_t& rs, const int32_t& rt){
 
 int32_t sign_extend_8(const uint8_t& byte){
 	int32_t temp = (int32_t)byte;
-	if(byte & 0xF0){
+	if(byte & 0x80){
 		temp = temp | 0xFFFFFF00;
+	}
+	return temp;
+}
+
+int32_t sign_extend_16(const uint32_t& half){
+	int32_t temp = (int32_t)half;
+	if(half & 0x8000){
+		temp = temp | 0xFFFF0000;
 	}
 	return temp;
 }
