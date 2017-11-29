@@ -26,6 +26,8 @@ const int IO_Error = -21;
 //3. Memory offset
 //4. Ensure no out of bounds
 //5. Testbench interface + layout
+//6. What do we do with all invalid instructions etc, e.g in SRA, rs = 0
+//7. ADDIU does not trap overflow, so wrap around or not
 
 int main(int argc, char *argv[]) {
 

@@ -48,11 +48,11 @@ void PC_advance(control& ctrl){
   }
 
   if(ctrl.PC < 0 || ctrl.PC > 0x11000000){
-  	exit(-11);  //memory exception or undefined behaviour?? ****** need exact code
+  	std::exit(-11);  //memory exception or undefined behaviour?? ****** need exact code
   }
 
   if(!( (ctrl.PC & 0x3) == 0x0) ){
-  	exit(-11);  //memory exception
+  	std::exit(-11);  //memory exception as not multiple of 4
   }
 
 }
@@ -64,7 +64,7 @@ void PC_advance(control& ctrl){
 // 		return false;
 // 	}
 // 	else if( ctrl.PC <  offset_AI || ctrl.PC >  0x11000000){
-// 		std::exit(Memory_Exception);
+// 		std::std::exit(Memory_Exception);
 // 	}
 // 	else{
 
@@ -185,65 +185,60 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 			execute_XOR(Rtype, REG);  //1
 			break;
 		default:
-			exit(-12); //invalid instrution type
-		// exit(Invalid_Instruction_Exception);
+			std::exit(-12); //invalid instrution type
+		// std::exit(Invalid_Instruction_Exception);
 		std::cerr << "LALA" << std::endl;
 	}
 	std::cerr << "Outside switch" << std::endl;
 }
 
-void execute_ADD(const instructionR& Rtype, int32_t REG){ //
-	if( overflow_add(Rtype.rs, Rtype.rt) ){
-		exit(Arithmetic_Exception);
+void execute_ADD(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, overflow??
+	if( overflow(Rtype.rs, Rtype.rt) ){
+		std::exit(Arithmetic_Exception);
 	}
 	else{
 		REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
 	}
 }
 
-void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){
+void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, wrap around?
 	std::cerr << "execute_ADDU !! \n BEFORE we have \n";
 	std::cerr << "REG[" << Rtype.rd << "] = " << REG[Rtype.rd] << std::endl;
 	std::cerr << "REG[" << Rtype.rs << "] = " << REG[Rtype.rs] << std::endl;
 	std::cerr << "REG[" << Rtype.rt << "] = " << REG[Rtype.rt] << std::endl;
- 	REG[Rtype.rd]=REG[Rtype.rs]+REG[Rtype.rt];
+ 	REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
  	std::cerr << "After we have, unsigned REG[" << Rtype.rd << "] = " << REG[Rtype.rd] << std::endl;
  	std::cerr << "After we have, signed REG[" << Rtype.rd << "] = " << (int32_t)REG[Rtype.rd] << std::endl;
 }
 
-void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //need to test
+void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //simple
 	REG[Rtype.rd] = REG[Rtype.rs] & REG[Rtype.rt];
 }
 
-void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //need to test
+void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //simple
 	REG[Rtype.rd] = REG[Rtype.rs] | REG[Rtype.rt];
 }
 
-void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //need to test
+void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //simple
 	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] ^ (uint32_t)REG[Rtype.rt];
 }
 
-void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //need to test
-	REG[Rtype.rd] = REG[Rtype.rs] -1 REG[Rtype.rt];
+void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //sub overflow, 1 -2 etc
+	REG[Rtype.rd] = REG[Rtype.rs] - REG[Rtype.rt];
 }
 
-void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?
 	ctrl.nPC = REG[Rtype.rs];
 	ctrl.branch_delay = 2;
 }
 
-void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){
-	if( (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtype.rt] ){
-		REG[Rtype.rd] = 1;
-	}
-	else{
-		REG[Rtype.rd] = 0;
-	}
+void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 with correct register
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtype.rt];
 }
 
 void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
-	if( overflow_sub(Rtype.rs, Rtype.rt)){
-		exit(Arithmetic_Exception);
+	if( overflow(Rtype.rs, -Rtype.rt)){
+		std::exit(Arithmetic_Exception);
 	}
 	else{
 		REG[Rtype.rd]=REG[Rtype.rs]-REG[Rtype.rt];
@@ -251,48 +246,44 @@ void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
 }
 
 void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //says arithmetic comparison does not cause Integer Overflow??
-	if( REG[Rtype.rs] < REG[Rtype.rt] ){
-		REG[Rtype.rd] = 1;
-	}
-	else{
-		0;
-	}
+	REG[Rtype.rd] = REG[Rtype.rs] < REG[Rtype.rt];
 }
 
 void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
-	if( !( REG[Rtype.rt] >> 31 ) ){
-		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
-	}
-	else{
-		REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
-		REG[Rtype.rd] = REG[Rtype.rd] | ((pow(2, Rtype.shamt) -1) << 32-Rtype.shamt );
-	}
+	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;	
+	// if( !( REG[Rtype.rt] >> 31 ) ){  //don't think this extra stuff is needed, test for signed values for sign extension
+	// 	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	// }
+	// else{
+	// 	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
+	// 	REG[Rtype.rd] = REG[Rtype.rd] | ((pow(2, Rtype.shamt) -1) << 32-Rtype.shamt );
+	// }
 }
 
-void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
-	REG[Rtype.rd] = REG[Rtype.rd] | (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1);
+void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){ //signed values for sign extension and correct variable shift
+	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.rs;
+	// REG[Rtype.rd] = REG[Rtype.rd] | (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1);
 }
 
 void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
-	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)REG[Rtype.rs]; //make sure 0's inserted
+	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
 }
-
-void execute_SLL(const instructionR& Rtype, int32_t REG[32]){
+//----------------------------------------------------------------17:00
+void execute_SLL(const instructionR& Rtype, int32_t REG[32]){  //simple
 	REG[Rtype.rd] = REG[Rtype.rt] << Rtype.shamt;
 }
 
-void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = REG[Rtype.rt] << (REG[Rtype.rs] & 0x1F);
+void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //simple
+	REG[Rtype.rd] = REG[Rtype.rt] << REG[Rtype.rs];
 }
 
-void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
-	REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
+void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){  //simple
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> REG[Rtype.rs];
+	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
 }
 
-void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //weird to test..., just need to move to high and back
 	REG[Rtype.rd] = ctrl.HI;  //this seems too simple hmmmm
 }
 
@@ -308,23 +299,23 @@ void execute_MTLI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	ctrl.LO = REG[Rtype.rs];
 }
 
-void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  //test big vals
 	if(Rtype.rt != 0 ){
 		ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
 		ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
 	}
 	else{
-		exit(-12); //invalid instruction, divide by zero
+		std::exit(-12); //invalid instruction, divide by zero
 	}
 } 
 
 void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
 	if(Rtype.rt != 0 ){
-		ctrl.LO = Rtype.rs/Rtype.rt;	//what does arithmetic result is undefined really mean??
-		ctrl.HO = Rtype.rs%Rtype.rt;
+		ctrl.LO = (int32_t)Rtype.rs/(int32_t)Rtype.rt;	//what does arithmetic result is undefined really mean??
+		ctrl.HO = (int32_t)Rtype.rs%(int32_t)Rtype.rt;
 	}
 	else{
-		exit(-12); //invalid instruction as divide by zero
+		std::exit(-12); //invalid instruction as divide by zero
 	}
 }
 
@@ -408,8 +399,8 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, c
 		case 0b100100:
 			execute_LBU();	//need to be completed
 		default:
-			exit(-12); //invalid instrution type
-	//exit(Invalid_Instruction_Exception);			
+			std::exit(-12); //invalid instrution type
+	//std::exit(Invalid_Instruction_Exception);			
 	}
 }
 
@@ -419,7 +410,7 @@ void execute_ADDI(const instructionI& Itype, int32_t REG[32]){ // check for over
  if(Itype.IMM & 0x8000)   //?
 	 	Itype.IMM = 0xFFFF | Itype.IMM;	
 		REG[Itype.rd] = REG[Itype.rs] + Itype.IMM;
-		overflow_add(REG[Itype.rs], Itype.IMM);
+		overflow(REG[Itype.rs], Itype.IMM);
 }
 
 void execute_ADDIU(const instructionI& Itype, int32_t REG[32]){
@@ -560,8 +551,8 @@ void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 			execute_JAL(Jtype, REG);
 			break;
 		default:
-			exit(-12); //invalid instruction type
-		//exit(Invalid_Instruction_Exception);
+			std::exit(-12); //invalid instruction type
+		//std::exit(Invalid_Instruction_Exception);
 	}
 }
 
@@ -598,19 +589,9 @@ void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// 
 //	return false;
 // }
 
-bool overflow_add(const int32_t& rs, const int32_t& rt){
+bool overflow(const int32_t& rs, const int32_t& rt){
 	uint64_t check = (uint64_t)rs + (uint64_t)rt;
 
-	if(check > 0xFFFFFFFF){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
-
-bool overflow_sub(const int32_t& rs, const int32_t& rt){
-	uint64_t check = (uint64_t)rs - (uint64_t)rt;
 	if(check > 0xFFFFFFFF){
 		return true;
 	}
