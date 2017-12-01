@@ -490,11 +490,11 @@ void execute_LUI(const instructionI& Itype, int32_t REG[32]){
 }
 
 void execute_LW(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	int32_t offset_PC = 	REG[Itype.rs] + Itype.IMMs;
+	uint32_t offset_PC = 	REG[Itype.rs] + Itype.IMMs;
 	if( offset_PC%4 != 0){
 		std::exit(-11); //address error exception
 	}
-	int32_t offset_PC -= 0x20000000;
+	offset_PC -= 0x20000000;
 	REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
 		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
 }
@@ -516,15 +516,15 @@ void execute_SLTIU(const instructionI& Itype, int32_t REG[32]){
 }
 
 void execute_SW(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	offset_PC = REG[Itype.rs] + Itype.IMMs;
+	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%4 != 0){
 		std::exit(-11); //address error exception
 	}
 	offset_PC -= 0x20000000;
- 	ADDR_DATA[offset_PC] = (uint32_t)REG[Itype.rd] >> 24;			// this might cause problems
-	ADDR_DATA[offset_PC+1] = ((uint32_t)REG[Itype.rd] << 8) >> 24;
-	ADDR_DATA[offset_PC+2] = ((uint32_t)REG[Itype.rd] << 16) >> 24; 
-	ADDR_DATA[offset_PC+3] = ((uint32_t)REG[Itype.rd] << 24) >> 24;  //how does this go???1!!!!!
+ 	ADDR_DATA[offset_PC] = (uint8_t)(uint32_t)REG[Itype.rd] >> 24;			// this might cause problems
+	ADDR_DATA[offset_PC+1] = (uint8_t)((uint32_t)REG[Itype.rd] << 8) >> 24;
+	ADDR_DATA[offset_PC+2] = (uint8_t)((uint32_t)REG[Itype.rd] << 16) >> 24; 
+	ADDR_DATA[offset_PC+3] = (uint8_t)((uint32_t)REG[Itype.rd] << 24) >> 24;  //how does this go???1!!!!!
 }
 
 void execute_XORI(const instructionI& Itype, int32_t REG[32]){
@@ -536,7 +536,7 @@ void execute_LBU(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR
 }
 
 void execute_LH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	offset_PC = (int32_t)REG[Itype.rs] + Itype.IMMs;
+	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
@@ -546,24 +546,52 @@ void execute_LH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_
 }
 
 void execute_LHU(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	offset_PC = (int32_t)REG[Itype.rs] + Itype.IMMs;
+	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
 	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+	REG[Itype.rd] = (0x0000 << 16)| (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
 }
 
-// void execute_SH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_SH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+	uint32_t offset_PC = Itype.IMMs + (uint32_t)Itype.rs;
+	if(offset_PC%2 != 0){
+		std::exit(-11); //address error exception
+	}
+	offset_PC -= 0x20000000;
+ 	ADDR_DATA[offset_PC] = (uint8_t)((REG[Itype.rd] & 0xFF00) >> 8);
+ 	ADDR_DATA[offset_PC+1] = (uint8_t)(REG[Itype.rd] & 0xFF);
+}
 
-// }
+void execute_LWL(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+	uint32_t offset_PC = Itype.IMMs + Itype.rs - 0x20000000;
+	uint32_t data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
+		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+
+	uint32_t EffAddr = Itype.IMMs + Itype.rs;
+	uint32_t lsbs = 0x3 & EffAddr;
+	uint32_t mask;
+	if( lsbs = 0x0){
+		mask = 0xFFFFFFFF;
+	}
+	else if( lsbs = 0x1){
+		mask = 0xFFFFFF00;
+	}
+	else if( lsbs = 0x10){
+		mask = 0xFFFF0000;
+	}
+	else{
+		mask = 0xFF000000;
+	}
+	data = data & mask;
+	REG[Itype.rd] = ~mask & REG[Itype.rd];
+	REG[Itype.rd] = data || REG[Itype.rd];
+}
 
 
 //add:
-//	lwl
 //	lwr
-//	sh
-//
 
 
 // //-----------------------------------------------Jtype----------------------------------------------

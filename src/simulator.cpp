@@ -28,6 +28,7 @@ const int IO_Error = -21;
 //5. Testbench interface + layout
 //6. What do we do with all invalid instructions etc, e.g in SRA, rs = 0
 //7. ADDIU does not trap overflow, so wrap around or not
+//8. Can you have a branch then jump, or branch followed by branch
 
 int main(int argc, char *argv[]) {
 
