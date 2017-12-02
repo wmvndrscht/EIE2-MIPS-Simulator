@@ -316,7 +316,7 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 	}
 } 
 
-/*void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
+void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
 	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	if(Rtype.rt != 0 ){
 		ctrl.LO = (int32_t)REG[Rtype.rs]/(int32_t)REG[Rtype.rt];	//what does arithmetic result is undefined really mean??
@@ -325,7 +325,7 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 	else{
 		std::exit(-12); //invalid instruction as divide by zero
 	}
-}*/
+}
 
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
