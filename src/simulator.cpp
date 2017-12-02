@@ -5,11 +5,11 @@
 #include "rijstructures.hpp"
 #include <string>
 
-const int Arithmetic_Exception = -10;
-const int Memory_Exception = -11;
-const int Invalid_Instruction_Exception = -12;
-const int Internal_Error = -20; 
-const int IO_Error = -21;
+// const int Arithmetic_Exception = -10;
+// const int Memory_Exception = -11;
+// const int Invalid_Instruction_Exception = -12;
+// const int Internal_Error = -20; 
+// const int IO_Error = -21;
 
 
 // Signed operations, careful with ADDR_DATA, jumps, tests
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   std::cerr << "START" << std::endl;
   if( argc < 2){
     std::cerr << "No input binary  :: END PROGRAM" << std::endl;
-    std::exit(IO_Error); //just for the moment
+    std::exit(-21); //IO ERROR
   }
 
   uint8_t* ADDR_INSTR;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
   else{ 
 
   	std::cerr << "Unable to open file" << std::endl;
-		std::exit(IO_Error);																				// IO ERROR 
+		std::exit(-21);	// IO ERROR 
   	return 0;
   }
   
@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
       std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
       REG[Rtype.rs] = 1;
       REG[Rtype.rt] = 1;
-  		execute_R_type(Rtype, REG);
+  		execute_R_type(Rtype, REG, ctrl);
   	}
   	else if(rijtype == "I"){
       std::cerr << "Detected I" << std::endl;
@@ -142,15 +142,15 @@ int main(int argc, char *argv[]) {
       std::cerr << "Itype.rs = " << Itype.rs << std::endl;
       std::cerr << "Rtype.rd = " << Itype.rd << std::endl;
       std::cerr << "Rtype.IMM = " << Itype.IMM << std::endl;
-  		execute_I_type(Itype,REG,ctrl);
+  		execute_I_type(Itype,REG,ctrl,ADDR_DATA);
   	}
   	else{
       std::cerr << "Detected J" << std::endl;
       instructionJ Jtype;
   		initialiseJ(instruction, Jtype);
-      std::cerr << "Jtype.data = " << Jtype.data << endl;
-      std::cerr << "Jtype.opcode = " << Jtype.opcode << endl;
-      std::cerr << "Jtype.address = " << Jtype.address << endl;
+      std::cerr << "Jtype.data = " << Jtype.data << std::endl;
+      std::cerr << "Jtype.opcode = " << Jtype.opcode << std::endl;
+      std::cerr << "Jtype.address = " << Jtype.address << std::endl;
   		execute_J_type(Jtype, REG, ctrl);
   	}
 

@@ -5,11 +5,11 @@
 #include "decode_instruction.hpp"
 #include <cmath>
 
-const int Arithmetic_Exception = -10;
-const int Memory_Exception = -11;
-const int Invalid_Instruction_Exception = -12;
-const int Internal_Error = -20; 
-const int IO_Error = -21;
+// const int Arithmetic_Exception = -10;
+// const int Memory_Exception = -11;
+// const int Invalid_Instruction_Exception = -12;  <- look more at errors
+// const int Internal_Error = -20; 
+// const int IO_Error = -21;
 
 
 uint32_t assemble_instruction(const uint8_t* ADDR_INSTR, const control &ctrl, const uint32_t& offset_AI){
@@ -194,7 +194,7 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 
 void execute_ADD(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, overflow??
 	if( overflow(Rtype.rs, Rtype.rt) ){
-		std::exit(Arithmetic_Exception);
+		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
 		REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
@@ -238,7 +238,7 @@ void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 
 
 void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
 	if( overflow(Rtype.rs, -Rtype.rt)){
-		std::exit(Arithmetic_Exception);
+		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
 		REG[Rtype.rd]=REG[Rtype.rs]-REG[Rtype.rt];
@@ -295,7 +295,7 @@ void execute_MTHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	ctrl.HI = REG[Rtype.rs];
 }
 
-void execute_MTLI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+void execute_MTLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	ctrl.LO = REG[Rtype.rs];
 }
 
@@ -311,8 +311,8 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 
 void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
 	if(Rtype.rt != 0 ){
-		ctrl.LO = (int32_t)Rtype.rs/(int32_t)Rtype.rt;	//what does arithmetic result is undefined really mean??
-		ctrl.HO = (int32_t)Rtype.rs%(int32_t)Rtype.rt;
+		ctrl.LO = (int32_t)REG[Rtype.rs]/(int32_t)REG[Rtype.rt];	//what does arithmetic result is undefined really mean??
+		ctrl.HI = (int32_t)REG[Rtype.rs]%(int32_t)REG[Rtype.rt];
 	}
 	else{
 		std::exit(-12); //invalid instruction as divide by zero
@@ -340,29 +340,39 @@ void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 //17:19------------------------------------------
 
 
-void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, const uint8_t* ADDR_DATA[4000000]){
+void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA){
 	
 	switch(Itype.opcode){
 		case 0b001110:
 			execute_XORI(Itype, REG);
+			break;
 		case 0b101011:
 			execute_SW(Itype, REG, ADDR_DATA);
+			break;
 		case 0b001011:
 			execute_SLTIU(Itype, REG);
+			break;
 		case 0b001010:
 			execute_SLTI(Itype, REG);
+			break;
 		case 0b101000:
-			execute_SB(Itype, REG);
+			execute_SB(Itype, REG, ADDR_DATA);
+			break;
 		case 0b001101:
 			execute_ORI(Itype, REG);
+			break;
 		case 0b100011:
-			execute_LW(Itype, REG, ADDR_DATA);	
+			execute_LW(Itype, REG, ADDR_DATA);
+			break;
 		case 0b001111:
-			execute_LUI(Itype, REG, ADDR_DATA);
+			execute_LUI(Itype, REG);
+			break;
 		case 0b100000:
 			execute_LB(Itype, REG, ADDR_DATA);
+			break;
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
+			break;
 		case 0b000001:
 			if(Itype.rd == 0b10000)
 				execute_BLTZAL(Itype, REG, ctrl);
@@ -378,28 +388,40 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, c
 			break;
 		case 0b000111:
 			execute_BGTZ(Itype, REG, ctrl);
+			break;
 		case 0b000110:
 			execute_BLEZ(Itype, REG, ctrl);
+			break;
 		case 0b000100:
 			execute_BEQ(Itype, REG, ctrl);
+			break;
 		case 0b001100:
 			execute_ANDI(Itype, REG);
+			break;
 		case 0b001001:
 			execute_ADDIU(Itype, REG);
+			break;
 		case 0b001000:
 			execute_ADDI(Itype, REG);
+			break;
 		case 0b100010:
-			execute_LWL();  //need to be completed
+			execute_LWL(Itype, REG, ADDR_DATA);
+			break;
 		case 0b100110:
-			execute_LWR();	//need to be completed
+			execute_LWR(Itype, REG, ADDR_DATA);
+			break;
 		case 0b100101:
-			execute_LHU();	//need to be completed
+			execute_LHU(Itype, REG, ADDR_DATA);
+			break;
 		case 0b100001:
-			execute_LH();		//need to be completed
+			execute_LH(Itype, REG, ADDR_DATA);
+			break;
 		case 0b101001:
-			execute_SH();		//need to be completed
+			execute_SH(Itype, REG, ADDR_DATA);
+			break;
 		case 0b100100:
-			execute_LBU();	//need to be completed
+			execute_LBU(Itype, REG, ADDR_DATA);
+			break;
 		default:
 			std::exit(-12); //invalid instrution type
 	//std::exit(Invalid_Instruction_Exception);			
@@ -481,41 +503,42 @@ void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
 	}
 }
 
-void execute_LB(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	REG[Itype.rd] = sign_extend_8(ADDR_DATA[ (int32_t)REG[Itype.rs] + Itype.IMMs - 0x20000000]);
+void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+	// uint8_t *temp = ADDR_DATA[ (REG[Itype.rs] + Itype.IMMs) - 0x20000000];
+	REG[Itype.rd] = sign_extend_8(ADDR_DATA[ (REG[Itype.rs] + Itype.IMMs) - 0x20000000]);
 }
 
 void execute_LUI(const instructionI& Itype, int32_t REG[32]){
 	REG[Itype.rd] = Itype.IMM << 16;
 }
 
-void execute_LW(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = 	REG[Itype.rs] + Itype.IMMs;
 	if( offset_PC%4 != 0){
 		std::exit(-11); //address error exception
 	}
 	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
-		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+	REG[Itype.rd] = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
+		<< 16| ADDR_DATA[offset_PC+2] << 8 | ADDR_DATA[offset_PC+3]);
 }
 
 void execute_ORI(const instructionI& Itype, int32_t REG[32]){
 	REG[Itype.rd] = REG[Itype.rs] | Itype.IMM;
 }
 
-void execute_SB(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_SB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	ADDR_DATA[ REG[Itype.rs] + Itype.IMMs - 0x20000000] = (uint8_t)(REG[Itype.rd] & 0xFF);
 }
 
 void execute_SLTI(const instructionI& Itype, int32_t REG[32]){
- 	REG[Rytpe.rd] = REG[Itype.rs] < Itype.IMMs; // sign extension needed
+ 	REG[Itype.rd] = REG[Itype.rs] < Itype.IMMs; // sign extension needed
 }
 
 void execute_SLTIU(const instructionI& Itype, int32_t REG[32]){
  	REG[Itype.rd] = (uint32_t)REG[Itype.rs] < (uint32_t)Itype.IMMs;
 }
 
-void execute_SW(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_SW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%4 != 0){
 		std::exit(-11); //address error exception
@@ -531,30 +554,30 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32]){
  	REG[Itype.rd] = REG[Itype.rs] ^ Itype.IMM;
 }
 
-void execute_LBU(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	REG[Itype.rd] = (int32_t) ADDR_DATA[ (int32_t)REG[Itype.rs] + Itype.IMMs - 0x20000000];  //may need to check address is in range
 }
 
-void execute_LH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
 	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+	REG[Itype.rd] = (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
 	REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);
 }
 
-void execute_LHU(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
 	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (0x0000 << 16)| (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+	REG[Itype.rd] = (0x0000 << 16)| (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
 }
 
-void execute_SH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = Itype.IMMs + (uint32_t)Itype.rs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
@@ -564,10 +587,10 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_
  	ADDR_DATA[offset_PC+1] = (uint8_t)(REG[Itype.rd] & 0xFF);
 }
 
-void execute_LWL(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;
-	uint32_t data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
-		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
+		<< 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
 
 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	uint32_t lsbs = 0x3 & EffAddr;
@@ -590,10 +613,10 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR
 }
 
 
-void execute_LWR(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = Itype.IMMs + Itype.rs - 0x20000000;
-	uint32_t data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
-		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
+		<< 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
 
 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	uint32_t lsbs = 0x3 & EffAddr;
@@ -615,11 +638,8 @@ void execute_LWR(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR
 	REG[Itype.rd] = data | REG[Itype.rd];
 }
 
-//add:
-//	lwr
 
-
-// //-----------------------------------------------Jtype----------------------------------------------
+//-----------------------------------------------Jtype----------------------------------------------
 
 void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 	switch(Jtype.opcode){
@@ -627,7 +647,7 @@ void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 			execute_J(Jtype,ctrl);
 			break;
 		case 0b000011:
-			execute_JAL(Jtype, REG);
+			execute_JAL(Jtype, REG, ctrl);
 			break;
 		default:
 			std::exit(-12); //invalid instruction type
@@ -638,14 +658,14 @@ void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 
 void execute_J(const instructionJ& Jtype, control &ctrl){
 	ctrl.branch_delay = 2;
-	ctrl.nPC = (ctrl.PC+4 & 0xF0000000) | (Jtype.address << 2);
+	ctrl.nPC = ( (ctrl.PC+4) & 0xF0000000) | (Jtype.address << 2);
 }
 
 
 void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// these might me right
 	ctrl.branch_delay = 2;
 	REG[31] = ctrl.PC + 8;
-	ctrl.nPC = (ctrl.PC+4 & 0xF0000000) | (Jtype.address << 2);
+	ctrl.nPC = ((ctrl.PC+4) & 0xF0000000) | (Jtype.address << 2);
 }
 
 

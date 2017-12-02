@@ -22,7 +22,7 @@ void initialiseI(const uint32_t& data, instructionI& Itype){
 		Itype.IMMs = (0xFFFF0000 | Itype.IMM);
 	}
 	else{
-		Itype.IMMS = IMM;
+		Itype.IMMs =Itype.IMM;
 	}
 	return;
 }
