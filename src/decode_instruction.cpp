@@ -572,27 +572,25 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR
 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	uint32_t lsbs = 0x3 & EffAddr;
 	uint32_t mask;
-	if( lsbs = 0x0){
+	if( lsbs == 0x0){
 		mask = 0xFFFFFFFF;
 	}
-	else if( lsbs = 0x1){
+	else if( lsbs == 0x1){
 		mask = 0xFFFFFF00;
 	}
-	else if( lsbs = 0x10){
+	else if( lsbs == 0x10){
 		mask = 0xFFFF0000;
 	}
 	else{
 		mask = 0xFF000000;
 	}
 	data = data & mask;
-	REG[Itype.rd] = ~mask & REG[Itype.rd];
+	REG[Itype.rd] = (~mask) & REG[Itype.rd];
 	REG[Itype.rd] = data | REG[Itype.rd];
 }
 
 
 void execute_LWR(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	
-
 	uint32_t offset_PC = Itype.IMMs + Itype.rs - 0x20000000;
 	uint32_t data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
 		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
@@ -600,22 +598,21 @@ void execute_LWR(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR
 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	uint32_t lsbs = 0x3 & EffAddr;
 	uint32_t mask;
-	if( lsbs = 0x0){
+	if( lsbs == 0x0){
 		mask = 0x000000FF;
 	}
-	else if( lsbs = 0x1){
+	else if( lsbs == 0x1){
 		mask = 0x0000FFFF;
 	}
-	else if( lsbs = 0x10){
+	else if( lsbs == 0x10){
 		mask = 0x00FFFFFF;
 	}
 	else{
 		mask = 0x000000FF;
 	}
-	data = data&mask;
-	REG[Itype.rd] = ~mask & REG[Itype.rd];
+	data = data & mask;
+	REG[Itype.rd] = (~mask) & REG[Itype.rd];
 	REG[Itype.rd] = data | REG[Itype.rd];
-
 }
 
 //add:
