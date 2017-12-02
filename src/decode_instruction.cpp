@@ -504,7 +504,6 @@ void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
 }
 
 void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	// uint8_t *temp = ADDR_DATA[ (REG[Itype.rs] + Itype.IMMs) - 0x20000000];
 	REG[Itype.rd] = sign_extend_8(ADDR_DATA[ (REG[Itype.rs] + Itype.IMMs) - 0x20000000]);
 }
 
