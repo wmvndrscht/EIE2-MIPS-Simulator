@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
   ADDR_DATA = new uint8_t[0x4000000]();
 
 
-	uint32_t REG[32] = {0};
+	int32_t REG[32] = {0};
 
 	const uint32_t offset_N  = 0;
 	const uint32_t offset_AI = 0x10000000;

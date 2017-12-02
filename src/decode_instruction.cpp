@@ -47,7 +47,7 @@ void PC_advance(control& ctrl){
     ctrl.branch_delay = 1;
   }
 
-  if(ctrl.PC < 0 || ctrl.PC > 0x11000000){
+  if(ctrl.PC > 0x11000000){
   	std::exit(-11);  //memory exception or undefined behaviour?? ****** need exact code
   }
 
@@ -105,7 +105,7 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 
 }
 
-void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
+void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 
 	switch(Rtype.funct){
 		case 0b100000:
@@ -119,10 +119,10 @@ void execute_R_type(const instructionR& Rtype, uint32_t REG[32], control& ctrl){
 			execute_AND(Rtype, REG); //1
 			break;
 		case 0b011010:
-			execute_DIV(Rtype, REG); //4
+			execute_DIV(Rtype, REG, ctrl); //4
 			break;
 		case 0b011011:
-			execute_DIVU(Rtype, REG); //4
+			execute_DIVU(Rtype, REG, ctrl); //4
 			break;
 		case 0b001000:
 			execute_JR(Rtype, REG, ctrl); //1
@@ -201,7 +201,7 @@ void execute_ADD(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFF
 	}
 }
 
-void execute_ADDU(const instructionR& Rtype, uint32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, wrap around?
+void execute_ADDU(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, wrap around?
 	std::cerr << "execute_ADDU !! \n BEFORE we have \n";
 	std::cerr << "REG[" << Rtype.rd << "] = " << REG[Rtype.rd] << std::endl;
 	std::cerr << "REG[" << Rtype.rs << "] = " << REG[Rtype.rs] << std::endl;
@@ -227,7 +227,7 @@ void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //sub overflow, 
 	REG[Rtype.rd] = REG[Rtype.rs] - REG[Rtype.rt];
 }
 
-void exectue_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?
+void execute_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?
 	ctrl.nPC = REG[Rtype.rs];
 	ctrl.branch_delay = 2;
 }
@@ -565,7 +565,7 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_
 }
 
 void execute_LWL(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
-	uint32_t offset_PC = Itype.IMMs + Itype.rs - 0x20000000;
+	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;
 	uint32_t data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
 		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
 
@@ -586,9 +586,37 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR
 	}
 	data = data & mask;
 	REG[Itype.rd] = ~mask & REG[Itype.rd];
-	REG[Itype.rd] = data || REG[Itype.rd];
+	REG[Itype.rd] = data | REG[Itype.rd];
 }
 
+
+void execute_LWR(const instructionI& Itype, int32_t REG[32], const uint8_t* ADDR_DATA[0x4000000]){
+	
+
+	uint32_t offset_PC = Itype.IMMs + Itype.rs - 0x20000000;
+	uint32_t data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
+		<< 16| ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+
+	uint32_t EffAddr = Itype.IMMs + Itype.rs;
+	uint32_t lsbs = 0x3 & EffAddr;
+	uint32_t mask;
+	if( lsbs = 0x0){
+		mask = 0x000000FF;
+	}
+	else if( lsbs = 0x1){
+		mask = 0x0000FFFF;
+	}
+	else if( lsbs = 0x10){
+		mask = 0x00FFFFFF;
+	}
+	else{
+		mask = 0x000000FF;
+	}
+	data = data&mask;
+	REG[Itype.rd] = ~mask & REG[Itype.rd];
+	REG[Itype.rd] = data | REG[Itype.rd];
+
+}
 
 //add:
 //	lwr
