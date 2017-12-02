@@ -83,14 +83,14 @@ int main(int argc, char *argv[]) {
   	return 0;
   }
   
-//TEST FOR ctrl initialise = PASS -----------------------------------------------------------
-  // control ctrl;
-  // initialise_control(ctrl, offset_AI);
-  // std::cerr << "ctrl.PC = " << ctrl.PC <<std::endl;
-  // std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
-  // std::cerr << "ctrl.target = " << ctrl.target << std::endl;
-  // std::cerr << "ctrl.delay1 = " << ctrl.delay1 << std::endl;
-  // std::cerr << "ctrl.delay2 = " << ctrl.delay2 << std::endl;
+// TEST FOR ctrl initialise = PASS -----------------------------------------------------------
+//   control ctrl;
+//   initialise_control(ctrl, offset_AI);
+//   std::cerr << "ctrl.PC = " << ctrl.PC <<std::endl;
+//   std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
+//   std::cerr << "ctrl.target = " << ctrl.target << std::endl;
+//   std::cerr << "ctrl.delay1 = " << ctrl.delay1 << std::endl;
+//   std::cerr << "ctrl.delay2 = " << ctrl.delay2 << std::endl;
 
 //TEST FOR instruction initialise = PASS----------------------------------------------------
 
@@ -140,8 +140,8 @@ int main(int argc, char *argv[]) {
       std::cerr << "Itype.data = " << Itype.data << std::endl;
       std::cerr << "Itype.opcode = " << Itype.opcode << std::endl;
       std::cerr << "Itype.rs = " << Itype.rs << std::endl;
-      std::cerr << "Rtype.rd = " << Itype.rd << std::endl;
-      std::cerr << "Rtype.IMM = " << Itype.IMM << std::endl;
+      std::cerr << "Itype.rd = " << Itype.rd << std::endl;
+      std::cerr << "Itype.IMM = " << Itype.IMM << std::endl;
   		execute_I_type(Itype,REG,ctrl,ADDR_DATA);
   	}
   	else{
@@ -155,6 +155,8 @@ int main(int argc, char *argv[]) {
   	}
 
     PC_advance(ctrl);
+    if(REG[0]!=0)
+      REG[0]=0;
     std::cerr << "End of while loop hopefully" << std::endl;
   }
 

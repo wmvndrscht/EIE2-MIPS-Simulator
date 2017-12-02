@@ -31,5 +31,6 @@ struct instructionJ{
 void initialiseR(const uint32_t& data, instructionR& Rtype);
 void initialiseI(const uint32_t& data, instructionI& Itype);
 void initialiseJ(const uint32_t& data, instructionJ& Jtype);
+//int32_t sign_extend_IMM(const uint32_t& IMM); // shouldn't this be here as well?
 
 #endif //RIJ_STRUCTURES

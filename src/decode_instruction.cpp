@@ -31,6 +31,8 @@ void initialise_control(control &ctrl, const uint32_t& offset_AI){
 	// ctrl.delay2 = 0;
 	ctrl.HI = 0;
 	ctrl.LO = 0;
+	//ctrl.HI_flag=0;
+	//ctrl.LO_flag=0;
 }
 
 void PC_advance(control& ctrl){
@@ -275,31 +277,36 @@ void execute_SLL(const instructionR& Rtype, int32_t REG[32]){  //simple
 }
 
 void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //simple
-	REG[Rtype.rd] = REG[Rtype.rt] << REG[Rtype.rs];
+	REG[Rtype.rd] = REG[Rtype.rt] << (REG[Rtype.rs]&0x1F); // the value in REG can be huge, we should only use the lowest 5 bits
 }
 
 void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){  //simple
-	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> REG[Rtype.rs];
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (REG[Rtype.rs]&0x1F); // same thing here
 	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
 }
 
 void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //weird to test..., just need to move to high and back
 	REG[Rtype.rd] = ctrl.HI;  //this seems too simple hmmmm
+	//ctrl.HI_flag=2;
 }
 
 void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	REG[Rtype.rd] = ctrl.LO;  //this seems too simple hmmmm
+	//ctrl.LO_flag=2;
 }
 
 void execute_MTHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	//if(ctrl.HI_flag) {undefined behaviour}
 	ctrl.HI = REG[Rtype.rs];
 }
 
 void execute_MTLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
+	//if(ctrl.LO_flag) {undefined behaviour}
 	ctrl.LO = REG[Rtype.rs];
 }
 
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  //test big vals
+	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	if(Rtype.rt != 0 ){
 		ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
 		ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
@@ -309,7 +316,8 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 	}
 } 
 
-void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
+/*void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
+	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	if(Rtype.rt != 0 ){
 		ctrl.LO = (int32_t)REG[Rtype.rs]/(int32_t)REG[Rtype.rt];	//what does arithmetic result is undefined really mean??
 		ctrl.HI = (int32_t)REG[Rtype.rs]%(int32_t)REG[Rtype.rt];
@@ -317,21 +325,25 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 	else{
 		std::exit(-12); //invalid instruction as divide by zero
 	}
-}
+}*/
 
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	uint64_t temp = (uint64_t)REG[Rtype.rs] * (uint64_t)REG[Rtype.rt];
 	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
 	ctrl.HI = (uint32_t) (temp >> 32) & 0xFFFFFFFF;
 }
 
 void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	uint64_t temp = (int64_t)REG[Rtype.rs] * (int64_t)REG[Rtype.rt];
 	ctrl.LO = (int32_t)(temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
 	ctrl.HI = (int32_t) ((temp >> 32)& 0xFFFFFFFF);
 }
 
 void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
+	//if((REG[Rtype.rs]&0xF) || Rtype.rs==Rtype.rd ) {undefined behaviour}
+
 	ctrl.nPC = REG[Rtype.rs];
 	REG[Rtype.rd] = ctrl.PC + 8;
 	ctrl.branch_delay = 2;
@@ -574,6 +586,7 @@ void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 	}
 	offset_PC -= 0x20000000;
 	REG[Itype.rd] = (0x0000 << 16)| (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
+	//REG[Itype.rd] = (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
 }
 
 void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){

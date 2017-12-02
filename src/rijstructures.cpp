@@ -34,10 +34,10 @@ void initialiseJ(const uint32_t& data, instructionJ& Jtype){
 	return; 
 }
 
-int32_t sign_extend_IMM(const uint32_t& IMM){
-	int32_t IMMs = IMM;
-	if(IMM & 0x8000){   //?
-		IMMs = (0xFFFF0000 | IMM);	
-	}
-	return IMMs;
-}
+// int32_t sign_extend_IMM(const uint32_t& IMM){
+// 	int32_t IMMs = IMM;
+// 	if(IMM & 0x8000){   //?
+// 		IMMs = (0xFFFF0000 | IMM);	
+// 	}
+// 	return IMMs;
+// }  I don't see where you use this
