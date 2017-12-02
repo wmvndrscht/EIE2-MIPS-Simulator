@@ -600,10 +600,10 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 }
 
 void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;
-	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
-		<< 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC +1] << 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
 
+	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC +1] << 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+	
 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	uint32_t lsbs = 0x3 & EffAddr;
 	uint32_t mask;
@@ -627,8 +627,8 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 
 void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = Itype.IMMs + Itype.rs - 0x20000000;
-	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
-		<< 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+	//uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+	uint32_t data = (ADDR_DATA[offset_PC-3] << 24 | ADDR_DATA[offset_PC+-2] << 16| ADDR_DATA[offset_PC-1] << 8| ADDR_DATA[offset_PC]);
 
 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	uint32_t lsbs = 0x3 & EffAddr;
@@ -643,11 +643,12 @@ void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		mask = 0x00FFFFFF;
 	}
 	else{
-		mask = 0x000000FF;
+		//mask = 0x000000FF; 
+		mask = 0xFFFFFFFF;
 	}
 	data = data & mask;
 	REG[Itype.rd] = (~mask) & REG[Itype.rd];
-	REG[Itype.rd] = data | REG[Itype.rd];
+	REG[Itype.rd] = REG[Itype.rd] | data;
 }
 
 
