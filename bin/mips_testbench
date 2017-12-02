@@ -3,25 +3,25 @@
 results_file='correct_results.txt' #this is where the correct results are
 
 NUM=0;	#initailise test index
-cp /dev/null ../test/output/outcome.csv 	# delete the contents of the the file in which we will store the outcomes of the new tests
+cp /dev/null test/output/outcome.csv 	# delete the contents of the the file in which we will store the outcomes of the new tests
 #truncate -s 0 bin/outcome.csv 	# has same effect as the previous command
-for binfile in ./*.bin 		#take each ".bin" file from the "bin" folder
+for binfile in bin/*.mips.bin 	#take each ".bin" file from the "bin" folder
 do 								#marks the beginning of the "for loop" 
 	let NUM++;					#update test index
-	#echo $binfile				#this helps if you want to see which binary file you are accessing
-	./mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
+	echo $binfile				#this helps if you want to see which binary file you are accessing
+	bin/mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
 	mips=$?						#store the output of mips_simulator
 	other=$(sed "${NUM}q;d" bin/$results_file)			#read the correct result from "correct_results.txt"
-	#echo $mips 				#display the output of the simulator
-	#echo $other				#see what you read from "Correct_results.txt"
+	echo $mips 				#display the output of the simulator
+	echo $other				#see what you read from "Correct_results.txt"
 	if [ $mips -eq $other ]		#check if the two values match
 	then						#you need this for the "if"
-		echo $NUM, $binfile , SUCCESS >> ../test/output/outcome.csv		#if they match, print index, name of the file, status
+		echo $NUM, $binfile , SUCCESS >> test/output/outcome.csv		#if they match, print index, name of the file, status
 	else						#you know what this is
-		echo $NUM, $binfile , FAIL >> ../test/output/outcome.csv			#print this if the two don't match
+		echo $NUM, $binfile , FAIL >> test/output/outcome.csv			#print this if the two don't match
 	fi 							#marks the end of the "if"
 done							#marks the end of the "for loop"
-emacs ../test/output/outcome.csv			#opens "outcome.csv"
+#emacs test/output/outcome.csv			#opens "outcome.csv"
 
 #this has to be in arch2-2017-cw-nips
 #the names of the binfiles should say what are we testing

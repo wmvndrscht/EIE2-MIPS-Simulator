@@ -109,8 +109,8 @@ int main(int argc, char *argv[]) {
   initialise_control(ctrl, offset_AI);
 
 
-  while( ctrl.PC != 0  ){					//if the program runs 
-
+  //while( ctrl.PC != 0 ){					//if the program runs 
+  while (ctrl.PC < offset_AI+12){
     uint32_t instruction = 0;
     std::string rijtype;
   	instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "RIJTYPE = " << rijtype << std::endl;
 
   	if(rijtype == "R"){
-      std::cerr << "Detected I" << std::endl;
+      std::cerr << "Detected R" << std::endl;
       instructionR Rtype;
   		initialiseR(instruction, Rtype);
       std::cerr << "Rtype.data = " <<Rtype.data << std::endl;
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
     PC_advance(ctrl);
     if(REG[0]!=0)
       REG[0]=0;
-    std::cerr << "End of while loop hopefully" << std::endl;
+    std::cerr << "End of while loop hopefully" << std::endl << std::endl;
   }
 
   delete[] ADDR_INSTR;  //deleting dynamic memory

@@ -1,1 +1,1 @@
-1, ./assem.mips.bin , FAIL
+1, bin/addi.mips.bin , SUCCESS
