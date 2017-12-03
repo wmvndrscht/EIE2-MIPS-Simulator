@@ -1,1 +1,1 @@
-10, bin/addi.mips.bin , FAIL, ap4116, ADD1 overflow
+1, bin/addi.mips.bin , FAIL, ap4116, ADD1 overflow, 0, -10

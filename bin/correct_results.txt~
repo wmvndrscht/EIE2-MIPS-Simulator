@@ -17,7 +17,7 @@ ADD3 overflow
 
 ap4116
 ADD4 normal
-16
+0x10
 
 ap4116
 ADDU1
@@ -38,10 +38,6 @@ ADDU4 /16
 ap4116
 JR
 0x0
-
-ap4116
-JR2
-0x1
 
 ap4116
 LUI & SRL

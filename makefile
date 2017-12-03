@@ -13,8 +13,8 @@ MIPS_LDFLAGS = -nostdlib -Wl,-melf32btsmip -march=mips1 -nostartfiles -mno-check
 MIPS_LDFLAGS += -Wl,--build-id=none
 
 # Compile an assembly file into a MIPS object file
-# %.mips.o : %.s
- #	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
+ #%.mips.o : %.s
+ 	#$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
 
 %.mips.o : %.s
 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
