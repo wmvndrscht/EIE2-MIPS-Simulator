@@ -44,10 +44,13 @@ int main(int argc, char *argv[]) {
   ADDR_DATA = new uint8_t[0x4000000]();
 
 
-	int32_t REG[32] = {0};
-
+	int32_t REG[32] = {1};
+  for(int tr=0; tr<32; tr++)
+    std::cerr << REG[tr] << " ";
+  std::cerr << "\n"; 
 	const uint32_t offset_N  = 0;
 	const uint32_t offset_AI = 0x10000000;
+  const uint32_t limit_AI =  0x11000000;
 	const uint32_t offset_AD = 0x20000000;
 	const uint32_t offset_GC = 0x30000000;
 	const uint32_t offset_AP = 0x30000004;
@@ -110,7 +113,7 @@ int main(int argc, char *argv[]) {
 
 
   //while( ctrl.PC != 0 ){					//if the program runs 
-  while (ctrl.PC < offset_AI+12){
+  while (ctrl.PC < limit_AI && ctrl.PC != 0){
     uint32_t instruction = 0;
     std::string rijtype;
   	instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
@@ -129,8 +132,8 @@ int main(int argc, char *argv[]) {
       std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
       std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
       std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
-      REG[Rtype.rs] = 1;
-      REG[Rtype.rt] = 1;
+      //REG[Rtype.rs] = 1;
+      //REG[Rtype.rt] = 1;
   		execute_R_type(Rtype, REG, ctrl);
   	}
   	else if(rijtype == "I"){
@@ -157,14 +160,16 @@ int main(int argc, char *argv[]) {
     PC_advance(ctrl);
     if(REG[0]!=0)
       REG[0]=0;
-    std::cerr << "End of while loop hopefully" << std::endl << std::endl;
+    //std::cerr << "End of while loop hopefully" << std::endl << std::endl;
   }
 
   delete[] ADDR_INSTR;  //deleting dynamic memory
   delete[] ADDR_DATA;
   ADDR_INSTR = NULL;
   ADDR_DATA = NULL;
-
+  for(int tri=0; tri<32; tri++)
+    std::cerr << REG[tri] << " ";
+  std::cerr << "\n";
   uint8_t result = REG[2] & 0x000000FF;
   std::exit(result);
 

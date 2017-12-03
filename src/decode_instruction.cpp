@@ -108,7 +108,7 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 }
 
 void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
-
+	std::cerr << "\n" << "\n";
 	switch(Rtype.funct){
 		case 0b100000:
 			if(Rtype.shamt==0){
