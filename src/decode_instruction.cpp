@@ -111,80 +111,120 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 
 	switch(Rtype.funct){
 		case 0b100000:
-			execute_ADD(Rtype, REG); //2
-			break;
+			if(Rtype.shamt==0){
+				execute_ADD(Rtype, REG); //2
+				std::cerr << "ADD" << std::endl;
+				break;}
 		case 0b100001:
-			execute_ADDU(Rtype, REG); //1
-			std::cerr << "Case ADDU" << std::endl;
-			break;
+			if(Rtype.shamt == 0){
+				execute_ADDU(Rtype, REG); //1
+				std::cerr << "ADDU" << std::endl;
+				break;}
 		case 0b100100:
-			execute_AND(Rtype, REG); //1
-			break;
+			if(Rtype.shamt == 0){
+				execute_AND(Rtype, REG); //1
+				std::cerr << "AND" << std::endl;
+				break;}
 		case 0b011010:
-			execute_DIV(Rtype, REG, ctrl); //4
-			break;
+			if(Rtype.shamt == 0 && Rtype.rd == 0){
+				execute_DIV(Rtype, REG, ctrl); //4
+				std::cerr << "DIV" << std::endl;
+				break;}
 		case 0b011011:
-			execute_DIVU(Rtype, REG, ctrl); //4
-			break;
+			if(Rtype.shamt == 0 && Rtype.rd == 0){
+				execute_DIVU(Rtype, REG, ctrl); //4
+				std::cerr << "DIVU" << std::endl;
+				break;}
 		case 0b001000:
-			execute_JR(Rtype, REG, ctrl); //1
-			break;
+			if(Rtype.rt == 0 && Rtype.rd == 0 && Rtype.shamt == 0){
+				execute_JR(Rtype, REG, ctrl); //1
+				std::cerr << "JR" << std::endl;
+				break;}
 		case 0b001001:
 			execute_JALR(Rtype, REG, ctrl);
+			std::cerr << "JALR" << std::endl;
 			break;
 		case 0b010000:
-			execute_MFHI(Rtype, REG, ctrl); //3
-			break;
+			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
+				execute_MFHI(Rtype, REG, ctrl); //3
+				std::cerr << "MFHI" << std::endl;
+				break;}
 		case 0b010010:
-			execute_MFLO(Rtype, REG, ctrl); //3
-			break;
+			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
+				execute_MFLO(Rtype, REG, ctrl); //3
+				std::cerr << "MFLO" << std::endl;
+				break;}
 		case 0b010001:
 			execute_MTHI(Rtype, REG, ctrl);
+			std::cerr << "MTHI" << std::endl;
 			break;
 		case 0b010011:
 			execute_MTLO(Rtype, REG, ctrl);
+			std::cerr << "MTLO" << std::endl;
 			break;
 		case 0b011000:
-			execute_MULT(Rtype, REG, ctrl);  //4
-			break;
+			if(Rtype.rd == 0 && Rtype.shamt == 0){
+				execute_MULT(Rtype, REG, ctrl);  //4
+				std::cerr << "MULT" << std::endl;
+				break;}
 		case 0b011001:
-			execute_MULTU(Rtype, REG, ctrl);  //4
-			break;
+			if(Rtype.rd == 0 && Rtype.rd == 0){
+				execute_MULTU(Rtype, REG, ctrl);  //4
+				std::cerr << "MULTU" << std::endl;
+				break;}
 		case 0b100101:
-			execute_OR(Rtype, REG);	//1	// it might be a NOOP
-			break;
+			if(Rtype.shamt == 0){
+				execute_OR(Rtype, REG);	//1	// it might be a NOOP
+				std::cerr << "OR" << std::endl;
+				break;}
 		case 0b000000:
 			execute_SLL(Rtype, REG); //2 
+			std::cerr << "SLL" << std::endl;
 			break;
 		case 0b000100:
 			execute_SLLV(Rtype, REG); //3
+			std::cerr << "SLLV" << std::endl;
 			break;
 		case 0b101010:
-			execute_SLT(Rtype, REG);  //2
-			break;
+			if(Rtype.shamt == 0){
+				execute_SLT(Rtype, REG);  //2
+				std::cerr << "SLT" << std::endl;
+				break;}
 		case 0b101011:
-			execute_SLTU(Rtype, REG); //1
-			break;
+			if(Rtype.shamt == 0){
+				execute_SLTU(Rtype, REG); //1
+				std::cerr << "SLTU" << std::endl;
+				break;}
 		case 0b000011:
 			execute_SRA(Rtype, REG); //2
+			std::cerr << "SRA" << std::endl;
 			break;
 		case 0b000111:
 			execute_SRAV(Rtype, REG);
+			std::cerr << "SRAV" << std::endl;
 			break;
 		case 0b000010:
 			execute_SRL(Rtype, REG);  //2
+			std::cerr << "SRL" << std::endl;
 			break;
 		case 0b000110:
-			execute_SRLV(Rtype, REG); //3
-			break;
+			if(Rtype.shamt == 0){
+				execute_SRLV(Rtype, REG); //3
+				std::cerr << "SRLV" << std::endl;
+				break;}
 		case 0b100010:
-			execute_SUB(Rtype, REG); //2
-			break;
+			if(Rtype.shamt == 0){
+				execute_SUB(Rtype, REG); //2
+				std::cerr << "SUB" << std::endl;
+				break;}
 		case 0b100011:
-			execute_SUBU(Rtype, REG); //1	
-			break;				
+			if(Rtype.shamt == 0){
+				execute_SUBU(Rtype, REG); //1	
+				std::cerr << "SUBU" << std::endl;
+				break;}				
 		case 0b100110:
 			execute_XOR(Rtype, REG);  //1
+			std::cerr << "XOR" << std::endl;
 			break;
 		default:
 			std::exit(-12); //invalid instrution type
@@ -357,82 +397,110 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 	switch(Itype.opcode){
 		case 0b001110:
 			execute_XORI(Itype, REG);
+			std::cerr << "XORI" << std::endl;
 			break;
 		case 0b101011:
 			execute_SW(Itype, REG, ADDR_DATA);
+			std::cerr << "SW" << std::endl;
 			break;
 		case 0b001011:
 			execute_SLTIU(Itype, REG);
+			std::cerr << "SLTIU" << std::endl;
 			break;
 		case 0b001010:
 			execute_SLTI(Itype, REG);
+			std::cerr << "SLTI" << std::endl;
 			break;
 		case 0b101000:
 			execute_SB(Itype, REG, ADDR_DATA);
+			std::cerr << "SB" << std::endl;
 			break;
 		case 0b001101:
 			execute_ORI(Itype, REG);
+			std::cerr << "ORI" << std::endl;
 			break;
 		case 0b100011:
 			execute_LW(Itype, REG, ADDR_DATA);
+			std::cerr << "LW" << std::endl;
 			break;
 		case 0b001111:
 			execute_LUI(Itype, REG);
+			std::cerr << "LUI" << std::endl;
 			break;
 		case 0b100000:
 			execute_LB(Itype, REG, ADDR_DATA);
+			std::cerr << "LB" << std::endl;
 			break;
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
+			std::cerr << "BNE" << std::endl;
 			break;
 		case 0b000001:
-			if(Itype.rd == 0b10000)
+			if(Itype.rd == 0b10000){
 				execute_BLTZAL(Itype, REG, ctrl);
-				break;
-			if(Itype.rd == 0b0)
+				std::cerr << "BLTZAL" << std::endl;
+				break;}
+			if(Itype.rd == 0b0){
 				execute_BLTZ(Itype, REG, ctrl);
-				break;
-			if(Itype.rd == 0b10001)
+				std::cerr << "BLTZ" << std::endl;
+				break;}
+			if(Itype.rd == 0b10001){
 				execute_BGEZAL(Itype, REG, ctrl);
-				break;
-			if(Itype.rd == 0b00001)
+				std::cerr << "BGEZAL" << std::endl;
+				break;}
+			if(Itype.rd == 0b00001){
 				execute_BGEZ(Itype, REG, ctrl);
-			break;
+				std::cerr << "BGEZ" << std::endl;			
+				break;}
 		case 0b000111:
-			execute_BGTZ(Itype, REG, ctrl);
-			break;
+			if(Itype.rd == 0){
+				execute_BGTZ(Itype, REG, ctrl);
+				std::cerr << "BGTZ" << std::endl;
+				break;}
 		case 0b000110:
-			execute_BLEZ(Itype, REG, ctrl);
-			break;
+			if(Itype.rd == 0){
+				execute_BLEZ(Itype, REG, ctrl);
+				std::cerr << "BLEZ" << std::endl;
+				break;}
 		case 0b000100:
 			execute_BEQ(Itype, REG, ctrl);
+			std::cerr << "BEQ" << std::endl;
 			break;
 		case 0b001100:
 			execute_ANDI(Itype, REG);
+			std::cerr << "ANDI" << std::endl;
 			break;
 		case 0b001001:
 			execute_ADDIU(Itype, REG);
+			std::cerr << "ADDIU" << std::endl;
 			break;
 		case 0b001000:
 			execute_ADDI(Itype, REG);
+			std::cerr << "ADDI" << std::endl;
 			break;
 		case 0b100010:
 			execute_LWL(Itype, REG, ADDR_DATA);
+			std::cerr << "LWL" << std::endl;
 			break;
 		case 0b100110:
 			execute_LWR(Itype, REG, ADDR_DATA);
+			std::cerr << "LWR" << std::endl;
 			break;
 		case 0b100101:
 			execute_LHU(Itype, REG, ADDR_DATA);
+			std::cerr << "LHU" << std::endl;
 			break;
 		case 0b100001:
 			execute_LH(Itype, REG, ADDR_DATA);
+			std::cerr << "LH" << std::endl;
 			break;
 		case 0b101001:
 			execute_SH(Itype, REG, ADDR_DATA);
+			std::cerr << "SH" << std::endl;
 			break;
 		case 0b100100:
 			execute_LBU(Itype, REG, ADDR_DATA);
+			std::cerr << "LBU" << std::endl;
 			break;
 		default:
 			std::exit(-12); //invalid instrution type
@@ -669,9 +737,11 @@ void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 	switch(Jtype.opcode){
 		case 0b000010:
 			execute_J(Jtype,ctrl);
+			std::cerr << "J" << std::endl;
 			break;
 		case 0b000011:
 			execute_JAL(Jtype, REG, ctrl);
+			std::cerr << "JAL" << std::endl;
 			break;
 		default:
 			std::exit(-12); //invalid instruction type
