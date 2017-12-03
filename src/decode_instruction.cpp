@@ -93,27 +93,27 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 	opcode = instruction >> 26;
 
 	if(opcode == 0){
-		std::cerr << "R instruction detected :) " << std::endl;
+		std::cerr << "Decode R " << std::endl;
 		return "R";							
 	}
 	else if( opcode == 2  ||  opcode == 3 ){
-		std::cerr << "J instruction detected :) " << std::endl;
+		std::cerr << "Decode J " << std::endl;
 		return "J";
 	}
 	else{
-		std::cerr << "I instruction detected :) " << std::endl;
+		std::cerr << "Decode I " << std::endl;
 		return "I";
 	}
 
 }
 
 void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
-	std::cerr << "\n" << "\n";
+	// std::cerr << "\n" << "\n";
 	switch(Rtype.funct){
 		case 0b100000:
 			if(Rtype.shamt==0){
-				execute_ADD(Rtype, REG); //2
 				std::cerr << "ADD" << std::endl;
+				execute_ADD(Rtype, REG); //2
 				break;}
 		case 0b100001:
 			if(Rtype.shamt == 0){
@@ -235,11 +235,13 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 }
 
 void execute_ADD(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, overflow??
-	if( overflow(Rtype.rs, Rtype.rt) ){
+	if( overflow(REG[Rtype.rs], REG[Rtype.rt]) ){
+		std::cerr << "ADD not executed due to overflow" << std::endl;
 		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
 		REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
+		std::cerr << "ADD executed" << std::endl;
 	}
 }
 
@@ -279,7 +281,7 @@ void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 
 }
 
 void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
-	if( overflow(Rtype.rs, -Rtype.rt)){
+	if( overflow(REG[Rtype.rs], -REG[Rtype.rt])){
 		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
@@ -308,7 +310,7 @@ void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){ //signed values f
 }
 
 void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)REG[Rtype.rs]; //make sure 0's inserted
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)Rtype.shamt; //make sure 0's inserted
 	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
 }
 //----------------------------------------------------------------17:00

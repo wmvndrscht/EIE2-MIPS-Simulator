@@ -32,7 +32,7 @@
 
 int main(int argc, char *argv[]) {
 
-  std::cerr << "START" << std::endl;
+  std::cerr << "---------------BEGIN------------------" << std::endl;
   if( argc < 2){
     std::cerr << "No input binary  :: END PROGRAM" << std::endl;
     std::exit(-21); //IO ERROR
@@ -44,9 +44,11 @@ int main(int argc, char *argv[]) {
   ADDR_DATA = new uint8_t[0x4000000]();
 
 
-	int32_t REG[32] = {1};
-  for(int tr=0; tr<32; tr++)
+	int32_t REG[32] = {};
+
+  for(int tr=0; tr<32; tr++){
     std::cerr << REG[tr] << " ";
+  }
   std::cerr << "\n"; 
 	const uint32_t offset_N  = 0;
 	const uint32_t offset_AI = 0x10000000;
@@ -113,7 +115,9 @@ int main(int argc, char *argv[]) {
 
 
   //while( ctrl.PC != 0 ){					//if the program runs 
-  while (ctrl.PC < limit_AI && ctrl.PC != 0){
+  while (ctrl.PC != 0){
+    std::cerr << "Start of while loop" << std::endl;
+    std::cerr << "PC = " << ctrl.PC << std::endl;
     uint32_t instruction = 0;
     std::string rijtype;
   	instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
@@ -132,8 +136,6 @@ int main(int argc, char *argv[]) {
       std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
       std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
       std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
-      //REG[Rtype.rs] = 1;
-      //REG[Rtype.rt] = 1;
   		execute_R_type(Rtype, REG, ctrl);
   	}
   	else if(rijtype == "I"){
@@ -157,20 +159,36 @@ int main(int argc, char *argv[]) {
   		execute_J_type(Jtype, REG, ctrl);
   	}
 
-    PC_advance(ctrl);
-    if(REG[0]!=0)
+    for(int tr=0; tr<32; tr++){
+      std::cerr << REG[tr] << " ";
+    }
+    std::cerr << "\n";
+    std::cerr << "\n"; 
+
+    if(REG[0]!=0){
       REG[0]=0;
+    }
+
+
+
+    PC_advance(ctrl);
+
+    // ctrl.PC = 0;
     //std::cerr << "End of while loop hopefully" << std::endl << std::endl;
   }
+
+
 
   delete[] ADDR_INSTR;  //deleting dynamic memory
   delete[] ADDR_DATA;
   ADDR_INSTR = NULL;
   ADDR_DATA = NULL;
+
   for(int tri=0; tri<32; tri++)
     std::cerr << REG[tri] << " ";
   std::cerr << "\n";
   uint8_t result = REG[2] & 0x000000FF;
+  std::cerr << int(result) << std::endl;
   std::exit(result);
 
   return 0;

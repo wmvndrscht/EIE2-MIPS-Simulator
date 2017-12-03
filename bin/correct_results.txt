@@ -5,7 +5,7 @@ result
 
 ap4116
 ADD1 overflow
--10
+246
 
 ap4116
 ADD2 normal
