@@ -21,7 +21,7 @@ ADD4 normal
 
 ap4116
 ADDU1
-1
+0
 
 ap4116
 ADDU2 /255
