@@ -5,7 +5,8 @@ MIPS_CC = mips-linux-gnu-gcc
 MIPS_OBJCOPY = mips-linux-gnu-objcopy
 
 # Turn on all warnings, and enable optimisations
-MIPS_CPPFLAGS = -W -Wall -O3 -fno-builtin
+MIPS_CPPFLAGS = -W -Wall -O3 -fno-builtin 
+#MIPS_CPPFLAGS += -march=mips1 -mfp32
 
 # Avoid standard libraries etc. being brought in, and link statically
 MIPS_LDFLAGS = -nostdlib -Wl,-melf32btsmip -march=mips1 -nostartfiles -mno-check-zero-division -Wl,--gpsize=0 -static -Wl,-Bstatic
@@ -13,11 +14,11 @@ MIPS_LDFLAGS += -Wl,--build-id=none
 
 # Compile an assembly file into a MIPS object file
 # %.mips.o : %.s
-# 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
+ #	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@c src/decodeinstruction.cpp src/rijstructures.cpp src/simulator.cpp
 
 %.mips.o : %.s
 	$(MIPS_CC) $(MIPS_CPPFLAGS) -c $< -o $@
-
+	#$(MIPS_CC) $(MIPS_CPPFLAGS) -S $< -o $@
 
 # Compile a C file into a MIPS object file
 %.mips.o : %.c
@@ -27,7 +28,7 @@ MIPS_LDFLAGS += -Wl,--build-id=none
 # spec using linker.ld
 %.mips.elf : %.mips.o
 	$(MIPS_CC) $(MIPS_CPPFLAGS) $(MIPS_LDFLAGS)  $< -o $@
-
+	#$(MIPS_CC) $(MIPS_CPPFLAGS) $(MIPS_LDFLAGS) -T src/linker.ld $< -o $@
 # Extract just the binary instructions from the object file
 %.mips.bin : %.mips.elf
 	$(MIPS_OBJCOPY) -O binary --only-section=.text $< $@
@@ -36,8 +37,8 @@ MIPS_LDFLAGS += -Wl,--build-id=none
 #
 # make testbench/test.mips.bin
 
-###################################################
-## Simulator
+##################################################
+# Simulator
 
 src/%.o: src/%.cpp
 	g++ -W -Wall --std=c++11 -c -o $@ $<

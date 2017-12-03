@@ -1,1 +1,44 @@
+User
+comment
+result
+*empty line*
+
+ap4116
+ADD1 overflow
+-10
+
+ap4116
+ADD2 normal
+0xff
+
+ap4116
+ADD3 overflow
+-10
+
+ap4116
+ADD4 normal
+0x10
+
+ap4116
+ADDU1
 0
+
+ap4116
+ADDU2 /255
+0xff
+
+ap4116
+ADDU3
+0
+
+ap4116
+ADDU4 /16
+0x10
+
+ap4116
+JR
+0x0
+
+ap4116
+LUI & SRL
+0x10
