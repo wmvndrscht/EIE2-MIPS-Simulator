@@ -20,6 +20,10 @@
 //3 - SET PC COUNTER TO START
 
 
+//--------------ASK DT MONDAY----------------------------------
+//1. How to disable the optimiser in compiling assembly file
+//2. Testbench, saw we use jr but it doesn't work then they fail all tests
+
 //------------------------To do--------------------------------
 //1. Check all instructions, comment edge cases
 //2. NOOP: r, i, or j, or undefined etc
