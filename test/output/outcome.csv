@@ -1,6 +1,6 @@
 1, bin/T1_0_ADD.mips.bin , SUCCESS, ap4116 ADD1 overflow, 246, 246
 2, bin/T1_1_ADD.mips.bin , SUCCESS, ap4116 ADD2 normal, 255, 255
-3, bin/T1_2_ADD.mips.bin , FAIL, ap4116, ADD3 overflow, 0, -10
+3, bin/T1_2_ADD.mips.bin , SUCCESS, ap4116 ADD3 overflow, 1, 1
 4, bin/T1_3_ADD.mips.bin , SUCCESS, ap4116 ADD4 normal, 16, 16
 5, bin/T2_1_ADDU.mips.bin , FAIL, ap4116, ADDU1, 1, 0
 6, bin/T2_2_ADDU.mips.bin , FAIL, ap4116, ADDU2 /255, 0, 255

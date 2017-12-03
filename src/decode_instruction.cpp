@@ -783,8 +783,9 @@ void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// 
 // }
 
 bool overflow(const int32_t& rs, const int32_t& rt){
-	uint64_t check = (uint64_t)rs + (uint64_t)rt;
-
+	uint32_t temp_rs = (uint32_t)rs;
+	uint32_t temp_rt = (uint32_t)rt;
+	uint64_t check = (uint64_t)temp_rs + (uint64_t)temp_rt;
 	if(check > 0xFFFFFFFF){
 		return true;
 	}
