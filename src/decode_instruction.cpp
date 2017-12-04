@@ -117,32 +117,32 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				break;}
 		case 0b100001:
 			if(Rtype.shamt == 0){
+				std::cerr << "ADDU" << std::endl;				
 				execute_ADDU(Rtype, REG); //1
-				std::cerr << "ADDU" << std::endl;
 				break;}
 		case 0b100100:
 			if(Rtype.shamt == 0){
-				execute_AND(Rtype, REG); //1
 				std::cerr << "AND" << std::endl;
+				execute_AND(Rtype, REG); //1
 				break;}
 		case 0b011010:
 			if(Rtype.shamt == 0 && Rtype.rd == 0){
-				execute_DIV(Rtype, REG, ctrl); //4
 				std::cerr << "DIV" << std::endl;
+				execute_DIV(Rtype, REG, ctrl); //4
 				break;}
 		case 0b011011:
 			if(Rtype.shamt == 0 && Rtype.rd == 0){
-				execute_DIVU(Rtype, REG, ctrl); //4
 				std::cerr << "DIVU" << std::endl;
+				execute_DIVU(Rtype, REG, ctrl); //4
 				break;}
 		case 0b001000:
 			if(Rtype.rt == 0 && Rtype.rd == 0 && Rtype.shamt == 0){
-				execute_JR(Rtype, REG, ctrl); //1
 				std::cerr << "JR" << std::endl;
+				execute_JR(Rtype, REG, ctrl); //1
 				break;}
 		case 0b001001:
-			execute_JALR(Rtype, REG, ctrl);
 			std::cerr << "JALR" << std::endl;
+			execute_JALR(Rtype, REG, ctrl);
 			break;
 		case 0b010000:
 			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
@@ -219,8 +219,8 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				break;}
 		case 0b100011:
 			if(Rtype.shamt == 0){
-				execute_SUBU(Rtype, REG); //1	
 				std::cerr << "SUBU" << std::endl;
+				execute_SUBU(Rtype, REG); //1	
 				break;}				
 		case 0b100110:
 			execute_XOR(Rtype, REG);  //1
@@ -285,7 +285,7 @@ void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
 		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
-		REG[Rtype.rd]=REG[Rtype.rs]-REG[Rtype.rt];
+		REG[Rtype.rd] = REG[Rtype.rs]-REG[Rtype.rt];
 	}
 }
 
@@ -315,7 +315,7 @@ void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
 }
 //----------------------------------------------------------------17:00
 void execute_SLL(const instructionR& Rtype, int32_t REG[32]){  //simple
-	REG[Rtype.rd] = REG[Rtype.rt] << Rtype.shamt;
+	REG[Rtype.rd] = REG[Rtype.rt] << REG[Rtype.shamt];
 }
 
 void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //simple
@@ -604,7 +604,7 @@ void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 }
 
 void execute_ORI(const instructionI& Itype, int32_t REG[32]){
-	REG[Itype.rd] = REG[Itype.rs] | Itype.IMM;
+	REG[Itype.rd] = (uint32_t)REG[Itype.rs] | Itype.IMM;
 }
 
 void execute_SB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){

@@ -25,7 +25,7 @@ ADDU1
 
 ap4116
 ADDU2 /255
-0xff
+1
 
 ap4116
 ADDU3
@@ -34,6 +34,22 @@ ADDU3
 ap4116
 ADDU4 /16
 0x10
+
+wv116
+SUBU normal
+0xEE
+
+wv116
+SUBU 'overflow'
+59
+
+wv116
+SUB normal
+59
+
+wv116
+SUB overflow
+245
 
 ap4116
 JR
@@ -46,3 +62,5 @@ JR2
 ap4116
 LUI & SRL
 0x10
+
+
