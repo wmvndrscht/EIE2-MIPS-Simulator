@@ -95,6 +95,17 @@ ap4116
 T9 J1
 0x6
 
+ap4116
+Ta1 SLT
+0x1
+
+ap4116
+Ta1 SLTU
+4
+
+ap4116
+T10 ADDIU0
+0xff
 
 
 

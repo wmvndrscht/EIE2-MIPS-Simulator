@@ -21,3 +21,6 @@
 21, bin/T8_0_XOR0.mips.bin , SUCCESS, ap4116 T8 XOR0, 51, 51
 22, bin/T9_0_J0.mips.bin , SUCCESS, ap4116 T9 J, 15, 15
 23, bin/T9_1_J1.mips.bin , SUCCESS, ap4116 T9 J1, 6, 6
+24, bin/Ta1_0_SLT0.mips.bin , SUCCESS, ap4116 Ta1 SLT, 1, 1
+25, bin/Ta1_0_SLTU.mips.bin , SUCCESS, ap4116 Ta1 SLTU, 4, 4
+26, bin/TT1_0_ADDIU0.mips.bin , SUCCESS, ap4116 T10 ADDIU0, 255, 255

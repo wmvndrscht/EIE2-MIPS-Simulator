@@ -316,7 +316,7 @@ void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
 }
 //----------------------------------------------------------------17:00
 void execute_SLL(const instructionR& Rtype, int32_t REG[32]){  //simple
-	REG[Rtype.rd] = REG[Rtype.rt] << REG[Rtype.shamt];
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] << (uint32_t)Rtype.shamt;
 }
 
 void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //simple
