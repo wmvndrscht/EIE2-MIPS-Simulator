@@ -1,26 +1,41 @@
-1, bin/T1_0_ADD.mips.bin , SUCCESS, ap4116 T0 ADD0 overflow, 246, 246
-2, bin/T1_1_ADD.mips.bin , SUCCESS, ap4116 ADD1 normal, 255, 255
-3, bin/T1_2_ADD.mips.bin , SUCCESS, ap4116 ADD2 normal, 1, 1
-4, bin/T1_3_ADD.mips.bin , SUCCESS, ap4116 ADD3 normal, 16, 16
-5, bin/T1_4_ADD.mips.bin , SUCCESS, ap4116 ADD4 overflow pos+pos=neg, 246, 246
-6, bin/T1_5_ADD.mips.bin , SUCCESS, ap4116 ADD5 no overflow pls neg+neg=neg, 254, 254
-7, bin/T2_0_ADDU.mips.bin , SUCCESS, ap4116 T2 ADDU1, 0, 0
-8, bin/T2_1_ADDU.mips.bin , SUCCESS, ap4116 ADDU2 , 1, 1
-9, bin/T2_2_ADDU.mips.bin , SUCCESS, ap4116 ADDU3, 0, 0
-10, bin/T2_3_ADDU.mips.bin , SUCCESS, ap4116 ADDU4 , 16, 16
-11, bin/T3_0_SUBU.mips.bin , SUCCESS, wv116 T3 SUBU normal, 238, 238
-12, bin/T3_1_SUBU.mips.bin , SUCCESS, wv116 SUBU 'overflow', 59, 59
-13, bin/T4_0_SUB.mips.bin , SUCCESS, wv116 T4 SUB0 normal, 59, 59
-14, bin/T4_1_SUB.mips.bin , SUCCESS, wv116 SUB1 overflow, 246, 246
-15, bin/T4_2_SUB.mips.bin , SUCCESS, ap4116 SUB2 overflow, 246, 246
-16, bin/T4_3_SUB.mips.bin , SUCCESS, ap4116 SUB3 overflow, 241, 241
-17, bin/T5_0_OR.mips.bin , SUCCESS, ap4116 T5 OR normal, 255, 255
-18, bin/T6_0_LUI.mips.bin , SUCCESS, ap4116 T6 LUI & SRL, 2, 2
-19, bin/T7_0_JR0.mips.bin , SUCCESS, ap4116 T7 JR0, 1, 1
-20, bin/T7_1_JR1.mips.bin , SUCCESS, ap4116 T7 JR1, 0, 0
-21, bin/T8_0_XOR0.mips.bin , SUCCESS, ap4116 T8 XOR0, 51, 51
-22, bin/T9_0_J0.mips.bin , SUCCESS, ap4116 T9 J, 15, 15
-23, bin/T9_1_J1.mips.bin , SUCCESS, ap4116 T9 J1, 6, 6
-24, bin/Ta1_0_SLT0.mips.bin , SUCCESS, ap4116 Ta1 SLT, 1, 1
-25, bin/Ta1_0_SLTU.mips.bin , SUCCESS, ap4116 Ta1 SLTU, 4, 4
-26, bin/TT1_0_ADDIU0.mips.bin , SUCCESS, ap4116 T10 ADDIU0, 255, 255
+1, bin/T001_0_ADD.mips.bin , PASS, ap4116 T0 ADD0 overflow, 246, 246
+2, bin/T001_1_ADD.mips.bin , PASS, ap4116 ADD1 normal, 255, 255
+3, bin/T001_2_ADD.mips.bin , PASS, ap4116 ADD2 normal, 1, 1
+4, bin/T001_3_ADD.mips.bin , PASS, ap4116 ADD3 normal, 16, 16
+5, bin/T001_4_ADD.mips.bin , PASS, ap4116 ADD4 overflow pos+pos=neg, 246, 246
+6, bin/T001_5_ADD.mips.bin , PASS, ap4116 ADD5 no overflow pls neg+neg=neg, 254, 254
+7, bin/T002_0_ADDU.mips.bin , PASS, ap4116 T2 ADDU1, 0, 0
+8, bin/T002_1_ADDU.mips.bin , PASS, ap4116 ADDU2 , 1, 1
+9, bin/T002_2_ADDU.mips.bin , PASS, ap4116 ADDU3, 0, 0
+10, bin/T002_3_ADDU.mips.bin , PASS, ap4116 ADDU4 , 16, 16
+11, bin/T003_0_SUBU.mips.bin , PASS, wv116 T3 SUBU normal, 238, 238
+12, bin/T003_1_SUBU.mips.bin , PASS, wv116 SUBU 'overflow', 59, 59
+13, bin/T004_0_SUB.mips.bin , PASS, wv116 T4 SUB0 normal, 59, 59
+14, bin/T004_1_SUB.mips.bin , PASS, wv116 SUB1 overflow, 246, 246
+15, bin/T004_2_SUB.mips.bin , PASS, ap4116 SUB2 overflow, 246, 246
+16, bin/T004_3_SUB.mips.bin , PASS, ap4116 SUB3 overflow, 241, 241
+17, bin/T005_0_OR.mips.bin , PASS, ap4116 T5 OR normal, 255, 255
+18, bin/T006_0_LUI.mips.bin , PASS, ap4116 T6 LUI & SRL, 2, 2
+19, bin/T007_0_JR0.mips.bin , PASS, ap4116 T7 JR0, 1, 1
+20, bin/T007_1_JR1.mips.bin , PASS, ap4116 T7 JR1, 0, 0
+21, bin/T008_0_XOR0.mips.bin , PASS, ap4116 T8 XOR0, 51, 51
+22, bin/T009_0_J0.mips.bin , PASS, ap4116 T9 J, 15, 15
+23, bin/T009_1_J1.mips.bin , PASS, ap4116 T9 J1, 6, 6
+24, bin/T010_0_SLT.mips.bin , PASS, ap4116 T10 SLT, 1, 1
+25, bin/T010_1_SLT.mips.bin , PASS, wv116 T10 SLT, 0, 0
+26, bin/T010_2_SLT.mips.bin , PASS, wv116 T10 SLT signed v, 1, 1
+27, bin/T010_5_SLTU.mips.bin , PASS, ap4116 T10 SLTU, 4, 4
+28, bin/T011_0_ADDIU0.mips.bin , PASS, ap4116 T11 ADDIU0, 255, 255
+29, bin/T012_0_AND.mips.bin , PASS, wv116 T12 AND, 170, 170
+30, bin/T013_0_SRA.mips.bin , PASS, wv116 T13 SRA, 255, 255
+31, bin/T013_1_SRA.mips.bin , PASS, wv116 T13 SRA, 2, 2
+32, bin/T014_0_SRAV.mips.bin , PASS, wv116 T14 SRAV, 255, 255
+33, bin/T014_1_SRAV.mips.bin , PASS, wv116 T14 SRAV, 32, 32
+34, bin/T015_0_SRL.mips.bin , PASS, wv116 T15 SRL, 2, 2
+35, bin/T015_1_SRL.mips.bin , PASS, wv116 T15 SRL signed, 1, 1
+36, bin/T016_0_SLL.mips.bin , PASS, wv116 T16 SLL signed, 254, 254
+37, bin/T016_1_SLL.mips.bin , PASS, wv116 T16 SLL, 32, 32
+38, bin/T017_0_SLLV.mips.bin , PASS, wv116 T17 SLLV signed, 254, 254
+39, bin/T017_1_SLLV.mips.bin , PASS, wv116 T17 SLLV, 32, 32
+40, bin/T018_0_SRLV.mips.bin , PASS, wv116 T18 SRLV signed, 2, 2
+41, bin/T018_1_SRLV.mips.bin , PASS, wv116 T18 SRLV, 1, 1

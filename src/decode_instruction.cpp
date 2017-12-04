@@ -255,32 +255,32 @@ void execute_ADDU(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFF
  	std::cerr << "After we have, signed REG[" << Rtype.rd << "] = " << (int32_t)REG[Rtype.rd] << std::endl;
 }
 
-void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //simple
+void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //simple, tested
 	REG[Rtype.rd] = REG[Rtype.rs] & REG[Rtype.rt];
 }
 
-void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //simple
+void execute_OR(const instructionR& Rtype, int32_t REG[32]){  //simple, tested
 	REG[Rtype.rd] = REG[Rtype.rs] | REG[Rtype.rt];
 }
 
-void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //simple
+void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //simple, tested
 	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] ^ (uint32_t)REG[Rtype.rt];
 }
 
-void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //sub overflow, 1 -2 etc
+void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //sub overflow, 1 -2 etc, tested
 	REG[Rtype.rd] = REG[Rtype.rs] - REG[Rtype.rt];
 }
 
-void execute_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?
+void execute_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?, tested
 	ctrl.nPC = REG[Rtype.rs];
 	ctrl.branch_delay = 2;
 }
 
-void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 with correct register
+void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 with correct register, tested
 	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] < (uint32_t)REG[Rtype.rt];
 }
 
-void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
+void execute_SUB(const instructionR& Rtype, int32_t REG[32]){ //tested
 
 	if( overflow_SUB(REG[Rtype.rs], REG[Rtype.rt])){
 		std::exit(-10);//Arithmetic_Exception
@@ -290,41 +290,33 @@ void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
 	}
 }
 
-void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //says arithmetic comparison does not cause Integer Overflow??
+void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //tested, says arithmetic comparison does not cause Integer Overflow??, tested
 	REG[Rtype.rd] = REG[Rtype.rs] < REG[Rtype.rt];
 }
 
-void execute_SRA(const instructionR& Rtype, int32_t REG[32]){
+void execute_SRA(const instructionR& Rtype, int32_t REG[32]){ //tested
 	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;	
-	// if( !( REG[Rtype.rt] >> 31 ) ){  //don't think this extra stuff is needed, test for signed values for sign extension
-	// 	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
-	// }
-	// else{
-	// 	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;
-	// 	REG[Rtype.rd] = REG[Rtype.rd] | ((pow(2, Rtype.shamt) -1) << 32-Rtype.shamt );
-	// }
 }
 
-void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){ //signed values for sign extension and correct variable shift
-	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.rs;
-	// REG[Rtype.rd] = REG[Rtype.rd] | (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1);
+void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){ //tested, signed values for sign extension and correct variable shift
+	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
 }
 
 void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)Rtype.shamt; //make sure 0's inserted
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)Rtype.shamt; //tested, make sure 0's inserted
 	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
 }
 //----------------------------------------------------------------17:00
-void execute_SLL(const instructionR& Rtype, int32_t REG[32]){  //simple
+void execute_SLL(const instructionR& Rtype, int32_t REG[32]){  //tested, simple
 	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] << (uint32_t)Rtype.shamt;
 }
 
-void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //simple
+void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //tested. simple
 	REG[Rtype.rd] = REG[Rtype.rt] << (REG[Rtype.rs]&0x1F); // the value in REG can be huge, we should only use the lowest 5 bits
 }
 
-void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){  //simple
-	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (REG[Rtype.rs]&0x1F); // same thing here
+void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){  //tested, simple
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)(REG[Rtype.rs]&0x1F); // same thing here
 	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
 }
 

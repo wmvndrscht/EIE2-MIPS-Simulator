@@ -96,16 +96,77 @@ T9 J1
 0x6
 
 ap4116
-Ta1 SLT
+T10 SLT
+0x1
+
+wv116
+T10 SLT
+0x0
+
+wv116
+T10 SLT signed v
 0x1
 
 ap4116
-Ta1 SLTU
+T10 SLTU
 4
 
 ap4116
-T10 ADDIU0
+T11 ADDIU0
 0xff
+
+wv116
+T12 AND
+0xAA
+
+wv116
+T13 SRA
+0xff
+
+wv116
+T13 SRA
+0x02
+
+wv116
+T14 SRAV
+0xff
+
+wv116
+T14 SRAV
+32
+
+wv116
+T15 SRL
+0x2
+
+wv116
+T15 SRL signed
+0x1
+
+wv116
+T16 SLL signed
+254
+
+wv116
+T16 SLL
+32
+
+wv116
+T17 SLLV signed
+254
+
+wv116
+T17 SLLV
+32
+
+wv116
+T18 SRLV
+2
+
+wv116
+T18 SRLV signed
+1
+
 
 
 
