@@ -4,7 +4,7 @@ result
 *empty line*
 
 ap4116
-ADD0 overflow
+T0 ADD0 overflow
 246
 
 ap4116
@@ -28,7 +28,7 @@ ADD5 no overflow pls neg+neg=neg
 254
 
 ap4116
-ADDU1
+T2 ADDU1
 0
 
 ap4116
@@ -44,7 +44,7 @@ ADDU4
 0x10
 
 wv116
-SUBU normal
+T3 SUBU normal
 0xEE
 
 wv116
@@ -52,7 +52,7 @@ SUBU 'overflow'
 59
 
 wv116
-SUB0 normal
+T4 SUB0 normal
 59
 
 wv116
@@ -64,15 +64,38 @@ SUB2 overflow
 246
 
 ap4116
-JR
-0x0
+SUB3 overflow
+0xf1
 
 ap4116
-JR2
+T5 OR normal
+0xff
+
+ap4116
+T6 LUI & SRL
+0x2
+
+ap4116
+T7 JR0
 0x1
 
 ap4116
-LUI & SRL
-0x10
+T7 JR1
+0x0
+
+ap4116
+T8 XOR0
+0x33
+
+ap4116
+T9 J
+15
+
+ap4116
+T9 J1
+0x6
+
+
+
 
 

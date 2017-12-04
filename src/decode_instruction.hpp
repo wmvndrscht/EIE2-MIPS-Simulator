@@ -25,6 +25,7 @@ void initialise_control(control &ctrl, const uint32_t& offset_AI);
 // void overflow(const int& result, const int& val1, const int& val2);
 bool overflow(const int32_t& rs, const int32_t& rt);
 bool overflow_SUB(const int32_t& rs, const int32_t& rt);
+//void overflow_OLD(const int32_t& result, const int32_t& val1, const int32_t& val2);
 int32_t sign_extend_8(const uint8_t& byte);
 int32_t sign_extend_16(const uint32_t& half);
 

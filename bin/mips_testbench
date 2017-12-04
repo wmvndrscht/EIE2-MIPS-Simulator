@@ -27,7 +27,7 @@ do 								#marks the beginning of the "for loop"
 		echo $id, $binfile , FAIL, $user, $comment, $mips, $other >> test/output/outcome.csv			#print this if the two don't match
 	fi 							#marks the end of the "if"
 done							#marks the end of the "for loop"
-emacs test/output/outcome.csv			#opens "outcome.csv"
+#emacs test/output/outcome.csv			#opens "outcome.csv"
 
 #this has to be in arch2-2017-cw-nips/bin
 #the names of the binfiles should specify the instruction

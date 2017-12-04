@@ -1,15 +1,23 @@
-1, bin/T1_0_ADD.mips.bin , SUCCESS, ap4116 ADD0 overflow, 246, 246
+1, bin/T1_0_ADD.mips.bin , SUCCESS, ap4116 T0 ADD0 overflow, 246, 246
 2, bin/T1_1_ADD.mips.bin , SUCCESS, ap4116 ADD1 normal, 255, 255
 3, bin/T1_2_ADD.mips.bin , SUCCESS, ap4116 ADD2 normal, 1, 1
 4, bin/T1_3_ADD.mips.bin , SUCCESS, ap4116 ADD3 normal, 16, 16
 5, bin/T1_4_ADD.mips.bin , SUCCESS, ap4116 ADD4 overflow pos+pos=neg, 246, 246
 6, bin/T1_5_ADD.mips.bin , SUCCESS, ap4116 ADD5 no overflow pls neg+neg=neg, 254, 254
-7, bin/T2_0_ADDU.mips.bin , SUCCESS, ap4116 ADDU1, 0, 0
+7, bin/T2_0_ADDU.mips.bin , SUCCESS, ap4116 T2 ADDU1, 0, 0
 8, bin/T2_1_ADDU.mips.bin , SUCCESS, ap4116 ADDU2 , 1, 1
 9, bin/T2_2_ADDU.mips.bin , SUCCESS, ap4116 ADDU3, 0, 0
 10, bin/T2_3_ADDU.mips.bin , SUCCESS, ap4116 ADDU4 , 16, 16
-11, bin/T3_0_SUBU.mips.bin , SUCCESS, wv116 SUBU normal, 238, 238
+11, bin/T3_0_SUBU.mips.bin , SUCCESS, wv116 T3 SUBU normal, 238, 238
 12, bin/T3_1_SUBU.mips.bin , SUCCESS, wv116 SUBU 'overflow', 59, 59
-13, bin/T4_0_SUB.mips.bin , SUCCESS, wv116 SUB0 normal, 59, 59
+13, bin/T4_0_SUB.mips.bin , SUCCESS, wv116 T4 SUB0 normal, 59, 59
 14, bin/T4_1_SUB.mips.bin , SUCCESS, wv116 SUB1 overflow, 246, 246
-15, bin/T4_2_SUB.mips.bin , FAIL, ap4116, SUB2 overflow, 0, 246
+15, bin/T4_2_SUB.mips.bin , SUCCESS, ap4116 SUB2 overflow, 246, 246
+16, bin/T4_3_SUB.mips.bin , SUCCESS, ap4116 SUB3 overflow, 241, 241
+17, bin/T5_0_OR.mips.bin , SUCCESS, ap4116 T5 OR normal, 255, 255
+18, bin/T6_0_LUI.mips.bin , SUCCESS, ap4116 T6 LUI & SRL, 2, 2
+19, bin/T7_0_JR0.mips.bin , SUCCESS, ap4116 T7 JR0, 1, 1
+20, bin/T7_1_JR1.mips.bin , SUCCESS, ap4116 T7 JR1, 0, 0
+21, bin/T8_0_XOR0.mips.bin , SUCCESS, ap4116 T8 XOR0, 51, 51
+22, bin/T9_0_J0.mips.bin , SUCCESS, ap4116 T9 J, 15, 15
+23, bin/T9_1_J1.mips.bin , SUCCESS, ap4116 T9 J1, 6, 6
