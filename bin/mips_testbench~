@@ -11,7 +11,7 @@ do 								#marks the beginning of the "for loop"
 	let NUM++;
 	comment=$(sed "${NUM}q;d" bin/$results_file)
 	let NUM++;			#update test index
-	#echo $binfile				#this helps if you want to see which binary file you are accessing
+	echo $binfile				#this helps if you want to see which binary file you are accessing
 	echo 
 	bin/mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
 	let mips=$?						#store the output of mips_simulator
@@ -27,7 +27,7 @@ do 								#marks the beginning of the "for loop"
 		echo $id, $binfile , FAIL, $user, $comment, $mips, $other >> test/output/outcome.csv			#print this if the two don't match
 	fi 							#marks the end of the "if"
 done							#marks the end of the "for loop"
-emacs test/output/outcome.csv			#opens "outcome.csv"
+vim test/output/outcome.csv			#opens "outcome.csv"
 
 #this has to be in arch2-2017-cw-nips/bin
 #the names of the binfiles should specify the instruction

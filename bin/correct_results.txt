@@ -4,27 +4,35 @@ result
 *empty line*
 
 ap4116
-ADD1 overflow
+ADD0 overflow
 246
 
 ap4116
-ADD2 normal
+ADD1 normal
 0xff
 
 ap4116
-ADD3 overflow
+ADD2 normal
 1
 
 ap4116
-ADD4 normal
+ADD3 normal
 16
+
+ap4116
+ADD4 overflow pos+pos=neg
+246
+
+ap4116
+ADD5 no overflow pls neg+neg=neg
+254
 
 ap4116
 ADDU1
 0
 
 ap4116
-ADDU2 /255
+ADDU2 
 1
 
 ap4116
@@ -32,7 +40,7 @@ ADDU3
 0
 
 ap4116
-ADDU4 /16
+ADDU4 
 0x10
 
 wv116
@@ -44,12 +52,16 @@ SUBU 'overflow'
 59
 
 wv116
-SUB normal
+SUB0 normal
 59
 
 wv116
-SUB overflow
-245
+SUB1 overflow
+246
+
+ap4116
+SUB2 overflow
+246
 
 ap4116
 JR

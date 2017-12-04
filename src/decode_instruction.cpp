@@ -281,7 +281,7 @@ void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 
 }
 
 void execute_SUB(const instructionR& Rtype, int32_t REG[32]){
-	if( overflow(REG[Rtype.rs], -REG[Rtype.rt])){
+	if( overflow_SUB(REG[Rtype.rs], REG[Rtype.rt])){
 		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
@@ -781,17 +781,53 @@ void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// 
 // 	}
 //	return false;
 // }
-
+bool overflow_SUB(const int32_t& rs, const int32_t& rt){
+	int32_t temp_rs = rs;
+	int32_t temp_rt = rt;
+	int64_t check = (int32_t)temp_rs - (int32_t)temp_rt;
+	temp_rt = temp_rt & 0x80000000;
+	temp_rs = temp_rs & 0x80000000;
+	check = check & 0x80000000; 
+	if(temp_rs && !(temp_rt) && !(check)){
+		return true;
+	}
+	if(!(temp_rt) && temp_rs && check){
+		return true;
+	}
+	/* temp_rs = rt;
+	 temp_rt = rs;
+	check = (int32_t)temp_rs - (int32_t)temp_rt;
+	temp_rt = temp_rt & 0x80000000;
+	temp_rs = temp_rs & 0x80000000;
+	check = check & 0x80000000; 
+	if(temp_rs && !(temp_rt) && !(check)){
+		return true;
+	}
+	if(!(temp_rt) && temp_rs && check){
+		return true;
+	}*/
+	
+	return false;
+}
 bool overflow(const int32_t& rs, const int32_t& rt){
 	uint32_t temp_rs = (uint32_t)rs;
 	uint32_t temp_rt = (uint32_t)rt;
-	uint64_t check = (uint64_t)temp_rs + (uint64_t)temp_rt;
-	if(check > 0xFFFFFFFF){
+	uint32_t check = (uint32_t)temp_rs + (uint32_t)temp_rt;
+	temp_rt = temp_rt >> 31;
+	temp_rs = temp_rs >> 31;
+	check = check >> 31; 
+	if(temp_rs && temp_rt && !(check))
+		return true;
+	if(!(temp_rt) && !(temp_rs) && check)
+		return true;
+	return false;
+	/*
+	if(check > 0xFFFFFFFF){ this detects all neg+neg as overflow
 		return true;
 	}
 	else{
 		return false;
-	}
+	}*/
 }
 
 
