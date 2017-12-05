@@ -22,22 +22,25 @@
 22, bin/T009_0_J0.mips.bin , PASS, ap4116 T9 J, 15, 15
 23, bin/T009_1_J1.mips.bin , PASS, ap4116 T9 J1, 6, 6
 24, bin/T009_2_J2.mips.bin , PASS, ap4116 T9 J2, 4, 4
-25, bin/T010_0_SLT.mips.bin , PASS, ap4116 T10 SLT, 1, 1
-26, bin/T010_1_SLT.mips.bin , PASS, wv116 T10 SLT, 0, 0
-27, bin/T010_2_SLT.mips.bin , PASS, wv116 T10 SLT signed v, 1, 1
-28, bin/T010_5_SLTU.mips.bin , PASS, ap4116 T10 SLTU, 4, 4
-29, bin/T011_0_ADDIU0.mips.bin , PASS, ap4116 T11 ADDIU0, 255, 255
-30, bin/T012_0_AND.mips.bin , PASS, wv116 T12 AND, 170, 170
-31, bin/T013_0_SRA.mips.bin , PASS, wv116 T13 SRA, 255, 255
-32, bin/T013_1_SRA.mips.bin , PASS, wv116 T13 SRA, 2, 2
-33, bin/T014_0_SRAV.mips.bin , PASS, wv116 T14 SRAV, 255, 255
-34, bin/T014_1_SRAV.mips.bin , PASS, wv116 T14 SRAV, 32, 32
-35, bin/T015_0_SRL.mips.bin , PASS, wv116 T15 SRL, 2, 2
-36, bin/T015_1_SRL.mips.bin , PASS, wv116 T15 SRL signed, 1, 1
-37, bin/T016_0_SLL.mips.bin , PASS, wv116 T16 SLL signed, 254, 254
-38, bin/T016_1_SLL.mips.bin , PASS, wv116 T16 SLL, 32, 32
-39, bin/T017_0_SLLV.mips.bin , PASS, wv116 T17 SLLV signed, 254, 254
-40, bin/T017_1_SLLV.mips.bin , PASS, wv116 T17 SLLV, 32, 32
-41, bin/T018_0_SRLV.mips.bin , PASS, wv116 T18 SRLV, 2, 2
-42, bin/T018_1_SRLV.mips.bin , PASS, wv116 T18 SRLV signed, 1, 1
-43, bin/T019_0_JALR.mips.bin , FAIL, ap4116, T19 JALR, 8, 16
+25, bin/T009_3_J3.mips.bin , PASS, ap4116 T9 J3, 2, 2
+26, bin/T009_4_J4.mips.bin , PASS, ap4116 T9 J4, 15, 15
+27, bin/T010_0_SLT.mips.bin , PASS, ap4116 T10 SLT, 1, 1
+28, bin/T010_1_SLT.mips.bin , PASS, wv116 T10 SLT, 0, 0
+29, bin/T010_2_SLT.mips.bin , PASS, wv116 T10 SLT signed v, 1, 1
+30, bin/T010_5_SLTU.mips.bin , PASS, ap4116 T10 SLTU, 4, 4
+31, bin/T011_0_ADDIU0.mips.bin , PASS, ap4116 T11 ADDIU0, 255, 255
+32, bin/T012_0_AND.mips.bin , PASS, wv116 T12 AND, 170, 170
+33, bin/T013_0_SRA.mips.bin , PASS, wv116 T13 SRA, 255, 255
+34, bin/T013_1_SRA.mips.bin , PASS, wv116 T13 SRA, 2, 2
+35, bin/T014_0_SRAV.mips.bin , PASS, wv116 T14 SRAV, 255, 255
+36, bin/T014_1_SRAV.mips.bin , PASS, wv116 T14 SRAV, 32, 32
+37, bin/T015_0_SRL.mips.bin , PASS, wv116 T15 SRL, 2, 2
+38, bin/T015_1_SRL.mips.bin , PASS, wv116 T15 SRL signed, 1, 1
+39, bin/T016_0_SLL.mips.bin , PASS, wv116 T16 SLL signed, 254, 254
+40, bin/T016_1_SLL.mips.bin , PASS, wv116 T16 SLL, 32, 32
+41, bin/T017_0_SLLV.mips.bin , PASS, wv116 T17 SLLV signed, 254, 254
+42, bin/T017_1_SLLV.mips.bin , PASS, wv116 T17 SLLV, 32, 32
+43, bin/T018_0_SRLV.mips.bin , PASS, wv116 T18 SRLV, 2, 2
+44, bin/T018_1_SRLV.mips.bin , PASS, wv116 T18 SRLV signed, 1, 1
+45, bin/T019_0_JALR.mips.bin , PASS, ap4116 T19 JALR, 20, 20
+46, bin/T019_1_JALR1.mips.bin , PASS, ap4116 T19 JALR1, 15, 15
