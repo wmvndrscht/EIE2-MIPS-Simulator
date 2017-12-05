@@ -96,6 +96,10 @@ T9 J1
 0x6
 
 ap4116
+T9 J2
+4
+
+ap4116
 T10 SLT
 0x1
 
@@ -167,7 +171,9 @@ wv116
 T18 SRLV signed
 1
 
-
+ap4116
+T19 JALR
+16
 
 
 
