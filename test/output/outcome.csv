@@ -78,3 +78,4 @@
 78, bin/T029_3_LBU.mips.bin , PASS, wv116 T29_3 LBU, out of range below, 245, 245
 79, bin/T029_4_LBU.mips.bin , PASS, wv116 T29_4 LBU, no sign extension works, 0, 0
 80, bin/T030_0_LH.mips.bin , PASS, wv116 T30_0_LH, check loads both bytes, 1, 1
+81, bin/T031_0_FailedTest.mips.bin , FAIL, ap4116, T31_0_FailedTest, 0, 8

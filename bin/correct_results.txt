@@ -322,3 +322,7 @@ T29_4 LBU, no sign extension works
 wv116
 T30_0_LH, check loads both bytes
 1
+
+ap4116
+T31_0_FailedTest
+0
