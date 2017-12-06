@@ -63,3 +63,18 @@
 63, bin/T026_1_BGEZAL_BLTZAL1.mips.bin , PASS, ap4116 T26 BGEZAL & BLTZAL take BLTZAL, 14, 14
 64, bin/T026_2_BGEZAL_BLTZAL2.mips.bin , PASS, ap4116 T26 BGEZAL & BLTZAL take BGEZAL, 16, 16
 65, bin/T026_3_BGEZAL_BLTZAL3.mips.bin , PASS, ap4116 T26 BGEZAL & BLTZAL take BGEZAL, 16, 16
+66, bin/T027_0_LB.mips.bin , PASS, wv116 T27_0 LB, 2, 2
+67, bin/T027_1_LB.mips.bin , PASS, wv116 T27_1 LB, offset, 96, 96
+68, bin/T027_2_LB.mips.bin , PASS, wv116 T27_2 LB, out of range above, 245, 245
+69, bin/T027_3_LB.mips.bin , PASS, wv116 T27_3 LB, out of range below, 245, 245
+70, bin/T027_4_LB.mips.bin , PASS, wv116 T27_4 LB, sign extension works, 1, 1
+71, bin/T028_0_SB.mips.bin , PASS, wv116 T28_0 SB, 2, 2
+72, bin/T028_1_SB.mips.bin , PASS, wv116 T28_1 SB, offset, 96, 96
+73, bin/T028_2_SB.mips.bin , PASS, wv116 T28_2 SB, out of range above, 245, 245
+74, bin/T028_3_SB.mips.bin , PASS, wv116 T28_3 SB, out of range below, 245, 245
+75, bin/T029_0_LBU.mips.bin , PASS, wv116 T29_0 LBU, 2, 2
+76, bin/T029_1_LBU.mips.bin , PASS, wv116 T29_1 LBU, offset, 96, 96
+77, bin/T029_2_LBU.mips.bin , PASS, wv116 T29_2 LBU, out of range above, 245, 245
+78, bin/T029_3_LBU.mips.bin , PASS, wv116 T29_3 LBU, out of range below, 245, 245
+79, bin/T029_4_LBU.mips.bin , PASS, wv116 T29_4 LBU, no sign extension works, 0, 0
+80, bin/T030_0_LH.mips.bin , PASS, wv116 T30_0_LH, check loads both bytes, 1, 1

@@ -262,3 +262,63 @@ T26 BGEZAL & BLTZAL take BGEZAL
 ap4116
 T26 BGEZAL & BLTZAL take BGEZAL
 16
+
+wv116
+T27_0 LB
+2
+
+wv116
+T27_1 LB, offset
+96
+
+wv116
+T27_2 LB, out of range above
+245
+
+wv116
+T27_3 LB, out of range below
+245
+
+wv116
+T27_4 LB, sign extension works
+1
+
+wv116
+T28_0 SB
+2
+
+wv116
+T28_1 SB, offset
+96
+
+wv116
+T28_2 SB, out of range above
+245
+
+wv116
+T28_3 SB, out of range below
+245
+
+wv116
+T29_0 LBU
+2
+
+wv116
+T29_1 LBU, offset
+96
+
+wv116
+T29_2 LBU, out of range above
+245
+
+wv116
+T29_3 LBU, out of range below
+245
+
+wv116
+T29_4 LBU, no sign extension works
+0
+
+wv116
+T30_0_LH, check loads both bytes
+1

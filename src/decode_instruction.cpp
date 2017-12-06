@@ -348,7 +348,7 @@ void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 //----------------------------------Itype----------------------------------------------------------
 
 void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA){
-	
+	std::cerr << "Reaches I type" << std::endl;
 	switch(Itype.opcode){
 		case 0b001110:
 			execute_XORI(Itype, REG);
@@ -367,8 +367,8 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			std::cerr << "SLTI" << std::endl;
 			break;
 		case 0b101000:
-			execute_SB(Itype, REG, ADDR_DATA);
 			std::cerr << "SB" << std::endl;
+			execute_SB(Itype, REG, ADDR_DATA);
 			break;
 		case 0b001101:
 			execute_ORI(Itype, REG);
@@ -383,8 +383,8 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			std::cerr << "LUI" << std::endl;
 			break;
 		case 0b100000:
-			execute_LB(Itype, REG, ADDR_DATA);
 			std::cerr << "LB" << std::endl;
+			execute_LB(Itype, REG, ADDR_DATA);
 			break;
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
@@ -554,17 +554,21 @@ void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 }
 
 void check_location(uint32_t &offset_PC, std::string &place){
+	std::cerr << "Check location offset_PC = " << offset_PC << std::endl;
 	if( 0x10000000 <= offset_PC && offset_PC < 0x11000000){
 		offset_PC = offset_PC - 0x10000000;
 		place = "ADDR_INSTR";
+		std::cerr << "place = ADDR_INSTR" << std::endl;
 	}
 	else if( 0x20000000 <= offset_PC && offset_PC < 0x24000000){
 		offset_PC = offset_PC - 0x20000000;
 		place = "ADDR_DATA";
+		std::cerr << "place = ADDR_DATA" << std::endl;
 	}
 	else if( 0x30000000 <= offset_PC && offset_PC < 0x30000004){
 		std::cerr << "GETC" << std::endl;
 		place = "GETC";
+		std::cerr << "place = GETC" << std::endl;
 	}
 	else if( 0x30000004 <= offset_PC && offset_PC < 0x30000008){
 		std::cerr << "PUTC" << std::endl;
@@ -610,6 +614,7 @@ void execute_SB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		ADDR_DATA[offset_PC] = (uint8_t)(REG[Itype.rd] & 0xFF);
 	}
 	else if(place == "ADDR_INSTR"){
+		std::cerr << "ADDR_INSTR area " << std::endl;
 		exit(-11);} //ADDR_INSTR one cannot write to
 	else{
 		std::cerr << "GETC, PUTC" << std::endl;
@@ -670,10 +675,17 @@ void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		std::exit(-11); //address error exception
 	}
 	std::string place;
-
-	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
-	REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		REG[Itype.rd] = (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
+		REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);
+	}
+	else if(place == "ADDR_INSTR"){
+		return; //NOOP
+	}
+	else{
+		std::cerr << "GETC, PUTC" << std::endl;
+	}
 }
 
 void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
@@ -889,7 +901,7 @@ bool overflow(const int32_t& rs, const int32_t& rt){
 
 int32_t sign_extend_8(const uint8_t& byte){
 	int32_t temp = (int32_t)byte;
-	if(byte & 0x80){
+	if(byte >> 7){
 		temp = temp | 0xFFFFFF00;
 	}
 	return temp;
@@ -897,7 +909,7 @@ int32_t sign_extend_8(const uint8_t& byte){
 
 int32_t sign_extend_16(const uint32_t& half){
 	int32_t temp = (int32_t)half;
-	if(half & 0x8000){
+	if(half >> 15){
 		temp = temp | 0xFFFF0000;
 	}
 	return temp;
