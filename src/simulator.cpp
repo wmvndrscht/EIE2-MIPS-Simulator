@@ -36,9 +36,9 @@
 
 int main(int argc, char *argv[]) {
 
-  std::cerr << "---------------BEGIN------------------" << std::endl;
+  //std::cerr << "---------------BEGIN------------------" << std::endl;
   if( argc < 2){
-    std::cerr << "No input binary  ::  END PROGRAM" << std::endl;
+    //std::cerr << "No input binary  ::  END PROGRAM" << std::endl;
     std::exit(-21); //IO ERROR
   }
 
@@ -51,9 +51,9 @@ int main(int argc, char *argv[]) {
   int32_t REG[32] = {};
 
   for(int tr=0; tr<32; tr++){
-    std::cerr << REG[tr] << " ";
+    //std::cerr << REG[tr] << " ";
   }
-  std::cerr << "\n"; 
+  //std::cerr << "\n"; 
 
   const uint32_t offset_N  = 0;
   const uint32_t offset_AI = 0x10000000;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
   std::streampos size;
   std::string binin;
   binin = argv[1];
-  std::cerr << "File name: " << binin << std::endl;
+  //std::cerr << "File name: " << binin << std::endl;
 
   //in - allow input, binary:read direct bin, ate: put pointer to end
   std::ifstream file (binin, std::ios::in|std::ios::binary|std::ios::ate);
@@ -74,11 +74,11 @@ int main(int argc, char *argv[]) {
   if (file.is_open()){
 
     size = file.tellg();
-    std::cerr << "file size: " << size << std::endl; //prints size
+    //std::cerr << "file size: " << size << std::endl; //prints size
     // may need to include size constraint for too large binaries
 
     if(size > 0x1000000){
-      std::cerr << "Input binary too large, max = 0x1000000" << std::endl;
+      //std::cerr << "Input binary too large, max = 0x1000000" << std::endl;
       std::exit(-21); //IO ERROR
     }
 
@@ -88,11 +88,11 @@ int main(int argc, char *argv[]) {
   
     file.close();
 
-    std::cerr << "the entire file content is in memory" << std::endl;
+    //std::cerr << "the entire file content is in memory" << std::endl;
 
   }
   else{ 
-    std::cerr << "Unable to open file" << std::endl;
+    //std::cerr << "Unable to open file" << std::endl;
     std::exit(-21); // IO ERROR 
     return 0;
   }
@@ -100,11 +100,11 @@ int main(int argc, char *argv[]) {
 // TEST FOR ctrl initialise = PASS -----------------------------------------------------------
 //   control ctrl;
 //   initialise_control(ctrl, offset_AI);
-//   std::cerr << "ctrl.PC = " << ctrl.PC <<std::endl;
-//   std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
-//   std::cerr << "ctrl.target = " << ctrl.target << std::endl;
-//   std::cerr << "ctrl.delay1 = " << ctrl.delay1 << std::endl;
-//   std::cerr << "ctrl.delay2 = " << ctrl.delay2 << std::endl;
+//   //std::cerr << "ctrl.PC = " << ctrl.PC <<std::endl;
+//   //std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
+//   //std::cerr << "ctrl.target = " << ctrl.target << std::endl;
+//   //std::cerr << "ctrl.delay1 = " << ctrl.delay1 << std::endl;
+//   //std::cerr << "ctrl.delay2 = " << ctrl.delay2 << std::endl;
 
 //TEST FOR instruction initialise = PASS----------------------------------------------------
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
   // instruction2 = (ADDR_INSTR[0] << 24 | ADDR_INSTR[1] 
   //   << 16| ADDR_INSTR[2] << 8| ADDR_INSTR[3]);
 
-  // std::cerr << "instruction2 = " << instruction2 << std::endl;
+  // //std::cerr << "instruction2 = " << instruction2 << std::endl;
 
   // uint32_t instruction = 0;
   // instruction = assemble_instruction(ctrl, offset_AI);
@@ -125,55 +125,55 @@ int main(int argc, char *argv[]) {
 
   //while( ctrl.PC != 0 ){          //if the program runs 
   while (ctrl.PC != 0){
-    std::cerr << "Start of while loop" << std::endl;
-    std::cerr << "PC = " << ctrl.PC << std::endl;
+    //std::cerr << "Start of while loop" << std::endl;
+    //std::cerr << "PC = " << ctrl.PC << std::endl;
     uint32_t instruction = 0;
     std::string rijtype;
     instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
 
     rijtype = decode_instructionRIJ(instruction);
-    std::cerr << "RIJTYPE = " << rijtype << std::endl;
+    //std::cerr << "RIJTYPE = " << rijtype << std::endl;
 
     if(rijtype == "R"){
-      std::cerr << "Detected R" << std::endl;
+      //std::cerr << "Detected R" << std::endl;
       instructionR Rtype;
       initialiseR(instruction, Rtype);
-      std::cerr << "Rtype.data = " <<Rtype.data << std::endl;
-      std::cerr << "Rtype.opcode = " << Rtype.opcode << std::endl;
-      std::cerr << "Rtype.rs = " << Rtype.rs << std::endl;
-      std::cerr << "Rtype.rt = " << Rtype.rt << std::endl;
-      std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
-      std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
-      std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
+      //std::cerr << "Rtype.data = " <<Rtype.data << std::endl;
+      //std::cerr << "Rtype.opcode = " << Rtype.opcode << std::endl;
+      //std::cerr << "Rtype.rs = " << Rtype.rs << std::endl;
+      //std::cerr << "Rtype.rt = " << Rtype.rt << std::endl;
+      //std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
+      //std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
+      //std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
       execute_R_type(Rtype, REG, ctrl);
     }
     else if(rijtype == "I"){
-      std::cerr << "Detected I" << std::endl;
+      //std::cerr << "Detected I" << std::endl;
       instructionI Itype;
       initialiseI(instruction, Itype);
-      std::cerr << "Itype.data = " << Itype.data << std::endl;
-      std::cerr << "Itype.opcode = " << Itype.opcode << std::endl;
-      std::cerr << "Itype.rs = " << Itype.rs << std::endl;
-      std::cerr << "Itype.rd = " << Itype.rd << std::endl;
-      std::cerr << "Itype.IMM = " << Itype.IMM << std::endl;
-      std::cerr << "Itype.IMMs = " << Itype.IMMs << std::endl;
+      //std::cerr << "Itype.data = " << Itype.data << std::endl;
+      //std::cerr << "Itype.opcode = " << Itype.opcode << std::endl;
+      //std::cerr << "Itype.rs = " << Itype.rs << std::endl;
+      //std::cerr << "Itype.rd = " << Itype.rd << std::endl;
+      //std::cerr << "Itype.IMM = " << Itype.IMM << std::endl;
+      //std::cerr << "Itype.IMMs = " << Itype.IMMs << std::endl;
       execute_I_type(Itype,REG,ctrl,ADDR_DATA);
     }
     else{
-      std::cerr << "Detected J" << std::endl;
+      //std::cerr << "Detected J" << std::endl;
       instructionJ Jtype;
       initialiseJ(instruction, Jtype);
-      std::cerr << "Jtype.data = " << Jtype.data << std::endl;
-      std::cerr << "Jtype.opcode = " << Jtype.opcode << std::endl;
-      std::cerr << "Jtype.address = " << Jtype.address << std::endl;
+      //std::cerr << "Jtype.data = " << Jtype.data << std::endl;
+      //std::cerr << "Jtype.opcode = " << Jtype.opcode << std::endl;
+      //std::cerr << "Jtype.address = " << Jtype.address << std::endl;
       execute_J_type(Jtype, REG, ctrl);
     }
 
-    for(int tr=0; tr<32; tr++){
-      std::cerr << REG[tr] << " ";
-    }
-    std::cerr << "\n";
-    std::cerr << "\n"; 
+    // for(int tr=0; tr<32; tr++){
+    //   //std::cerr << REG[tr] << " ";
+    // }
+    // //std::cerr << "\n";
+    //std::cerr << "\n"; 
 
     if(REG[0]!=0){
       REG[0]=0;
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     PC_advance(ctrl);
 
     // ctrl.PC = 0;
-    //std::cerr << "End of while loop hopefully" << std::endl << std::endl;
+    ////std::cerr << "End of while loop hopefully" << std::endl << std::endl;
   }
 
 
@@ -194,11 +194,11 @@ int main(int argc, char *argv[]) {
   ADDR_INSTR = NULL;
   ADDR_DATA = NULL;
 
-  for(int tri=0; tri<32; tri++)
-    std::cerr << REG[tri] << " ";
-  std::cerr << "\n";
+  // for(int tri=0; tri<32; tri++)
+    //std::cerr << REG[tri] << " ";
+  //std::cerr << "\n";
   uint8_t result = REG[2] & 0x000000FF;
-  std::cerr << int(result) << std::endl;
+  //std::cerr << int(result) << std::endl;
   std::exit(result);
 
   return 0;

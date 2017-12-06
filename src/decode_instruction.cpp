@@ -49,6 +49,10 @@ void PC_advance(control& ctrl){
   	std::exit(-11);  //memory exception
   }
 
+  if(ctrl.PC < 0x10000000 && 0 < ctrl.PC ){
+  	std::exit(-11);
+  }
+
   if(!( (ctrl.PC & 0x3) == 0x0) ){
   	std::exit(-11);  //memory exception as not multiple of 4
   }
@@ -62,15 +66,15 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 	opcode = instruction >> 26;
 
 	if(opcode == 0){
-		std::cerr << "Decode R " << std::endl;
+		//std::cerr << "Decode R " << std::endl;
 		return "R";							
 	}
 	else if( opcode == 2  ||  opcode == 3 ){
-		std::cerr << "Decode J " << std::endl;
+		//std::cerr << "Decode J " << std::endl;
 		return "J";
 	}
 	else{
-		std::cerr << "Decode I " << std::endl;
+		//std::cerr << "Decode I " << std::endl;
 		return "I";
 	}
 
@@ -81,146 +85,146 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	switch(Rtype.funct){
 		case 0b100000:
 			if(Rtype.shamt==0){
-				std::cerr << "ADD" << std::endl;
+				//std::cerr << "ADD" << std::endl;
 				execute_ADD(Rtype, REG); //2
 				break;}
 		case 0b100001:
 			if(Rtype.shamt == 0){
-				std::cerr << "ADDU" << std::endl;				
+				//std::cerr << "ADDU" << std::endl;				
 				execute_ADDU(Rtype, REG); //1
 				break;}
 		case 0b100100:
 			if(Rtype.shamt == 0){
-				std::cerr << "AND" << std::endl;
+				//std::cerr << "AND" << std::endl;
 				execute_AND(Rtype, REG); //1
 				break;}
 		case 0b011010:
 			if(Rtype.shamt == 0 && Rtype.rd == 0){
-				std::cerr << "DIV" << std::endl;
+				//std::cerr << "DIV" << std::endl;
 				execute_DIV(Rtype, REG, ctrl); //4
 				break;}
 		case 0b011011:
 			if(Rtype.shamt == 0 && Rtype.rd == 0){
-				std::cerr << "DIVU" << std::endl;
+				//std::cerr << "DIVU" << std::endl;
 				execute_DIVU(Rtype, REG, ctrl); //4
 				break;}
 		case 0b001000:
 			if(Rtype.rt == 0 && Rtype.rd == 0 && Rtype.shamt == 0){
-				std::cerr << "JR" << std::endl;
+				//std::cerr << "JR" << std::endl;
 				execute_JR(Rtype, REG, ctrl); //1
 				break;}
 		case 0b001001:
 			if(Rtype.rt == 0 && Rtype.shamt == 0){
-			std::cerr << "JALR" << std::endl;
+			//std::cerr << "JALR" << std::endl;
 			execute_JALR(Rtype, REG, ctrl);
 			break;}
 		case 0b010000:
 			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 				execute_MFHI(Rtype, REG, ctrl); //3
-				std::cerr << "MFHI" << std::endl;
+				//std::cerr << "MFHI" << std::endl;
 				break;}
 		case 0b010010:
 			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 				execute_MFLO(Rtype, REG, ctrl); //3
-				std::cerr << "MFLO" << std::endl;
+				//std::cerr << "MFLO" << std::endl;
 				break;}
 		case 0b010001:
 			if(Rtype.rd == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 			execute_MTHI(Rtype, REG, ctrl);
-			std::cerr << "MTHI" << std::endl;
+			//std::cerr << "MTHI" << std::endl;
 			break;
 			}
 		case 0b010011:
 			if(Rtype.rd == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 			execute_MTLO(Rtype, REG, ctrl);
-			std::cerr << "MTLO" << std::endl;
+			//std::cerr << "MTLO" << std::endl;
 			break;
 			}
 		case 0b011000:
 			if(Rtype.rd == 0 && Rtype.shamt == 0){
 				execute_MULT(Rtype, REG, ctrl);  //4
-				std::cerr << "MULT" << std::endl;
+				//std::cerr << "MULT" << std::endl;
 				break;}
 		case 0b011001:
 			if(Rtype.rd == 0 && Rtype.shamt == 0){
 				execute_MULTU(Rtype, REG, ctrl);  //4
-				std::cerr << "MULTU" << std::endl;
+				//std::cerr << "MULTU" << std::endl;
 				break;}
 		case 0b100101:
 			if(Rtype.shamt == 0){
 				execute_OR(Rtype, REG);	//1	
-				std::cerr << "OR" << std::endl;
+				//std::cerr << "OR" << std::endl;
 				break;}
 		case 0b000000:
 			if(Rtype.rs == 0){	
 			execute_SLL(Rtype, REG); //2 
-			std::cerr << "SLL" << std::endl;
+			//std::cerr << "SLL" << std::endl;
 			break;}
 		case 0b000100:
 			if(Rtype.shamt == 0){	
 			execute_SLLV(Rtype, REG); //3
-			std::cerr << "SLLV" << std::endl;
+			//std::cerr << "SLLV" << std::endl;
 			break;}
 		case 0b101010:
 			if(Rtype.shamt == 0){
 				execute_SLT(Rtype, REG);  //2
-				std::cerr << "SLT" << std::endl;
+				//std::cerr << "SLT" << std::endl;
 				break;}
 		case 0b101011:
 			if(Rtype.shamt == 0){
 				execute_SLTU(Rtype, REG); //1
-				std::cerr << "SLTU" << std::endl;
+				//std::cerr << "SLTU" << std::endl;
 				break;}
 		case 0b000011:
 			if(Rtype.rs == 0){
 			execute_SRA(Rtype, REG); //2
-			std::cerr << "SRA" << std::endl;
+			//std::cerr << "SRA" << std::endl;
 			break;}
 		case 0b000111:
 			if(Rtype.shamt == 0){
 			execute_SRAV(Rtype, REG);
-			std::cerr << "SRAV" << std::endl;
+			//std::cerr << "SRAV" << std::endl;
 			break;}
 		case 0b000010:
 			if(Rtype.rs == 0){
 			execute_SRL(Rtype, REG);  //2
-			std::cerr << "SRL" << std::endl;
+			//std::cerr << "SRL" << std::endl;
 			break;}
 		case 0b000110:
 			if(Rtype.shamt == 0){
 				execute_SRLV(Rtype, REG); //3
-				std::cerr << "SRLV" << std::endl;
+				//std::cerr << "SRLV" << std::endl;
 				break;}
 		case 0b100010:
 			if(Rtype.shamt == 0){
 				execute_SUB(Rtype, REG); //2
-				std::cerr << "SUB" << std::endl;
+				//std::cerr << "SUB" << std::endl;
 				break;}
 		case 0b100011:
 			if(Rtype.shamt == 0){
-				std::cerr << "SUBU" << std::endl;
+				//std::cerr << "SUBU" << std::endl;
 				execute_SUBU(Rtype, REG); //1	
 				break;}				
 		case 0b100110:
 			if(Rtype.shamt == 0){
 			execute_XOR(Rtype, REG);  //1
-			std::cerr << "XOR" << std::endl;
+			//std::cerr << "XOR" << std::endl;
 			break;}
 		default:
 			std::exit(-12); //invalid instrution type
-		std::cerr << "LALA" << std::endl;
+		//std::cerr << "LALA" << std::endl;
 	}
-	std::cerr << "Outside switch" << std::endl;
+	//std::cerr << "Outside switch" << std::endl;
 }
 
 void execute_ADD(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, overflow??
 	if( overflow(REG[Rtype.rs], REG[Rtype.rt]) ){
-		std::cerr << "ADD not executed due to overflow" << std::endl;
+		//std::cerr << "ADD not executed due to overflow" << std::endl;
 		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
 		REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
-		std::cerr << "ADD executed" << std::endl;
+		//std::cerr << "ADD executed" << std::endl;
 	}
 }
 
@@ -348,114 +352,114 @@ void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 //----------------------------------Itype----------------------------------------------------------
 
 void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA){
-	std::cerr << "Reaches I type" << std::endl;
+	//std::cerr << "Reaches I type" << std::endl;
 	switch(Itype.opcode){
 		case 0b001110:
 			execute_XORI(Itype, REG);
-			std::cerr << "XORI" << std::endl;
+			//std::cerr << "XORI" << std::endl;
 			break;
 		case 0b101011:
 			execute_SW(Itype, REG, ADDR_DATA);
-			std::cerr << "SW" << std::endl;
+			//std::cerr << "SW" << std::endl;
 			break;
 		case 0b001011:
 			execute_SLTIU(Itype, REG);
-			std::cerr << "SLTIU" << std::endl;
+			//std::cerr << "SLTIU" << std::endl;
 			break;
 		case 0b001010:
 			execute_SLTI(Itype, REG);
-			std::cerr << "SLTI" << std::endl;
+			//std::cerr << "SLTI" << std::endl;
 			break;
 		case 0b101000:
-			std::cerr << "SB" << std::endl;
+			//std::cerr << "SB" << std::endl;
 			execute_SB(Itype, REG, ADDR_DATA);
 			break;
 		case 0b001101:
 			execute_ORI(Itype, REG);
-			std::cerr << "ORI" << std::endl;
+			//std::cerr << "ORI" << std::endl;
 			break;
 		case 0b100011:
 			execute_LW(Itype, REG, ADDR_DATA);
-			std::cerr << "LW" << std::endl;
+			//std::cerr << "LW" << std::endl;
 			break;
 		case 0b001111:
 			execute_LUI(Itype, REG);
-			std::cerr << "LUI" << std::endl;
+			//std::cerr << "LUI" << std::endl;
 			break;
 		case 0b100000:
-			std::cerr << "LB" << std::endl;
+			//std::cerr << "LB" << std::endl;
 			execute_LB(Itype, REG, ADDR_DATA);
 			break;
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
-			std::cerr << "BNE" << std::endl;
+			//std::cerr << "BNE" << std::endl;
 			break;
 		case 0b000001:
 			if(Itype.rd == 0b10000){
 				execute_BLTZAL(Itype, REG, ctrl);
-				std::cerr << "BLTZAL" << std::endl;
+				//std::cerr << "BLTZAL" << std::endl;
 				break;}
 			if(Itype.rd == 0b0){
 				execute_BLTZ(Itype, REG, ctrl);
-				std::cerr << "BLTZ" << std::endl;
+				//std::cerr << "BLTZ" << std::endl;
 				break;}
 			if(Itype.rd == 0b10001){
 				execute_BGEZAL(Itype, REG, ctrl);
-				std::cerr << "BGEZAL" << std::endl;
+				//std::cerr << "BGEZAL" << std::endl;
 				break;}
 			if(Itype.rd == 0b00001){
 				execute_BGEZ(Itype, REG, ctrl);
-				std::cerr << "BGEZ" << std::endl;			
+				//std::cerr << "BGEZ" << std::endl;			
 				break;}
 		case 0b000111:
 			if(Itype.rd == 0){
 				execute_BGTZ(Itype, REG, ctrl);
-				std::cerr << "BGTZ" << std::endl;
+				//std::cerr << "BGTZ" << std::endl;
 				break;}
 		case 0b000110:
 			if(Itype.rd == 0){
 				execute_BLEZ(Itype, REG, ctrl);
-				std::cerr << "BLEZ" << std::endl;
+				//std::cerr << "BLEZ" << std::endl;
 				break;}
 		case 0b000100:
 			execute_BEQ(Itype, REG, ctrl);
-			std::cerr << "BEQ" << std::endl;
+			//std::cerr << "BEQ" << std::endl;
 			break;
 		case 0b001100:
 			execute_ANDI(Itype, REG);
-			std::cerr << "ANDI" << std::endl;
+			//std::cerr << "ANDI" << std::endl;
 			break;
 		case 0b001001:
 			execute_ADDIU(Itype, REG);
-			std::cerr << "ADDIU" << std::endl;
+			//std::cerr << "ADDIU" << std::endl;
 			break;
 		case 0b001000:
 			execute_ADDI(Itype, REG);
-			std::cerr << "ADDI" << std::endl;
+			//std::cerr << "ADDI" << std::endl;
 			break;
 		case 0b100010:
 			execute_LWL(Itype, REG, ADDR_DATA);
-			std::cerr << "LWL" << std::endl;
+			//std::cerr << "LWL" << std::endl;
 			break;
 		case 0b100110:
 			execute_LWR(Itype, REG, ADDR_DATA);
-			std::cerr << "LWR" << std::endl;
+			//std::cerr << "LWR" << std::endl;
 			break;
 		case 0b100101:
 			execute_LHU(Itype, REG, ADDR_DATA);
-			std::cerr << "LHU" << std::endl;
+			//std::cerr << "LHU" << std::endl;
 			break;
 		case 0b100001:
 			execute_LH(Itype, REG, ADDR_DATA);
-			std::cerr << "LH" << std::endl;
+			//std::cerr << "LH" << std::endl;
 			break;
 		case 0b101001:
 			execute_SH(Itype, REG, ADDR_DATA);
-			std::cerr << "SH" << std::endl;
+			//std::cerr << "SH" << std::endl;
 			break;
 		case 0b100100:
 			execute_LBU(Itype, REG, ADDR_DATA);
-			std::cerr << "LBU" << std::endl;
+			//std::cerr << "LBU" << std::endl;
 			break;
 		default:
 			std::exit(-12); //invalid instrution type
@@ -485,6 +489,7 @@ void execute_BEQ(const instructionI& Itype, int32_t REG[32], control &ctrl){  //
  		ctrl.nPC = (int32_t)ctrl.PC + (Itype.IMMs << 2) + 4;  //adding the relative offset right?
  		ctrl.branch_delay = 2;
  	}
+ 	return;
 }
 
 void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
@@ -494,7 +499,7 @@ void execute_BGEZ(const instructionI& Itype, int32_t REG[32], control &ctrl){
  	}
 }
 
-void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){
+void execute_BGEZAL(const instructionI& Itype, int32_t REG[32], control &ctrl){  //passed++++
 	if(REG[Itype.rs] >= 0){
 		ctrl.nPC = (int32_t)ctrl.PC + (Itype.IMMs << 2) + 4;
 		ctrl.branch_delay = 2;
@@ -549,29 +554,29 @@ void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		return; //NOOP, simplicity
 	}
 	else{
-		std::cerr << "Not yet done GETC, PUTC" << std::endl;
+		//std::cerr << "Not yet done GETC, PUTC" << std::endl;
 	}
 }
 
 void check_location(uint32_t &offset_PC, std::string &place){
-	std::cerr << "Check location offset_PC = " << offset_PC << std::endl;
+	//std::cerr << "Check location offset_PC = " << offset_PC << std::endl;
 	if( 0x10000000 <= offset_PC && offset_PC < 0x11000000){
 		offset_PC = offset_PC - 0x10000000;
 		place = "ADDR_INSTR";
-		std::cerr << "place = ADDR_INSTR" << std::endl;
+		//std::cerr << "place = ADDR_INSTR" << std::endl;
 	}
 	else if( 0x20000000 <= offset_PC && offset_PC < 0x24000000){
 		offset_PC = offset_PC - 0x20000000;
 		place = "ADDR_DATA";
-		std::cerr << "place = ADDR_DATA" << std::endl;
+		//std::cerr << "place = ADDR_DATA" << std::endl;
 	}
 	else if( 0x30000000 <= offset_PC && offset_PC < 0x30000004){
-		std::cerr << "GETC" << std::endl;
+		//std::cerr << "GETC" << std::endl;
 		place = "GETC";
-		std::cerr << "place = GETC" << std::endl;
+		//std::cerr << "place = GETC" << std::endl;
 	}
 	else if( 0x30000004 <= offset_PC && offset_PC < 0x30000008){
-		std::cerr << "PUTC" << std::endl;
+		//std::cerr << "PUTC" << std::endl;
 		place = "PUTC";
 	}
 	else{
@@ -592,13 +597,13 @@ void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	check_location(offset_PC, place);
 	if(place == "ADDR_DATA"){
 		REG[Itype.rd] = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
-		<< 16| ADDR_DATA[offset_PC+2] << 8 | ADDR_DATA[offset_PC+3]);
+			<< 16| ADDR_DATA[offset_PC+2] << 8 | ADDR_DATA[offset_PC+3]);
 	}
 	else if(place == "ADDR_INSTR"){
 		return; //NOOP
 	}
 	else{
-		std::cerr << "Not yet done, GETC, PUTC" << std::endl;
+		//std::cerr << "Not yet done, GETC, PUTC" << std::endl;
 	}
 }
 
@@ -614,10 +619,10 @@ void execute_SB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		ADDR_DATA[offset_PC] = (uint8_t)(REG[Itype.rd] & 0xFF);
 	}
 	else if(place == "ADDR_INSTR"){
-		std::cerr << "ADDR_INSTR area " << std::endl;
+		//std::cerr << "ADDR_INSTR area " << std::endl;
 		exit(-11);} //ADDR_INSTR one cannot write to
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		//std::cerr << "GETC, PUTC" << std::endl;
 	}
 }
 
@@ -646,7 +651,7 @@ void execute_SW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		exit(-11);
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		//std::cerr << "GETC, PUTC" << std::endl;
 	}
 }
 
@@ -665,7 +670,7 @@ void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		return; //NOOP
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		//std::cerr << "GETC, PUTC" << std::endl;
 	}
 }
 
@@ -684,7 +689,7 @@ void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		return; //NOOP
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		//std::cerr << "GETC, PUTC" << std::endl;
 	}
 }
 
@@ -702,7 +707,7 @@ void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		return;
 	}
 	else{
-		std::cerr << "PUTC, GETC" << std::endl;
+		//std::cerr << "PUTC, GETC" << std::endl;
 	}
 }
 
@@ -722,7 +727,7 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		exit(-11);
 	}
 	else{
-		std::cerr << "PUTC, GETC" << std::endl;
+		//std::cerr << "PUTC, GETC" << std::endl;
 	}
 }
 
@@ -791,7 +796,7 @@ void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		return;
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		//std::cerr << "GETC, PUTC" << std::endl;
 	}
 }
 
@@ -802,11 +807,11 @@ void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 	switch(Jtype.opcode){
 		case 0b000010:
 			execute_J(Jtype,ctrl);
-			std::cerr << "J" << std::endl;
+			//std::cerr << "J" << std::endl;
 			break;
 		case 0b000011:
 			execute_JAL(Jtype, REG, ctrl);
-			std::cerr << "JAL" << std::endl;
+			//std::cerr << "JAL" << std::endl;
 			break;
 		default:
 			std::exit(-12); //invalid instruction type
@@ -825,6 +830,7 @@ void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// 
 	ctrl.branch_delay = 2;
 	REG[31] = ctrl.PC + 8;
 	ctrl.nPC = ((ctrl.PC+4) & 0xF0000000) | (Jtype.address << 2);
+	return;
 }
 
 
@@ -854,14 +860,14 @@ bool overflow_SUB(const int32_t& rs, const int32_t& rt){
 	temp_rt = temp_rt & 0x80000000;
 	temp_rs = temp_rs & 0x80000000;
 	check = check & 0x80000000; 
-	std::cerr << temp_rs << " " << temp_rt << " " << check << "\n";
+	//std::cerr << temp_rs << " " << temp_rt << " " << check << "\n";
 	if((rs >= 0) && (rt < 0) && (check < 0)){
 		return true;
 	}
 	if((rs < 0) && (rt >= 0) && (check >= 0)){
 		return true;
 	}
-	std::cerr << temp_rs << " " << temp_rt << " " << check << "\n";
+	//std::cerr << temp_rs << " " << temp_rt << " " << check << "\n";
 	/* temp_rs = rt;
 	 temp_rt = rs;
 	check = (int32_t)temp_rs - (int32_t)temp_rt;
