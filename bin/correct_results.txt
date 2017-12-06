@@ -200,5 +200,30 @@ T21 SLTI(U)
 10
 
 ap4116
-T22 BNE1
-36
+T22 BNE not taken
+7
+
+ap4116
+T22 BEQ1 taken
+3
+
+ap4116
+T22 BEQ2 not taken
+13
+
+ap4116
+T22 BNE2 taken
+0xee
+
+ap4116
+T23 BLEZ1
+18
+
+ap4116
+T23 BLEZ2 not taken
+9
+
+ap4116
+T23	BLEZ3
+16
+

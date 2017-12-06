@@ -47,3 +47,10 @@
 47, bin/T020_0_JAL0.mips.bin , FAIL, ap4116, T20 JAL0, 139, 8
 48, bin/T020_1_JAL1.mips.bin , FAIL, ap4116, T20 JAL1, 139, 2
 49, bin/T021_0_SLTI.mips.bin , PASS, ap4116 T21 SLTI(U), 10, 10
+50, bin/T022_1_BNE.mips.bin , PASS, ap4116 T22 BNE not taken, 7, 7
+51, bin/T022_2_BEQ1.mips.bin , PASS, ap4116 T22 BEQ1 taken, 3, 3
+52, bin/T022_3_BEQ2.mips.bin , PASS, ap4116 T22 BEQ2 not taken, 13, 13
+53, bin/T022_4_BNE2.mips.bin , PASS, ap4116 T22 BNE2 taken, 238, 238
+54, bin/T023_1_BLEZ1.mips.bin , PASS, ap4116 T23 BLEZ1, 18, 18
+55, bin/T023_2_BLEZ2.mips.bin , PASS, ap4116 T23 BLEZ2 not taken, 9, 9
+56, bin/T023_3_BLEZ3.mips.bin , PASS, ap4116 T23 BLEZ3, 16, 16
