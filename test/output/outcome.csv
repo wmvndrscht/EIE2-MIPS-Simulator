@@ -44,3 +44,6 @@
 44, bin/T018_1_SRLV.mips.bin , PASS, wv116 T18 SRLV signed, 1, 1
 45, bin/T019_0_JALR.mips.bin , PASS, ap4116 T19 JALR, 20, 20
 46, bin/T019_1_JALR1.mips.bin , PASS, ap4116 T19 JALR1, 15, 15
+47, bin/T020_0_JAL0.mips.bin , FAIL, ap4116, T20 JAL0, 139, 8
+48, bin/T020_1_JAL1.mips.bin , FAIL, ap4116, T20 JAL1, 139, 2
+49, bin/T021_0_SLTI.mips.bin , PASS, ap4116 T21 SLTI(U), 10, 10
