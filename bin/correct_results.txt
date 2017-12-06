@@ -227,3 +227,26 @@ ap4116
 T23	BLEZ3
 16
 
+ap4116
+T24 BGEZ1 not taken
+11
+
+ap4116
+T24 BGEZ2 
+18
+
+ap4116
+T24 BGEZ3 Combo: not taken + overflow
+246
+
+ap4116
+T25 BGTZ & BLTZ take BGTZ
+9
+
+ap4116
+T25 BGTZ & BLTZ take BLTZ
+8
+
+ap4116
+T25 BGTZ & BLTZ take none
+10

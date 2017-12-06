@@ -54,3 +54,9 @@
 54, bin/T023_1_BLEZ1.mips.bin , PASS, ap4116 T23 BLEZ1, 18, 18
 55, bin/T023_2_BLEZ2.mips.bin , PASS, ap4116 T23 BLEZ2 not taken, 9, 9
 56, bin/T023_3_BLEZ3.mips.bin , PASS, ap4116 T23 BLEZ3, 16, 16
+57, bin/T024_1_BGEZ1.mips.bin , PASS, ap4116 T24 BGEZ1 not taken, 11, 11
+58, bin/T024_2_BGEZ2.mips.bin , PASS, ap4116 T24 BGEZ2 , 18, 18
+59, bin/T024_3_BGEZ3.mips.bin , PASS, ap4116 T24 BGEZ3 Combo: not taken + overflow, 246, 246
+60, bin/T025_1_BGTZ_BLTZ1.mips.bin , PASS, ap4116 T25 BGTZ & BLTZ take BGTZ, 9, 9
+61, bin/T025_2_BGTZ_BLTZ2.mips.bin , PASS, ap4116 T25 BGTZ & BLTZ take BLTZ, 8, 8
+62, bin/T025_3_BGTZ_BLTZ3.mips.bin , PASS, ap4116 T25 BGTZ & BLTZ take none, 10, 10
