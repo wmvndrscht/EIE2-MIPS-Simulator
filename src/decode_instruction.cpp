@@ -5,6 +5,7 @@
 #include "decode_instruction.hpp"
 #include <cmath>
 
+//----for reference
 // const int Arithmetic_Exception = -10;
 // const int Memory_Exception = -11;
 // const int Invalid_Instruction_Exception = -12;  <- look more at errors
@@ -26,13 +27,8 @@ void initialise_control(control &ctrl, const uint32_t& offset_AI){
 	ctrl.PC = offset_AI;
 	ctrl.nPC = offset_AI;
 	ctrl.branch_delay = 0;
-	// ctrl.target = 0;
-	// ctrl.delay1 = 0;
-	// ctrl.delay2 = 0;
 	ctrl.HI = 0;
 	ctrl.LO = 0;
-	//ctrl.HI_flag=0;
-	//ctrl.LO_flag=0;
 }
 
 void PC_advance(control& ctrl){
@@ -49,8 +45,8 @@ void PC_advance(control& ctrl){
     ctrl.branch_delay = 1;
   }
 
-  if(ctrl.PC > 0x11000000){
-  	std::exit(-11);  //memory exception or undefined behaviour?? ****** need exact code
+  if(ctrl.PC >= 0x11000000){// || ctrl.PC < 0x10000000){
+  	std::exit(-11);  //memory exception
   }
 
   if(!( (ctrl.PC & 0x3) == 0x0) ){
@@ -58,33 +54,6 @@ void PC_advance(control& ctrl){
   }
 
 }
-
-
-
-// bool check_PC(control &ctrl, const uint32_t& offset_AI){
-// 	if( ctrl.PC == 0){
-// 		return false;
-// 	}
-// 	else if( ctrl.PC <  offset_AI || ctrl.PC >  0x11000000){
-// 		std::std::exit(Memory_Exception);
-// 	}
-// 	else{
-
-// 		if(ctrl.delay2 == 1){		
-// 		  ctrl.PC = ctrl.nPC;
-//       ctrl.nPC = 0;
-//       ctrl.delay2 = 0;
-//     }
-//     if(ctrl.delay1 == 1){
-//       ctrl.delay2 = 1;
-//       ctrl.delay1 = 0;
-//     }
-
-//     return true;
-// 	}
-// }
-
-
 
 
 std::string decode_instructionRIJ(const uint32_t& instruction){
@@ -108,7 +77,7 @@ std::string decode_instructionRIJ(const uint32_t& instruction){
 }
 
 void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
-	// std::cerr << "\n" << "\n";
+
 	switch(Rtype.funct){
 		case 0b100000:
 			if(Rtype.shamt==0){
@@ -141,9 +110,10 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				execute_JR(Rtype, REG, ctrl); //1
 				break;}
 		case 0b001001:
+			if(Rtype.rt == 0 && Rtype.shamt == 0){
 			std::cerr << "JALR" << std::endl;
 			execute_JALR(Rtype, REG, ctrl);
-			break;
+			break;}
 		case 0b010000:
 			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 				execute_MFHI(Rtype, REG, ctrl); //3
@@ -155,36 +125,42 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				std::cerr << "MFLO" << std::endl;
 				break;}
 		case 0b010001:
+			if(Rtype.rd == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 			execute_MTHI(Rtype, REG, ctrl);
 			std::cerr << "MTHI" << std::endl;
 			break;
+			}
 		case 0b010011:
+			if(Rtype.rd == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 			execute_MTLO(Rtype, REG, ctrl);
 			std::cerr << "MTLO" << std::endl;
 			break;
+			}
 		case 0b011000:
 			if(Rtype.rd == 0 && Rtype.shamt == 0){
 				execute_MULT(Rtype, REG, ctrl);  //4
 				std::cerr << "MULT" << std::endl;
 				break;}
 		case 0b011001:
-			if(Rtype.rd == 0 && Rtype.rd == 0){
+			if(Rtype.rd == 0 && Rtype.shamt == 0){
 				execute_MULTU(Rtype, REG, ctrl);  //4
 				std::cerr << "MULTU" << std::endl;
 				break;}
 		case 0b100101:
 			if(Rtype.shamt == 0){
-				execute_OR(Rtype, REG);	//1	// it might be a NOOP
+				execute_OR(Rtype, REG);	//1	
 				std::cerr << "OR" << std::endl;
 				break;}
 		case 0b000000:
+			if(Rtype.rs == 0){	
 			execute_SLL(Rtype, REG); //2 
 			std::cerr << "SLL" << std::endl;
-			break;
+			break;}
 		case 0b000100:
+			if(Rtype.shamt == 0){	
 			execute_SLLV(Rtype, REG); //3
 			std::cerr << "SLLV" << std::endl;
-			break;
+			break;}
 		case 0b101010:
 			if(Rtype.shamt == 0){
 				execute_SLT(Rtype, REG);  //2
@@ -196,17 +172,20 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				std::cerr << "SLTU" << std::endl;
 				break;}
 		case 0b000011:
+			if(Rtype.rs == 0){
 			execute_SRA(Rtype, REG); //2
 			std::cerr << "SRA" << std::endl;
-			break;
+			break;}
 		case 0b000111:
+			if(Rtype.shamt == 0){
 			execute_SRAV(Rtype, REG);
 			std::cerr << "SRAV" << std::endl;
-			break;
+			break;}
 		case 0b000010:
+			if(Rtype.rs == 0){
 			execute_SRL(Rtype, REG);  //2
 			std::cerr << "SRL" << std::endl;
-			break;
+			break;}
 		case 0b000110:
 			if(Rtype.shamt == 0){
 				execute_SRLV(Rtype, REG); //3
@@ -223,12 +202,12 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				execute_SUBU(Rtype, REG); //1	
 				break;}				
 		case 0b100110:
+			if(Rtype.shamt == 0){
 			execute_XOR(Rtype, REG);  //1
 			std::cerr << "XOR" << std::endl;
-			break;
+			break;}
 		default:
 			std::exit(-12); //invalid instrution type
-		// std::exit(Invalid_Instruction_Exception);
 		std::cerr << "LALA" << std::endl;
 	}
 	std::cerr << "Outside switch" << std::endl;
@@ -246,13 +225,7 @@ void execute_ADD(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFF
 }
 
 void execute_ADDU(const instructionR& Rtype, int32_t REG[32]){ //edge cases 0xFFFFFFFF + 0xFFFFFFFF, wrap around?
-	std::cerr << "execute_ADDU !! \n BEFORE we have \n";
-	std::cerr << "REG[" << Rtype.rd << "] = " << REG[Rtype.rd] << std::endl;
-	std::cerr << "REG[" << Rtype.rs << "] = " << REG[Rtype.rs] << std::endl;
-	std::cerr << "REG[" << Rtype.rt << "] = " << REG[Rtype.rt] << std::endl;
- 	REG[Rtype.rd] = REG[Rtype.rs] + REG[Rtype.rt];
- 	std::cerr << "After we have, unsigned REG[" << Rtype.rd << "] = " << REG[Rtype.rd] << std::endl;
- 	std::cerr << "After we have, signed REG[" << Rtype.rd << "] = " << (int32_t)REG[Rtype.rd] << std::endl;
+ 	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] + (uint32_t)REG[Rtype.rt]; //any reason why there weren't uint32_t here?
 }
 
 void execute_AND(const instructionR& Rtype, int32_t REG[32]){  //simple, tested
@@ -268,7 +241,7 @@ void execute_XOR(const instructionR& Rtype, int32_t REG[32]){  //simple, tested
 }
 
 void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //sub overflow, 1 -2 etc, tested
-	REG[Rtype.rd] = REG[Rtype.rs] - REG[Rtype.rt];
+	REG[Rtype.rd] = (uint32_t)REG[Rtype.rs] - (uint32_t)REG[Rtype.rt];  //any reason why weren't uin32_t before??
 }
 
 void execute_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?, tested
@@ -281,8 +254,7 @@ void execute_SLTU(const instructionR& Rtype, int32_t REG[32]){  //simple 1 or 0 
 }
 
 void execute_SUB(const instructionR& Rtype, int32_t REG[32]){ //tested
-
-	if( overflow_SUB(REG[Rtype.rs], REG[Rtype.rt])){
+	if( overflow_SUB(REG[Rtype.rs], REG[Rtype.rt]) ){
 		std::exit(-10);//Arithmetic_Exception
 	}
 	else{
@@ -317,31 +289,25 @@ void execute_SLLV(const instructionR& Rtype, int32_t REG[32]){  //tested. simple
 
 void execute_SRLV(const instructionR& Rtype, int32_t REG[32]){  //tested, simple
 	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)(REG[Rtype.rs]&0x1F); // same thing here
-	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - (REG[Rtype.rs] & 0x1F) ) -1) ;
 }
 
 void execute_MFHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //weird to test..., just need to move to high and back
 	REG[Rtype.rd] = ctrl.HI;  //this seems too simple hmmmm
-	//ctrl.HI_flag=2;
 }
 
 void execute_MFLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 	REG[Rtype.rd] = ctrl.LO;  //this seems too simple hmmmm
-	//ctrl.LO_flag=2;
 }
 
 void execute_MTHI(const instructionR& Rtype, int32_t REG[32], control& ctrl){
-	//if(ctrl.HI_flag) {undefined behaviour}
 	ctrl.HI = REG[Rtype.rs];
 }
 
 void execute_MTLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
-	//if(ctrl.LO_flag) {undefined behaviour}
 	ctrl.LO = REG[Rtype.rs];
 }
 
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  //test big vals
-	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	if(Rtype.rt != 0 ){
 		ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
 		ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
@@ -352,40 +318,34 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 } 
 
 void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
-	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	if(Rtype.rt != 0 ){
 		ctrl.LO = (int32_t)REG[Rtype.rs]/(int32_t)REG[Rtype.rt];	//what does arithmetic result is undefined really mean??
 		ctrl.HI = (int32_t)REG[Rtype.rs]%(int32_t)REG[Rtype.rt];
 	}
 	else{
-		std::exit(-12); //invalid instruction as divide by zero
+		std::exit(-12); //invalid instruction as divide by zero, is this exception...waiting on DT
 	}
 }
 
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	uint64_t temp = (uint64_t)REG[Rtype.rs] * (uint64_t)REG[Rtype.rt];
-	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
+	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);
 	ctrl.HI = (uint32_t) (temp >> 32) & 0xFFFFFFFF;
 }
 
 void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	//if(ctrl.LO_flag || ctrl.HI_flag) {undefined behaviour}
 	uint64_t temp = (int64_t)REG[Rtype.rs] * (int64_t)REG[Rtype.rt];
 	ctrl.LO = (int32_t)(temp & 0xFFFFFFFF);  //WHAT IS THE SIGN EXTEND THING
 	ctrl.HI = (int32_t) ((temp >> 32)& 0xFFFFFFFF);
 }
 
 void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	//if((REG[Rtype.rs]&0xF) || Rtype.rs==Rtype.rd ) {undefined behaviour}
-
 	ctrl.nPC = REG[Rtype.rs];
 	REG[Rtype.rd] = ctrl.PC + 8;
 	ctrl.branch_delay = 2;
 }
 
-//17:19------------------------------------------
-
+//----------------------------------Itype----------------------------------------------------------
 
 void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA){
 	
@@ -579,7 +539,40 @@ void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
 }
 
 void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	REG[Itype.rd] = sign_extend_8(ADDR_DATA[ (REG[Itype.rs] + Itype.IMMs) - 0x20000000]);
+	std::string place;
+	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		REG[Itype.rd] = sign_extend_8(ADDR_DATA[offset_PC]);
+	}
+	else if( place == "ADDR_INSTR"){
+		REG[Itype.rd] = 0; //decide to just put 0, keeps simplicity in code :)
+	}
+	else{
+		std::cerr << "Not yet done GETC, PUTC" << std::endl;
+	}
+}
+
+void check_location(uint32_t &offset_PC, std::string &place){
+	if( 0x10000000 <= offset_PC && offset_PC < 0x11000000){
+		offset_PC = offset_PC - 0x10000000;
+		place = "ADDR_INSTR";
+	}
+	else if( 0x20000000 <= offset_PC && offset_PC < 0x24000000){
+		offset_PC = offset_PC - 0x20000000;
+		place = "ADDR_DATA";
+	}
+	else if( 0x30000000 <= offset_PC && offset_PC < 0x30000004){
+		std::cerr << "GETC" << std::endl;
+		place = "GETC";
+	}
+	else if( 0x30000004 <= offset_PC && offset_PC < 0x30000008){
+		std::cerr << "PUTC" << std::endl;
+		place = "PUTC";
+	}
+	else{
+		std::exit(-11);
+	}
 }
 
 void execute_LUI(const instructionI& Itype, int32_t REG[32]){
@@ -588,12 +581,21 @@ void execute_LUI(const instructionI& Itype, int32_t REG[32]){
 
 void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = 	REG[Itype.rs] + Itype.IMMs;
+	std::string place;
 	if( offset_PC%4 != 0){
 		std::exit(-11); //address error exception
 	}
-	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		REG[Itype.rd] = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] 
 		<< 16| ADDR_DATA[offset_PC+2] << 8 | ADDR_DATA[offset_PC+3]);
+	}
+	else if(place == "ADDR_INSTR"){
+		REG[Itype.rd] = 0; 
+	}
+	else{
+		std::cerr << "Not yet done, GETC, PUTC" << std::endl;
+	}
 }
 
 void execute_ORI(const instructionI& Itype, int32_t REG[32]){
@@ -601,7 +603,17 @@ void execute_ORI(const instructionI& Itype, int32_t REG[32]){
 }
 
 void execute_SB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	ADDR_DATA[ REG[Itype.rs] + Itype.IMMs - 0x20000000] = (uint8_t)(REG[Itype.rd] & 0xFF);
+	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
+	std::string place;
+	check_location(offset_PC, place);
+	if( place == "ADDR_DATA"){
+		ADDR_DATA[offset_PC] = (uint8_t)(REG[Itype.rd] & 0xFF);
+	}
+	else if(place == "ADDR_INSTR"){
+		exit(-11);} //ADDR_INSTR one cannot write to
+	else{
+		std::cerr << "GETC, PUTC" << std::endl;
+	}
 }
 
 void execute_SLTI(const instructionI& Itype, int32_t REG[32]){
@@ -617,11 +629,20 @@ void execute_SW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	if(offset_PC%4 != 0){
 		std::exit(-11); //address error exception
 	}
-	offset_PC -= 0x20000000;
- 	ADDR_DATA[offset_PC] = (uint8_t)(uint32_t)REG[Itype.rd] >> 24;			// this might cause problems
-	ADDR_DATA[offset_PC+1] = (uint8_t)((uint32_t)REG[Itype.rd] << 8) >> 24;
-	ADDR_DATA[offset_PC+2] = (uint8_t)((uint32_t)REG[Itype.rd] << 16) >> 24; 
-	ADDR_DATA[offset_PC+3] = (uint8_t)((uint32_t)REG[Itype.rd] << 24) >> 24;  //how does this go???1!!!!!
+	std::string place;
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+	 	ADDR_DATA[offset_PC] = (uint8_t)(uint32_t)REG[Itype.rd] >> 24;			// this might cause problems
+		ADDR_DATA[offset_PC+1] = (uint8_t)((uint32_t)REG[Itype.rd] << 8) >> 24;
+		ADDR_DATA[offset_PC+2] = (uint8_t)((uint32_t)REG[Itype.rd] << 16) >> 24; 
+		ADDR_DATA[offset_PC+3] = (uint8_t)((uint32_t)REG[Itype.rd] << 24) >> 24;  //how does this go???1!!!!!
+	}
+	else if( place == "ADDR_INSTR"){
+		exit(-11);
+	}
+	else{
+		std::cerr << "GETC, PUTC" << std::endl;
+	}
 }
 
 void execute_XORI(const instructionI& Itype, int32_t REG[32]){
@@ -629,7 +650,18 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32]){
 }
 
 void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	REG[Itype.rd] = (int32_t) ADDR_DATA[ (int32_t)REG[Itype.rs] + Itype.IMMs - 0x20000000];  //may need to check address is in range
+	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
+	std::string place;
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		REG[Itype.rd] = (int32_t) ADDR_DATA[ offset_PC ];  //may need to check address is in range
+	}
+	else if(place == "ADDR_INSTR"){
+		REG[Itype.rd] = 0;
+	}
+	else{
+		std::cerr << "GETC, PUTC" << std::endl;
+	}
 }
 
 void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
@@ -637,6 +669,8 @@ void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
+	std::string place;
+
 	offset_PC -= 0x20000000;
 	REG[Itype.rd] = (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
 	REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);

@@ -28,13 +28,14 @@ bool overflow_SUB(const int32_t& rs, const int32_t& rt);
 //void overflow_OLD(const int32_t& result, const int32_t& val1, const int32_t& val2);
 int32_t sign_extend_8(const uint8_t& byte);
 int32_t sign_extend_16(const uint32_t& half);
+void check_location(uint32_t &offset_PC, std::string &place);
 
 std::string decode_instructionRIJ(const uint32_t& instruction);
 void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl);
 void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA);
 void execute_J_type(const instructionJ& Jtype, int32_t REG[32], control &ctrl);
 
-//------------------------------Rtype-------------------------------
+//------------------------------Rtype------------------------------- 25
 void execute_ADD(const instructionR& Rtype, int32_t REG[32]);
 void execute_ADDU(const instructionR& Rtype, int32_t REG[32]);
 void execute_AND(const instructionR& Rtype, int32_t REG[32]);
@@ -61,7 +62,7 @@ void execute_SUB(const instructionR& Rtype, int32_t REG[32]);
 void execute_SUBU(const instructionR& Rtype, int32_t REG[32]);
 void execute_XOR(const instructionR& Rtype, int32_t REG[32]);
 
-//------------------------------Itype-------------------------------
+//------------------------------Itype------------------------------- 26
 
 void execute_XORI(const instructionI& Itype, int32_t REG[32]);
 void execute_SW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA);

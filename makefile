@@ -62,5 +62,4 @@ simulator : bin/mips_simulator
 ## Testbench
 
 testbench :
-	echo "No testbench yet"
-	exit 1
+	echo "testbench is a bash script in bin/mips_testbench"
