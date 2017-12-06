@@ -313,7 +313,7 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 		ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
 	}
 	else{
-		std::exit(-12); //invalid instruction, divide by zero
+		return; //do nothing if divide by 0
 	}
 } 
 
@@ -323,7 +323,7 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 		ctrl.HI = (int32_t)REG[Rtype.rs]%(int32_t)REG[Rtype.rt];
 	}
 	else{
-		std::exit(-12); //invalid instruction as divide by zero, is this exception...waiting on DT
+		return; //do nothing if divide by 0
 	}
 }
 
@@ -546,7 +546,7 @@ void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		REG[Itype.rd] = sign_extend_8(ADDR_DATA[offset_PC]);
 	}
 	else if( place == "ADDR_INSTR"){
-		REG[Itype.rd] = 0; //decide to just put 0, keeps simplicity in code :)
+		return; //NOOP, simplicity
 	}
 	else{
 		std::cerr << "Not yet done GETC, PUTC" << std::endl;
@@ -591,7 +591,7 @@ void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		<< 16| ADDR_DATA[offset_PC+2] << 8 | ADDR_DATA[offset_PC+3]);
 	}
 	else if(place == "ADDR_INSTR"){
-		REG[Itype.rd] = 0; 
+		return; //NOOP
 	}
 	else{
 		std::cerr << "Not yet done, GETC, PUTC" << std::endl;
@@ -657,7 +657,7 @@ void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		REG[Itype.rd] = (int32_t) ADDR_DATA[ offset_PC ];  //may need to check address is in range
 	}
 	else if(place == "ADDR_INSTR"){
-		REG[Itype.rd] = 0;
+		return; //NOOP
 	}
 	else{
 		std::cerr << "GETC, PUTC" << std::endl;
@@ -681,9 +681,17 @@ void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
-	offset_PC -= 0x20000000;
-	REG[Itype.rd] = (0x0000 << 16)| (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
-	//REG[Itype.rd] = (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
+	std::string place;
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		REG[Itype.rd] = (0x0000 << 16)| (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
+	}
+	else if(place == "ADDR_INSTR"){
+		return;
+	}
+	else{
+		std::cerr << "PUTC, GETC" << std::endl;
+	}
 }
 
 void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
@@ -691,15 +699,23 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
-	offset_PC -= 0x20000000;
- 	ADDR_DATA[offset_PC] = (uint8_t)((REG[Itype.rd] & 0xFF00) >> 8);
- 	ADDR_DATA[offset_PC+1] = (uint8_t)(REG[Itype.rd] & 0xFF);
+	std::string place;
+	check_location(offset_PC, place);
+
+	if(place == "ADDR_DATA"){
+ 		ADDR_DATA[offset_PC] = (uint8_t)((REG[Itype.rd] & 0xFF00) >> 8);
+ 		ADDR_DATA[offset_PC+1] = (uint8_t)(REG[Itype.rd] & 0xFF);
+	}
+	else if(place == "ADDR_INSTR"){
+		exit(-11);
+	}
+	else{
+		std::cerr << "PUTC, GETC" << std::endl;
+	}
 }
 
 void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;
-
-//	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC +1] << 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
 
 	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
 	
@@ -725,36 +741,46 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 
 
 void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;
-	//uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16| ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
-	uint32_t data = (ADDR_DATA[offset_PC-3] << 24 | ADDR_DATA[offset_PC-2] << 16| ADDR_DATA[offset_PC-1] << 8| ADDR_DATA[offset_PC]);
+	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC);
+	std::string place;
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16| 
+			ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
 
-	uint32_t EffAddr = Itype.IMMs + Itype.rs;
-	uint32_t lsbs = 0x3 & EffAddr;
-	uint32_t mask;
-	uint32_t mask2;
-	if( lsbs == 0x0){
-		mask = 0xFF000000;
-		mask2 = 0xFFFFFF00;
+		uint32_t EffAddr = Itype.IMMs + Itype.rs;
+		uint32_t lsbs = 0x3 & EffAddr;
+		uint32_t mask;
+		uint32_t mask2;
+		if( lsbs == 0x0){
+			mask = 0xFF000000;
+			mask2 = 0xFFFFFF00;
+		}
+		else if( lsbs == 0x1){
+			mask = 0xFFFF0000;
+			mask2 = mask;
+		}
+		else if( lsbs == 0x2){
+			mask = 0xFFFFFF00;
+			mask2 = 0xFF000000;
+		}
+		else{
+			//mask = 0x000000FF; 
+			mask = 0xFFFFFFFF;
+			mask2 = 0x0;
+		}
+		data = data & mask;
+		data = data >> (32-(8*(lsbs+1)));
+
+		REG[Itype.rd] = (mask2) & REG[Itype.rd];
+		REG[Itype.rd] = REG[Itype.rd] | data;
 	}
-	else if( lsbs == 0x1){
-		mask = 0xFFFF0000;
-		mask2 = mask;
-	}
-	else if( lsbs == 0x2){
-		mask = 0xFFFFFF00;
-		mask2 = 0xFF000000;
+	else if(place == "ADDR_INSTR"){
+		return;
 	}
 	else{
-		//mask = 0x000000FF; 
-		mask = 0xFFFFFFFF;
-		mask2 = 0x0;
+		std::cerr << "GETC, PUTC" << std::endl;
 	}
-	data = data & mask;
-	data = data >> (32-(8*(lsbs+1)));
-
-	REG[Itype.rd] = (mask2) & REG[Itype.rd];
-	REG[Itype.rd] = REG[Itype.rd] | data;
 }
 
 
