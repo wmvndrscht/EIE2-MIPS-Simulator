@@ -80,4 +80,6 @@
 80, bin/T030_0_LH.mips.bin , PASS, wv116 T30_0_LH, check loads both bytes, 1, 1
 81, bin/T031_0_DIV.mips.bin , PASS, ap4116 T31 DIV , 14, 14
 82, bin/T031_0_FailedTest.mips.bin , FAIL, ap4116, T31_0_FailedTest, 0, 245
-83, bin/T031_1_JAL.mips.bin , FAIL, ap4116, T31_1_JAL, 245, 0
+83, bin/T032_1_LW_SW.mips.bin , PASS, ap4116 T32 LW SW invalid memory access, 245, 245
+84, bin/T032_2_LW_SW2.mips.bin , PASS, ap4116 T32 LW SW, 49, 49
+85, bin/T131_1_JAL.mips.bin , FAIL, ap4116, T31_1_JAL, 245, 0
