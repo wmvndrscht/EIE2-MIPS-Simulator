@@ -45,13 +45,13 @@ void PC_advance(control& ctrl){
     ctrl.branch_delay = 1;
   }
 
-  if(ctrl.PC >= 0x11000000){// || ctrl.PC < 0x10000000){
+  if((ctrl.PC >= 0x11000000) || ctrl.PC < 0x10000000) && ctrl.PC){
   	std::exit(-11);  //memory exception
   }
 
-  if(ctrl.PC < 0x10000000 && 0 < ctrl.PC ){
-  	std::exit(-11);
-  }
+  //if(ctrl.PC < 0x10000000 && 0 < ctrl.PC ){
+  //	std::exit(-11);
+  //}
 
   if(!( (ctrl.PC & 0x3) == 0x0) ){
   	std::exit(-11);  //memory exception as not multiple of 4
