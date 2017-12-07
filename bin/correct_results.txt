@@ -324,5 +324,13 @@ T30_0_LH, check loads both bytes
 1
 
 ap4116
+T31 DIV 
+14
+
+ap4116
 T31_0_FailedTest
+245
+
+ap4116
+T31_1_JAL
 0

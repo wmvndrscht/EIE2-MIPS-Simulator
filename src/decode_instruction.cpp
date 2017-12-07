@@ -105,50 +105,50 @@ void execute_R_type(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 				break;}
 		case 0b011011:
 			if(Rtype.shamt == 0 && Rtype.rd == 0){
-				//std::cerr << "DIVU" << std::endl;
+				std::cerr << "DIVU" << std::endl;
 				execute_DIVU(Rtype, REG, ctrl); //4
 				break;}
 		case 0b001000:
 			if(Rtype.rt == 0 && Rtype.rd == 0 && Rtype.shamt == 0){
-				//std::cerr << "JR" << std::endl;
+				std::cerr << "JR" << std::endl;
 				execute_JR(Rtype, REG, ctrl); //1
 				break;}
 		case 0b001001:
 			if(Rtype.rt == 0 && Rtype.shamt == 0){
-			//std::cerr << "JALR" << std::endl;
+			std::cerr << "JALR" << std::endl;
 			execute_JALR(Rtype, REG, ctrl);
 			break;}
 		case 0b010000:
 			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 				execute_MFHI(Rtype, REG, ctrl); //3
-				//std::cerr << "MFHI" << std::endl;
+				std::cerr << "MFHI" << std::endl;
 				break;}
 		case 0b010010:
 			if(Rtype.rs == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 				execute_MFLO(Rtype, REG, ctrl); //3
-				//std::cerr << "MFLO" << std::endl;
+				std::cerr << "MFLO" << std::endl;
 				break;}
 		case 0b010001:
 			if(Rtype.rd == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 			execute_MTHI(Rtype, REG, ctrl);
-			//std::cerr << "MTHI" << std::endl;
+			std::cerr << "MTHI" << std::endl;
 			break;
 			}
 		case 0b010011:
 			if(Rtype.rd == 0 && Rtype.rt == 0 && Rtype.shamt == 0){
 			execute_MTLO(Rtype, REG, ctrl);
-			//std::cerr << "MTLO" << std::endl;
+			std::cerr << "MTLO" << std::endl;
 			break;
 			}
 		case 0b011000:
 			if(Rtype.rd == 0 && Rtype.shamt == 0){
 				execute_MULT(Rtype, REG, ctrl);  //4
-				//std::cerr << "MULT" << std::endl;
+				std::cerr << "MULT" << std::endl;
 				break;}
 		case 0b011001:
 			if(Rtype.rd == 0 && Rtype.shamt == 0){
 				execute_MULTU(Rtype, REG, ctrl);  //4
-				//std::cerr << "MULTU" << std::endl;
+				std::cerr << "MULTU" << std::endl;
 				break;}
 		case 0b100101:
 			if(Rtype.shamt == 0){
@@ -392,7 +392,7 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			break;
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
-			//std::cerr << "BNE" << std::endl;
+			std::cerr << "BNE" << std::endl;
 			break;
 		case 0b000001:
 			if(Itype.rd == 0b10000){
@@ -423,7 +423,7 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 				break;}
 		case 0b000100:
 			execute_BEQ(Itype, REG, ctrl);
-			//std::cerr << "BEQ" << std::endl;
+			std::cerr << "BEQ" << std::endl;
 			break;
 		case 0b001100:
 			execute_ANDI(Itype, REG);
@@ -743,17 +743,39 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		mask = 0xFFFFFFFF;
 	}
 	else if( lsbs == 0x1){
-		mask = 0xFFFFFF00;
+		mask = 0xFFFFFF00; //0x00FFFFFF
 	}
 	else if( lsbs == 0x2){
-		mask = 0xFFFF0000;
+		mask = 0xFFFF0000; //0x0000FFFF
 	}
 	else{
-		mask = 0xFF000000;
+		mask = 0xFF000000; //0x000000FF
 	}
 	data = data & mask;
 	REG[Itype.rd] = (~mask) & REG[Itype.rd];
 	REG[Itype.rd] = data | REG[Itype.rd];
+
+	// uint32_t mask2=0;
+	// if( lsbs == 0x0){
+	// 	mask = 0xFFFFFFFF;
+	// 	mask2 = 0x0;
+	// }
+	// else if( lsbs == 0x1){
+	// 	mask = 0x00FFFFFF;
+	// 	mask2 = 0x000000FF;
+	// }
+	// else if( lsbs == 0x2){
+	// 	mask = 0x0000FFFF;
+	// 	mask2 = mask;
+	// }
+	// else{
+	// 	mask = 0x000000FF;
+	// 	mask2 = 0x00FFFFFF;
+	// }
+	// data = (data & mask) ;
+	// data = data << (8*lsbs);
+	// REG[Itype.rd] = mask2 & REG[Itype.rd];
+	// REG[Itype.rd] = data | REG[Itype.rd];
 }
 
 
@@ -826,10 +848,10 @@ void execute_J(const instructionJ& Jtype, control &ctrl){
 }
 
 
-void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){	// these might me right
+void execute_JAL(const instructionJ& Jtype, int32_t REG[32], control &ctrl){
 	ctrl.branch_delay = 2;
 	REG[31] = ctrl.PC + 8;
-	ctrl.nPC = ((ctrl.PC+4) & 0xF0000000) | (Jtype.address << 2);
+	ctrl.nPC = ( (ctrl.PC+4) & 0xF0000000) | (Jtype.address << 2);
 	return;
 }
 

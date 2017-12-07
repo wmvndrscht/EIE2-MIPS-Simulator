@@ -36,7 +36,7 @@
 
 int main(int argc, char *argv[]) {
 
-  //std::cerr << "---------------BEGIN------------------" << std::endl;
+  std::cerr << "---------------BEGIN------------------" << std::endl;
   if( argc < 2){
     //std::cerr << "No input binary  ::  END PROGRAM" << std::endl;
     std::exit(-21); //IO ERROR
@@ -98,14 +98,13 @@ int main(int argc, char *argv[]) {
   }
   
 // TEST FOR ctrl initialise = PASS -----------------------------------------------------------
-//   control ctrl;
-//   initialise_control(ctrl, offset_AI);
-//   //std::cerr << "ctrl.PC = " << ctrl.PC <<std::endl;
-//   //std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
-//   //std::cerr << "ctrl.target = " << ctrl.target << std::endl;
-//   //std::cerr << "ctrl.delay1 = " << ctrl.delay1 << std::endl;
-//   //std::cerr << "ctrl.delay2 = " << ctrl.delay2 << std::endl;
-
+  //  control ctrl;
+  //  initialise_control(ctrl, offset_AI);
+  // std::cerr << "ctrl.PC = " << (0x)ctrl.PC <<std::endl;
+  // std::cerr << "ctrl.nPC = " << ctrl.nPC << std::endl;
+  // std::cerr << "ctrl.target = " << ctrl.branch_delay << std::endl;
+  // int ns;
+  // std::cin >>ns; 
 //TEST FOR instruction initialise = PASS----------------------------------------------------
 
   // uint32_t instruction2 = 0;
@@ -126,7 +125,7 @@ int main(int argc, char *argv[]) {
   //while( ctrl.PC != 0 ){          //if the program runs 
   while (ctrl.PC != 0){
     //std::cerr << "Start of while loop" << std::endl;
-    //std::cerr << "PC = " << ctrl.PC << std::endl;
+    std::cerr << "PC = " << ctrl.PC << std::endl;
     uint32_t instruction = 0;
     std::string rijtype;
     instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
@@ -138,25 +137,25 @@ int main(int argc, char *argv[]) {
       //std::cerr << "Detected R" << std::endl;
       instructionR Rtype;
       initialiseR(instruction, Rtype);
-      //std::cerr << "Rtype.data = " <<Rtype.data << std::endl;
-      //std::cerr << "Rtype.opcode = " << Rtype.opcode << std::endl;
-      //std::cerr << "Rtype.rs = " << Rtype.rs << std::endl;
-      //std::cerr << "Rtype.rt = " << Rtype.rt << std::endl;
-      //std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
-      //std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
-      //std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
+      std::cerr << "Rtype.data = " <<Rtype.data << std::endl;
+      std::cerr << "Rtype.opcode = " << Rtype.opcode << std::endl;
+      std::cerr << "Rtype.rs = " << Rtype.rs << std::endl;
+      std::cerr << "Rtype.rt = " << Rtype.rt << std::endl;
+      std::cerr << "Rtype.rd = " << Rtype.rd << std::endl;
+      std::cerr << "Rtype.shamt = " << Rtype.shamt << std::endl;
+      std::cerr << "Rtype.function = " << Rtype.funct << std::endl;
       execute_R_type(Rtype, REG, ctrl);
     }
     else if(rijtype == "I"){
       //std::cerr << "Detected I" << std::endl;
       instructionI Itype;
       initialiseI(instruction, Itype);
-      //std::cerr << "Itype.data = " << Itype.data << std::endl;
-      //std::cerr << "Itype.opcode = " << Itype.opcode << std::endl;
-      //std::cerr << "Itype.rs = " << Itype.rs << std::endl;
-      //std::cerr << "Itype.rd = " << Itype.rd << std::endl;
-      //std::cerr << "Itype.IMM = " << Itype.IMM << std::endl;
-      //std::cerr << "Itype.IMMs = " << Itype.IMMs << std::endl;
+      std::cerr << "Itype.data = " << Itype.data << std::endl;
+      std::cerr << "Itype.opcode = " << Itype.opcode << std::endl;
+      std::cerr << "Itype.rs = " << Itype.rs << std::endl;
+      std::cerr << "Itype.rd = " << Itype.rd << std::endl;
+      std::cerr << "Itype.IMM = " << Itype.IMM << std::endl;
+      std::cerr << "Itype.IMMs = " << Itype.IMMs << std::endl;
       execute_I_type(Itype,REG,ctrl,ADDR_DATA);
     }
     else{
@@ -169,11 +168,11 @@ int main(int argc, char *argv[]) {
       execute_J_type(Jtype, REG, ctrl);
     }
 
-    // for(int tr=0; tr<32; tr++){
-    //   //std::cerr << REG[tr] << " ";
-    // }
-    // //std::cerr << "\n";
-    //std::cerr << "\n"; 
+    for(int tr=0; tr<32; tr++){
+      std::cerr << REG[tr] << " ";
+    }
+    //std::cerr << "\n";
+    std::cerr << "\n"; 
 
     if(REG[0]!=0){
       REG[0]=0;
