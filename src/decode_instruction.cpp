@@ -751,7 +751,7 @@ void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA,
 	}
 }
 void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	uint32_t offset_PC = Itype.IMMs + (uint32_t)Itype.rs;
+	uint32_t offset_PC = Itype.IMMs + (uint32_t)REG[Itype.rs];
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
 	}
@@ -774,7 +774,7 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 }
 
 void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
-	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC);
+	uint32_t offset_PC = ((Itype.IMMs + REG[Itype.rs])&0xFFFFFFFC);
 
 	std::string place;
 	check_location(offset_PC, place);
@@ -789,7 +789,7 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA,
 	}
 
 	if( place == "ADDR_DATA" || place == "ADDR_INSTR"){
-		uint32_t EffAddr = Itype.IMMs + Itype.rs;
+		uint32_t EffAddr = Itype.IMMs + REG[Itype.rs];
 	 	uint32_t lsbs = 0x3 & EffAddr;
 		uint32_t mask;
 		uint32_t mask2=0;
@@ -826,7 +826,7 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA,
 
 
 void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
-	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC);
+	uint32_t offset_PC = ((Itype.IMMs + REG[Itype.rs])&0xFFFFFFFC);
 	std::string place;
 	check_location(offset_PC, place);
 	uint32_t data;
@@ -840,7 +840,7 @@ void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA,
 	}
 
 	if( place == "ADDR_DATA" || place == "ADDR_INSTR"){
-		uint32_t EffAddr = Itype.IMMs + Itype.rs;
+		uint32_t EffAddr = Itype.IMMs + REG[Itype.rs];
 		uint32_t lsbs = 0x3 & EffAddr;
 		uint32_t mask;
 		uint32_t mask2;
