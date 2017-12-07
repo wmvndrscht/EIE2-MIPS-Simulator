@@ -84,4 +84,6 @@
 84, bin/T032_3_LW_SW3.mips.bin , PASS, ap4116 T32 LW SW, 86, 86
 85, bin/T032_4_LW_SW4.mips.bin , PASS, ap4116 T32 LW_SW, 17, 17
 86, bin/T033_1_LWL.mips.bin , FAIL, ap4116, T33 LW, 0, 16
-87, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
+87, bin/T033_2_LWL.mips.bin , FAIL, ap4116, T33 LWL insane, 0, 17
+88, bin/T033_3_Torture.mips.bin , FAIL, ap4116, Torture, 245, 2
+89, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
