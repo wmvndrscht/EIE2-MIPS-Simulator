@@ -313,8 +313,8 @@ void execute_MTLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  //test big vals
 	if(Rtype.rt != 0 ){
-		ctrl.LO = ((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]);	
-		ctrl.HI = ((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]);
+		ctrl.LO = uint32_t(((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]));	
+		ctrl.HI = uint32_t(((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]));
 	}
 	else{
 		return; //do nothing if divide by 0
@@ -332,9 +332,9 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 }
 
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	uint64_t temp = (uint64_t)REG[Rtype.rs] * (uint64_t)REG[Rtype.rt];
+	uint64_t temp = uint64_t(uint64_t(REG[Rtype.rs]) * uint64_t(REG[Rtype.rt]));
 	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);
-	ctrl.HI = (uint32_t) (temp >> 32) & 0xFFFFFFFF;
+	ctrl.HI = (uint32_t) ((temp >> 32) & 0xFFFFFFFF);
 }
 
 void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
@@ -351,7 +351,7 @@ void execute_JALR(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 
 //----------------------------------Itype----------------------------------------------------------
 
-void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA){
+void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	std::cerr << "Reaches I type" << std::endl;
 	switch(Itype.opcode){
 		case 0b001110:
@@ -379,7 +379,7 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			std::cerr << "ORI" << std::endl;
 			break;
 		case 0b100011:
-			execute_LW(Itype, REG, ADDR_DATA);
+			execute_LW(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			std::cerr << "LW" << std::endl;
 			break;
 		case 0b001111:
@@ -388,7 +388,7 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			break;
 		case 0b100000:
 			std::cerr << "LB" << std::endl;
-			execute_LB(Itype, REG, ADDR_DATA);
+			execute_LB(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			break;
 		case 0b000101:
 			execute_BNE(Itype, REG, ctrl);
@@ -439,20 +439,20 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			break;
 		case 0b100010:
 			std::cerr << "LWL" << std::endl;
-			execute_LWL(Itype, REG, ADDR_DATA);
+			execute_LWL(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			std::cerr << "LWL" << std::endl;
 			break;
 		case 0b100110:
 			std::cerr << "LWR" << std::endl;
-			execute_LWR(Itype, REG, ADDR_DATA);
+			execute_LWR(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			std::cerr << "LWR" << std::endl;
 			break;
 		case 0b100101:
-			execute_LHU(Itype, REG, ADDR_DATA);
+			execute_LHU(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			std::cerr << "LHU" << std::endl;
 			break;
 		case 0b100001:
-			execute_LH(Itype, REG, ADDR_DATA);
+			execute_LH(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			std::cerr << "LH" << std::endl;
 			break;
 		case 0b101001:
@@ -460,7 +460,7 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			std::cerr << "SH" << std::endl;
 			break;
 		case 0b100100:
-			execute_LBU(Itype, REG, ADDR_DATA);
+			execute_LBU(Itype, REG, ADDR_DATA, ADDR_INSTR);
 			std::cerr << "LBU" << std::endl;
 			break;
 		default:
@@ -545,18 +545,23 @@ void execute_BNE(const instructionI& Itype, int32_t REG[32], control &ctrl){
 	}
 }
 
-void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	std::string place;
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	check_location(offset_PC, place);
 	if(place == "ADDR_DATA"){
 		REG[Itype.rd] = sign_extend_8(ADDR_DATA[offset_PC]);
 	}
-	else if( place == "ADDR_INSTR"){
-		return; //NOOP, simplicity
+	else if(place == "ADDR_INSTR"){
+		REG[Itype.rd] = sign_extend_8(ADDR_INSTR[offset_PC]);
+	}
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
 	}
 	else{
-		std::cerr << "Not yet done GETC, PUTC" << std::endl;
+		exit(-11);
 	}
 }
 
@@ -590,7 +595,7 @@ void execute_LUI(const instructionI& Itype, int32_t REG[32]){
 	REG[Itype.rd] = Itype.IMM << 16;
 }
 
-void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	uint32_t offset_PC = 	REG[Itype.rs] + Itype.IMMs;
 	std::string place;
 	if( offset_PC%4 != 0){
@@ -602,10 +607,16 @@ void execute_LW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 			<< 16| ADDR_DATA[offset_PC+2] << 8 | ADDR_DATA[offset_PC+3]);
 	}
 	else if(place == "ADDR_INSTR"){
-		return; //NOOP
+		REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] 
+			<< 16| ADDR_INSTR[offset_PC+2] << 8 | ADDR_INSTR[offset_PC+3]);
+	}
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
 	}
 	else{
-		std::cerr << "Not yet done, GETC, PUTC" << std::endl;
+		exit(-11);
 	}
 }
 
@@ -621,10 +632,13 @@ void execute_SB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		ADDR_DATA[offset_PC] = (uint8_t)(REG[Itype.rd] & 0xFF);
 	}
 	else if(place == "ADDR_INSTR"){
-		std::cerr << "ADDR_INSTR area " << std::endl;
+		std::cerr << "Cannot write to instruction area " << std::endl;
 		exit(-11);} //ADDR_INSTR one cannot write to
+	else if( place == "PUTC"){
+		std::putchar( (uint8_t)(REG[Itype.rd] & 0xFF) );
+	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		std::exit(-11);
 	}
 }
 
@@ -652,8 +666,11 @@ void execute_SW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	else if( place == "ADDR_INSTR"){
 		exit(-11);
 	}
+	else if( place == "PUTC"){
+		std::putchar( uint8_t (uint32_t(REG[Itype.rd])&0xFF));
+	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		std::exit(-11);
 	}
 }
 
@@ -661,7 +678,7 @@ void execute_XORI(const instructionI& Itype, int32_t REG[32]){
  	REG[Itype.rd] = REG[Itype.rs] ^ Itype.IMM;
 }
 
-void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	std::string place;
 	check_location(offset_PC, place);
@@ -669,14 +686,19 @@ void execute_LBU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		REG[Itype.rd] = (int32_t) ADDR_DATA[ offset_PC ];  //may need to check address is in range
 	}
 	else if(place == "ADDR_INSTR"){
-		return; //NOOP
+		REG[Itype.rd] = (int32_t) ADDR_INSTR[ offset_PC ]; 
+	}
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		exit(-11);
 	}
 }
 
-void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
@@ -688,14 +710,20 @@ void execute_LH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 		REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);
 	}
 	else if(place == "ADDR_INSTR"){
-		return; //NOOP
+		REG[Itype.rd] = (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+		REG[Itype.rd] = sign_extend_16(REG[Itype.rd]);
+	}
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		exit(-11);
 	}
 }
 
-void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	uint32_t offset_PC = REG[Itype.rs] + Itype.IMMs;
 	if(offset_PC%2 != 0){
 		std::exit(-11); //address error exception
@@ -706,10 +734,15 @@ void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		REG[Itype.rd] = (0x0000 << 16)| (ADDR_DATA[offset_PC] << 8 | ADDR_DATA[offset_PC+1]);
 	}
 	else if(place == "ADDR_INSTR"){
-		return;
+		REG[Itype.rd] = (0x0000 << 16)| (ADDR_INSTR[offset_PC] << 8 | ADDR_INSTR[offset_PC+1]);
+	}
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
 	}
 	else{
-		std::cerr << "PUTC, GETC" << std::endl;
+		exit(-11);
 	}
 }
 void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
@@ -724,46 +757,33 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
  		ADDR_DATA[offset_PC] = (uint8_t)((REG[Itype.rd] & 0xFF00) >> 8);
  		ADDR_DATA[offset_PC+1] = (uint8_t)(REG[Itype.rd] & 0xFF);
 	}
-	else if(place == "ADDR_INSTR"){
+	else if( place == "ADDR_INSTR"){
 		exit(-11);
 	}
+	else if( place == "PUTC"){
+		std::putchar( (uint8_t)(REG[Itype.rd] & 0xFF));
+	}
 	else{
-		std::cerr << "PUTC, GETC" << std::endl;
+		std::exit(-11);
 	}
 }
 
-void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC);
-	// std::string place;
-	// check_location(offset_PC, place);
-	// if(place == "ADDR_DATA"){
-	// 	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
-		
-	// 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
-	// 	uint32_t lsbs = 0x3 & EffAddr;
-	// 	uint32_t mask;
-	// 	if( lsbs == 0x0){
-	// 		mask = 0xFFFFFFFF;
-	// 	}
-	// 	else if( lsbs == 0x1){
-	// 		mask = 0xFFFFFF00; //0x00FFFFFF
-	// 	}
-	// 	else if( lsbs == 0x2){
-	// 		mask = 0xFFFF0000; //0x0000FFFF
-	// 	}
-	// 	else{
-	// 		mask = 0xFF000000; //0x000000FF
-	// 	}
-	// 	data = data & mask;
-	// 	REG[Itype.rd] = (~mask) & REG[Itype.rd];
-	// 	REG[Itype.rd] = data | REG[Itype.rd];
-	// }
 
 	std::string place;
 	check_location(offset_PC, place);
+	uint32_t data;
 	if(place == "ADDR_DATA"){
 		std::cerr << "Place: " << place << "\n";
-		uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+		data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+	}
+	if(place == "ADDR_INSTR"){
+		std::cerr << "Place: " << place << "\n";
+		data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] << 16|	ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+	}
+
+	if( place == "ADDR_DATA" || place == "ADDR_INSTR"){
 		uint32_t EffAddr = Itype.IMMs + Itype.rs;
 	 	uint32_t lsbs = 0x3 & EffAddr;
 		uint32_t mask;
@@ -788,24 +808,33 @@ void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		data = data << (8*lsbs);
 		REG[Itype.rd] = mask2 & REG[Itype.rd];
 		REG[Itype.rd] = data | REG[Itype.rd];
-		}
-		else if(place == "ADDR_INSTR"){
-			return;
-		}
-		else{
-			std::cerr << "GETC, PUTC" << std::endl;
-		}
 	}
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
+	}
+	else{
+		exit(-11);
+	}
+}
 
 
-void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
+void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, uint8_t* ADDR_INSTR){
 	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC);
 	std::string place;
 	check_location(offset_PC, place);
+	uint32_t data;
 	if(place == "ADDR_DATA"){
-		uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16| 
-			ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+		std::cerr << "Place: " << place << "\n";
+		data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+	}
+	if(place == "ADDR_INSTR"){
+		std::cerr << "Place: " << place << "\n";
+		data = (ADDR_INSTR[offset_PC] << 24 | ADDR_INSTR[offset_PC+1] << 16|	ADDR_INSTR[offset_PC+2] << 8| ADDR_INSTR[offset_PC+3]);
+	}
 
+	if( place == "ADDR_DATA" || place == "ADDR_INSTR"){
 		uint32_t EffAddr = Itype.IMMs + Itype.rs;
 		uint32_t lsbs = 0x3 & EffAddr;
 		uint32_t mask;
@@ -833,11 +862,13 @@ void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		REG[Itype.rd] = (mask2) & REG[Itype.rd];
 		REG[Itype.rd] = REG[Itype.rd] | data;
 	}
-	else if(place == "ADDR_INSTR"){
-		return;
+	else if( place == "GETC"){
+		int32_t c;
+		c = std::getchar();
+		REG[Itype.rd] = c;
 	}
 	else{
-		std::cerr << "GETC, PUTC" << std::endl;
+		exit(-11);
 	}
 }
 

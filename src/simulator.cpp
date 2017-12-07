@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
       std::cerr << "Itype.rd = " << Itype.rd << std::endl;
       std::cerr << "Itype.IMM = " << Itype.IMM << std::endl;
       std::cerr << "Itype.IMMs = " << Itype.IMMs << std::endl;
-      execute_I_type(Itype,REG,ctrl,ADDR_DATA);
+      execute_I_type(Itype,REG,ctrl,ADDR_DATA, ADDR_INSTR);
     }
     else{
       //std::cerr << "Detected J" << std::endl;
