@@ -438,10 +438,12 @@ void execute_I_type(const instructionI& Itype, int32_t REG[32], control &ctrl, u
 			std::cerr << "ADDI" << std::endl;
 			break;
 		case 0b100010:
+			std::cerr << "LWL" << std::endl;
 			execute_LWL(Itype, REG, ADDR_DATA);
 			std::cerr << "LWL" << std::endl;
 			break;
 		case 0b100110:
+			std::cerr << "LWR" << std::endl;
 			execute_LWR(Itype, REG, ADDR_DATA);
 			std::cerr << "LWR" << std::endl;
 			break;
@@ -710,7 +712,6 @@ void execute_LHU(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA)
 		std::cerr << "PUTC, GETC" << std::endl;
 	}
 }
-
 void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	uint32_t offset_PC = Itype.IMMs + (uint32_t)Itype.rs;
 	if(offset_PC%2 != 0){
@@ -732,51 +733,69 @@ void execute_SH(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 }
 
 void execute_LWL(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
-	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC)- 0x20000000;
+	uint32_t offset_PC = ((Itype.IMMs + Itype.rs)&0xFFFFFFFC);
+	// std::string place;
+	// check_location(offset_PC, place);
+	// if(place == "ADDR_DATA"){
+	// 	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+		
+	// 	uint32_t EffAddr = Itype.IMMs + Itype.rs;
+	// 	uint32_t lsbs = 0x3 & EffAddr;
+	// 	uint32_t mask;
+	// 	if( lsbs == 0x0){
+	// 		mask = 0xFFFFFFFF;
+	// 	}
+	// 	else if( lsbs == 0x1){
+	// 		mask = 0xFFFFFF00; //0x00FFFFFF
+	// 	}
+	// 	else if( lsbs == 0x2){
+	// 		mask = 0xFFFF0000; //0x0000FFFF
+	// 	}
+	// 	else{
+	// 		mask = 0xFF000000; //0x000000FF
+	// 	}
+	// 	data = data & mask;
+	// 	REG[Itype.rd] = (~mask) & REG[Itype.rd];
+	// 	REG[Itype.rd] = data | REG[Itype.rd];
+	// }
 
-	uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
-	
-	uint32_t EffAddr = Itype.IMMs + Itype.rs;
-	uint32_t lsbs = 0x3 & EffAddr;
-	uint32_t mask;
-	if( lsbs == 0x0){
-		mask = 0xFFFFFFFF;
+	std::string place;
+	check_location(offset_PC, place);
+	if(place == "ADDR_DATA"){
+		std::cerr << "Place: " << place << "\n";
+		uint32_t data = (ADDR_DATA[offset_PC] << 24 | ADDR_DATA[offset_PC+1] << 16|	ADDR_DATA[offset_PC+2] << 8| ADDR_DATA[offset_PC+3]);
+		uint32_t EffAddr = Itype.IMMs + Itype.rs;
+	 	uint32_t lsbs = 0x3 & EffAddr;
+		uint32_t mask;
+		uint32_t mask2=0;
+		if( lsbs == 0x0){
+			mask = 0xFFFFFFFF;
+			mask2 = 0x0;
+		}
+		else if( lsbs == 0x1){
+			mask = 0x00FFFFFF;
+			mask2 = 0x000000FF;
+		}
+		else if( lsbs == 0x2){
+			mask = 0x0000FFFF;
+			mask2 = mask;
+		}
+		else{
+			mask = 0x000000FF;
+			mask2 = 0x00FFFFFF;
+		}
+		data = (data & mask) ;
+		data = data << (8*lsbs);
+		REG[Itype.rd] = mask2 & REG[Itype.rd];
+		REG[Itype.rd] = data | REG[Itype.rd];
+		}
+		else if(place == "ADDR_INSTR"){
+			return;
+		}
+		else{
+			std::cerr << "GETC, PUTC" << std::endl;
+		}
 	}
-	else if( lsbs == 0x1){
-		mask = 0xFFFFFF00; //0x00FFFFFF
-	}
-	else if( lsbs == 0x2){
-		mask = 0xFFFF0000; //0x0000FFFF
-	}
-	else{
-		mask = 0xFF000000; //0x000000FF
-	}
-	data = data & mask;
-	REG[Itype.rd] = (~mask) & REG[Itype.rd];
-	REG[Itype.rd] = data | REG[Itype.rd];
-
-	// uint32_t mask2=0;
-	// if( lsbs == 0x0){
-	// 	mask = 0xFFFFFFFF;
-	// 	mask2 = 0x0;
-	// }
-	// else if( lsbs == 0x1){
-	// 	mask = 0x00FFFFFF;
-	// 	mask2 = 0x000000FF;
-	// }
-	// else if( lsbs == 0x2){
-	// 	mask = 0x0000FFFF;
-	// 	mask2 = mask;
-	// }
-	// else{
-	// 	mask = 0x000000FF;
-	// 	mask2 = 0x00FFFFFF;
-	// }
-	// data = (data & mask) ;
-	// data = data << (8*lsbs);
-	// REG[Itype.rd] = mask2 & REG[Itype.rd];
-	// REG[Itype.rd] = data | REG[Itype.rd];
-}
 
 
 void execute_LWR(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){

@@ -83,5 +83,5 @@
 83, bin/T032_1_LW_SW.mips.bin , PASS, ap4116 T32 LW SW invalid memory access, 245, 245
 84, bin/T032_2_LW_SW2.mips.bin , PASS, ap4116 T32 LW SW, 49, 49
 85, bin/T032_3_LW_SW3.mips.bin , PASS, ap4116 T32 LW SW, 86, 86
-86, bin/T032_4_LW_SW4.mips.bin , PASS, ap4116 T32 LW_SW, 17, 17
-87, bin/T131_1_JAL.mips.bin , FAIL, ap4116, T31_1_JAL, 245, 0
+86, bin/T032_4_LW_SW4.mips.bin , FAIL, ap4116, T32 LW_SW, 245, 17
+87, bin/T131_1_JAL.mips.bin , PASS, ap4116 T31_1_JAL, 0, 0
