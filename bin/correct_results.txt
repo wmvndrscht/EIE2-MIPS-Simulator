@@ -328,10 +328,6 @@ T31 DIV
 14
 
 ap4116
-T31_0_FailedTest
-245
-
-ap4116
 T32 LW SW invalid memory access
 245
 
