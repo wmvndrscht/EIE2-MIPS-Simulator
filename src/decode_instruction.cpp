@@ -45,15 +45,20 @@ void PC_advance(control& ctrl){
     ctrl.branch_delay = 1;
   }
 
-  if(ctrl.PC && (ctrl.PC >= 0x11000000 || ctrl.PC < 0x10000000)){
-  	std::exit(-11);  //memory exception
+
+  if( ctrl.PC < 0x10000000 && ctrl.PC > 0){
+  	std::exit(-11);
   }
 
-  //if(ctrl.PC < 0x10000000 && 0 < ctrl.PC ){
-  //	std::exit(-11);
-  //}
+  if( 0x11000000 <= ctrl.PC && ctrl.PC < 0x20000000){
+  	std::exit(-11);
+  }
 
-  if(!( (ctrl.PC & 0x3) == 0x0) ){
+  if( ctrl.PC >= 0x24000000){
+  	std::exit(-11);
+  }
+
+  if( (ctrl.PC & 0x3) != 0x0 ){
   	std::exit(-11);  //memory exception as not multiple of 4
   }
 
@@ -567,22 +572,22 @@ void execute_LB(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA, 
 
 void check_location(uint32_t &offset_PC, std::string &place){
 	std::cerr << "Check location offset_PC = " << offset_PC << std::endl;
-	if( 0x10000000 <= offset_PC && offset_PC < 0x11000000){
+	if( (0x10000000 <= offset_PC) && (offset_PC < 0x11000000) ){
 		offset_PC = offset_PC - 0x10000000;
 		place = "ADDR_INSTR";
 		std::cerr << "place = ADDR_INSTR" << std::endl;
 	}
-	else if( 0x20000000 <= offset_PC && offset_PC < 0x24000000){
+	else if( (0x20000000 <= offset_PC) && (offset_PC < 0x24000000) ){
 		offset_PC = offset_PC - 0x20000000;
 		place = "ADDR_DATA";
 		std::cerr << "place = ADDR_DATA" << std::endl;
 	}
-	else if( 0x30000000 <= offset_PC && offset_PC < 0x30000004){
+	else if( (0x30000000 <= offset_PC) && (offset_PC < 0x30000004)){
 		std::cerr << "GETC" << std::endl;
 		place = "GETC";
 		std::cerr << "place = GETC" << std::endl;
 	}
-	else if( 0x30000004 <= offset_PC && offset_PC < 0x30000008){
+	else if( (0x30000004 <= offset_PC) && (offset_PC < 0x30000008)){
 		std::cerr << "PUTC" << std::endl;
 		place = "PUTC";
 	}
