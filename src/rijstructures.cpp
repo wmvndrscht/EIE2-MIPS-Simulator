@@ -18,11 +18,11 @@ void initialiseI(const uint32_t& data, instructionI& Itype){
 	Itype.rs = (data << 6) >> 27;
 	Itype.rd = (data << 11) >> 27;
 	Itype.IMM = (data & 0xFFFF);
-	if(Itype.IMM & 0x8000){
+	if(Itype.IMM >> 15){
 		Itype.IMMs = (0xFFFF0000 | Itype.IMM);
 	}
 	else{
-		Itype.IMMs =Itype.IMM;
+		Itype.IMMs = Itype.IMM;
 	}
 	return;
 }
