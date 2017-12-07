@@ -125,7 +125,10 @@ int main(int argc, char *argv[]) {
   //while( ctrl.PC != 0 ){          //if the program runs 
   while (ctrl.PC != 0){
     //std::cerr << "Start of while loop" << std::endl;
-    std::cerr << "PC = " << ctrl.PC << std::endl;
+    std::cerr << "PC = " /*<< ctrl.PC*/;
+    printf("%04x",ctrl.PC);
+    std::cerr << "\n";
+
     uint32_t instruction = 0;
     std::string rijtype;
     instruction = assemble_instruction(ADDR_INSTR, ctrl, offset_AI);
@@ -169,7 +172,8 @@ int main(int argc, char *argv[]) {
     }
 
     for(int tr=0; tr<32; tr++){
-      std::cerr << REG[tr] << " ";
+      printf("%01x",REG[tr]);
+      std::cerr << " ";
     }
     //std::cerr << "\n";
     std::cerr << "\n"; 
