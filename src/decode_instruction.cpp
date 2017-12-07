@@ -642,10 +642,10 @@ void execute_SW(const instructionI& Itype, int32_t REG[32], uint8_t* ADDR_DATA){
 	std::string place;
 	check_location(offset_PC, place);
 	if(place == "ADDR_DATA"){
-	 	ADDR_DATA[offset_PC] = (uint8_t)(uint32_t)REG[Itype.rd] >> 24;			// this might cause problems
-		ADDR_DATA[offset_PC+1] = (uint8_t)((uint32_t)REG[Itype.rd] << 8) >> 24;
-		ADDR_DATA[offset_PC+2] = (uint8_t)((uint32_t)REG[Itype.rd] << 16) >> 24; 
-		ADDR_DATA[offset_PC+3] = (uint8_t)((uint32_t)REG[Itype.rd] << 24) >> 24;  //how does this go???1!!!!!
+	 	ADDR_DATA[offset_PC] = uint8_t ((uint32_t(REG[Itype.rd]) >> 24)&0xFF);			// this might cause problems
+		ADDR_DATA[offset_PC+1] = uint8_t ((uint32_t(REG[Itype.rd]) >> 16)&0xFF);
+		ADDR_DATA[offset_PC+2] = uint8_t ((uint32_t(REG[Itype.rd]) >> 8)&0xFF); 
+		ADDR_DATA[offset_PC+3] = uint8_t (uint32_t(REG[Itype.rd])&0xFF);  //how does this go???1!!!!!
 	}
 	else if( place == "ADDR_INSTR"){
 		exit(-11);
