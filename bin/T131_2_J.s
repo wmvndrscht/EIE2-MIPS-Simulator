@@ -1,6 +1,7 @@
 .set noreorder
 loop1:
-jal loop
+.word 0x0c1BC2E0
+jr $0
 
 nop
 nop

@@ -351,9 +351,21 @@ ap4116
 T33 LWL insane
 17
 
-ap4116
-Torture
-2
+wv116
+T34 DIV simple
+3
+
+wv116
+T34 DIV
+253
+
+wv116
+T34 DIVU
+3
+
+wv116
+T34 DIVU
+1
 
 ap4116
 T999 LAST

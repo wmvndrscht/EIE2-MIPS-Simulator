@@ -11,9 +11,10 @@ do 								#marks the beginning of the "for loop"
 	let NUM++;
 	comment=$(sed "${NUM}q;d" bin/$results_file)
 	let NUM++;			#update test index
-	echo $binfile				#this helps if you want to see which binary file you are accessing
-	echo 
-	bin/mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
+	#echo $binfile				#this helps if you want to see which binary file you are accessing
+	echo
+	$1 $binfile 
+	#bin/mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
 	let mips=$?						#store the output of mips_simulator
 	let other="$(sed "${NUM}q;d" bin/$results_file)"			#read the correct result from "correct_results.txt"
 	let NUM=$NUM+2;
