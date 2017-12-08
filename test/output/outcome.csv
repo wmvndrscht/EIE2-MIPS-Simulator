@@ -98,4 +98,5 @@
 98, bin/T034_3_DIVU1.mips.bin , PASS, wv116 T34 DIVU, 3, 3
 99, bin/T034_4_DIVU2.mips.bin , PASS, wv116 T34 DIVU, 1, 1
 100, bin/T035_1_MT.mips.bin , PASS, ap4116 T35 MT/MF - HI/LO, 10, 10
-101, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
+101, bin/T037_1_PUTC.mips.bin , FAIL, ap4116, T37 PUT, 49, 10
+102, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
