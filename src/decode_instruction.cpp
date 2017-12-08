@@ -337,7 +337,7 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 }
 
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
-	uint64_t temp = uint64_t(uint32_t(REG[Rtype.rs])) * uint64_t(uint32_t(REG[Rtype.rt]));
+	int64_t temp = uint64_t(uint32_t(REG[Rtype.rs])) * uint64_t(uint32_t(REG[Rtype.rt]));
 	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);
 	//std::cerr << "temp = ";
 	//printf("%04x",temp);
