@@ -46,17 +46,17 @@ void PC_advance(control& ctrl){
   }
 
 
-  if( ctrl.PC < 0x10000000 && ctrl.PC > 0){
+  if( (ctrl.PC < 0x10000000 && ctrl.PC > 0)) {
   	std::exit(-11);
   }
 
-  if( 0x11000000 <= ctrl.PC && ctrl.PC < 0x20000000){
+  if( 0x11000000 <= ctrl.PC){
   	std::exit(-11);
   }
 
-  if( ctrl.PC >= 0x24000000){
-  	std::exit(-11);
-  }
+  // if( ctrl.PC >= 0x24000000){
+  // 	std::exit(-11);
+  // }
 
   if( (ctrl.PC & 0x3) != 0x0 ){
   	std::exit(-11);  //memory exception as not multiple of 4
@@ -254,7 +254,7 @@ void execute_SUBU(const instructionR& Rtype, int32_t REG[32]){  //sub overflow, 
 }
 
 void execute_JR(const instructionR& Rtype, int32_t REG[32], control& ctrl){ //correct Rtype bits, valid does delay etc..?, tested
-	ctrl.nPC = REG[Rtype.rs];
+	ctrl.nPC = (uint32_t)REG[Rtype.rs];
 	ctrl.branch_delay = 2;
 }
 
@@ -339,13 +339,13 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 	uint64_t temp = uint64_t(uint32_t(REG[Rtype.rs])) * uint64_t(uint32_t(REG[Rtype.rt]));
 	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);
-	std::cerr << "temp = ";
-	printf("%04x",temp);
-	std::cerr << " " << std::endl;
+	//std::cerr << "temp = ";
+	//printf("%04x",temp);
+	//std::cerr << " " << std::endl;
 	ctrl.HI = (uint32_t) ((temp >> 32) & 0xFFFFFFFF);
-	std::cerr << "temp = ";
-	printf("%04x",ctrl.HI);
-	std::cerr << " " << std::endl;
+	//std::cerr << "temp = ";
+	//printf("%04x",ctrl.HI);
+	//std::cerr << " " << std::endl;
 }
 
 void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){
