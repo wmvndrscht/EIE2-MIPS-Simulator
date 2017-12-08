@@ -403,6 +403,54 @@ ap4116
 T35 MT/MF - HI/LO
 10
 
+wv116
+T36 0 MULT 8*4
+32
+
+wv116
+T36 1 MULT -2*-16
+32
+
+wv116
+T36 2 MULT -big *2
+7
+
+wv116
+T36 3 MULT -1*-1
+1
+
+wv116
+T36 0 MULTU 4*8 = 32
+32
+
+wv116
+T37 1 MULTU hi+lo or
+39
+
+wv116
+T37 2 MULTU max check lo
+0xE
+
+wv116
+T37 3 MULTU max check hi
+1
+
+wv116
+T38 0 DIV
+4
+
+wv116
+T38 1 DIV
+12
+
+wv116
+T38 2 DIV
+14
+
+wv116
+T38 3 DIV
+2
+
 ap4116
 T999 LAST
 0
