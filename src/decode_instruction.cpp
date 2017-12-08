@@ -317,7 +317,7 @@ void execute_MTLO(const instructionR& Rtype, int32_t REG[32], control& ctrl){
 }
 
 void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  //test big vals
-	if(Rtype.rt != 0 ){
+	if(REG[Rtype.rt] != 0 ){
 		ctrl.LO = uint32_t(((uint32_t)REG[Rtype.rs])/((uint32_t)REG[Rtype.rt]));	
 		ctrl.HI = uint32_t(((uint32_t)REG[Rtype.rs])%((uint32_t)REG[Rtype.rt]));
 	}
@@ -327,7 +327,7 @@ void execute_DIVU(const instructionR& Rtype, int32_t REG[32], control& ctrl){  /
 } 
 
 void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//signed division
-	if(Rtype.rt != 0 ){
+	if(REG[Rtype.rt] != 0 ){
 		ctrl.LO = (int32_t)REG[Rtype.rs]/(int32_t)REG[Rtype.rt];	//what does arithmetic result is undefined really mean??
 		ctrl.HI = (int32_t)REG[Rtype.rs]%(int32_t)REG[Rtype.rt];
 	}
@@ -339,7 +339,13 @@ void execute_DIV(const instructionR& Rtype, int32_t REG[32], control &ctrl){	//s
 void execute_MULTU(const instructionR& Rtype, int32_t REG[32], control &ctrl){
 	uint64_t temp = uint64_t(uint32_t(REG[Rtype.rs])) * uint64_t(uint32_t(REG[Rtype.rt]));
 	ctrl.LO = (uint32_t) (temp & 0xFFFFFFFF);
+	std::cerr << "temp = ";
+	printf("%04x",temp);
+	std::cerr << " " << std::endl;
 	ctrl.HI = (uint32_t) ((temp >> 32) & 0xFFFFFFFF);
+	std::cerr << "temp = ";
+	printf("%04x",ctrl.HI);
+	std::cerr << " " << std::endl;
 }
 
 void execute_MULT(const instructionR& Rtype, int32_t REG[32], control &ctrl){

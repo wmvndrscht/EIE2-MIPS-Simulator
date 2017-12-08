@@ -98,4 +98,16 @@
 98, bin/T034_3_DIVU1.mips.bin , PASS, wv116 T34 DIVU, 3, 3
 99, bin/T034_4_DIVU2.mips.bin , PASS, wv116 T34 DIVU, 1, 1
 100, bin/T035_1_MT.mips.bin , PASS, ap4116 T35 MT/MF - HI/LO, 10, 10
-101, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
+101, bin/T036_0_MULT.mips.bin , PASS, wv116 T36 0 MULT 8*4, 32, 32
+102, bin/T036_1_MULT.mips.bin , PASS, wv116 T36 1 MULT -2*-16, 32, 32
+103, bin/T036_2_MULT.mips.bin , PASS, wv116 T36 2 MULT -big *2, 7, 7
+104, bin/T036_3_MULT.mips.bin , PASS, wv116 T36 3 MULT -1*-1, 1, 1
+105, bin/T037_0_MULTU.mips.bin , PASS, wv116 T36 0 MULTU 4*8 = 32, 32, 32
+106, bin/T037_1_MULTU.mips.bin , PASS, wv116 T37 1 MULTU hi+lo or, 39, 39
+107, bin/T037_2_MULTU.mips.bin , PASS, wv116 T37 2 MULTU max check lo, 14, 14
+108, bin/T037_3_MULTU.mips.bin , PASS, wv116 T37 3 MULTU max check hi, 1, 1
+109, bin/T038_0_DIV.mips.bin , PASS, wv116 T38 0 DIV, 4, 4
+110, bin/T038_1_DIV.mips.bin , PASS, wv116 T38 1 DIV, 12, 12
+111, bin/T038_2_DIV.mips.bin , PASS, wv116 T38 2 DIV, 14, 14
+112, bin/T038_3_DIV.mips.bin , PASS, wv116 T38 3 DIV, 2, 2
+113, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
