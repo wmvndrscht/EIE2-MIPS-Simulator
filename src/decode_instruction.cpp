@@ -276,15 +276,18 @@ void execute_SLT(const instructionR& Rtype, int32_t REG[32]){  //tested, says ar
 }
 
 void execute_SRA(const instructionR& Rtype, int32_t REG[32]){ //tested
-	REG[Rtype.rd] = REG[Rtype.rt] >> Rtype.shamt;	
+	int32_t temp = int32_t(REG[Rtype.rt]);
+	REG[Rtype.rd] = int32_t(temp >> uint32_t(Rtype.shamt));	
 }
 
 void execute_SRAV(const instructionR& Rtype, int32_t REG[32]){ //tested, signed values for sign extension and correct variable shift
-	REG[Rtype.rd] = REG[Rtype.rt] >> (REG[Rtype.rs] & 0x1F);
+	int32_t temp = int32_t(REG[Rtype.rt]);
+	REG[Rtype.rd] = int32_t(temp >> uint32_t(REG[Rtype.rs]&0x1F));
 }
 
 void execute_SRL(const instructionR& Rtype, int32_t REG[32]){
-	REG[Rtype.rd] = (uint32_t)REG[Rtype.rt] >> (uint32_t)Rtype.shamt; //tested, make sure 0's inserted
+	uint32_t temp = (uint32_t)REG[Rtype.rt];
+	REG[Rtype.rd] = temp >> (uint32_t)Rtype.shamt; //tested, make sure 0's inserted
 	// REG[Rtype.rd] = REG[Rtype.rd] & (pow(2, 32 - Rtype.shamt) -1) ;
 }
 //----------------------------------------------------------------17:00
