@@ -11,9 +11,10 @@ do 								#marks the beginning of the "for loop"
 	let NUM++;
 	comment=$(sed "${NUM}q;d" bin/$results_file)
 	let NUM++;			#update test index
-	echo $binfile				#this helps if you want to see which binary file you are accessing
-	echo 
-	bin/mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
+	#echo $binfile				#this helps if you want to see which binary file you are accessing
+	echo
+	$1 $binfile 
+	#bin/mips_simulator $binfile	#run mips_simulator with current binary file as command line parameter
 	let mips=$?						#store the output of mips_simulator
 	let other="$(sed "${NUM}q;d" bin/$results_file)"			#read the correct result from "correct_results.txt"
 	let NUM=$NUM+2;
@@ -22,7 +23,7 @@ do 								#marks the beginning of the "for loop"
 	let id+=1;
 	if [ $mips -eq $other ]		#check if the two values match
 	then						#you need this for the "if"
-		echo $id, $binfile , SUCCESS, $user $comment, $mips, $other >> test/output/outcome.csv		#if they match, print index, name of the file, status
+		echo $id, $binfile , PASS, $user $comment, $mips, $other >> test/output/outcome.csv		#if they match, print index, name of the file, status
 	else						#you know what this is
 		echo $id, $binfile , FAIL, $user, $comment, $mips, $other >> test/output/outcome.csv			#print this if the two don't match
 	fi 							#marks the end of the "if"

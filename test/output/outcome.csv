@@ -83,10 +83,18 @@
 83, bin/T032_2_LW_SW2.mips.bin , PASS, ap4116 T32 LW SW, 49, 49
 84, bin/T032_3_LW_SW3.mips.bin , PASS, ap4116 T32 LW SW, 86, 86
 85, bin/T032_4_LW_SW4.mips.bin , PASS, ap4116 T32 LW_SW, 17, 17
-86, bin/T033_1_LWL.mips.bin , FAIL, ap4116, T33 LW, 0, 16
-87, bin/T033_2_LWL.mips.bin , FAIL, ap4116, T33 LWL insane, 0, 17
-88, bin/T034_1_DIV1.mips.bin , PASS, wv116 T34 DIV simple, 3, 3
-89, bin/T034_2_DIV2.mips.bin , PASS, wv116 T34 DIV, 253, 253
-90, bin/T034_3_DIVU1.mips.bin , PASS, wv116 T34 DIVU, 3, 3
-91, bin/T034_4_DIVU2.mips.bin , PASS, wv116 T34 DIVU, 1, 1
-92, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
+86, bin/T033_1_LWL.mips.bin , PASS, ap4116 T33 LWL & LWR memory test, 16, 16
+87, bin/T033_2_LWL.mips.bin , PASS, ap4116 T33 LWL & LWR insane, 17, 17
+88, bin/T033_3_LWL.mips.bin , PASS, ap4116 T33 LWR mask test1, 15, 15
+89, bin/T033_4_LWR.mips.bin , PASS, ap4116 T33 LWR mask test2, 14, 14
+90, bin/T033_5_LWR.mips.bin , PASS, ap4116 T33 LWR mask test3, 13, 13
+91, bin/T033_6_LWR.mips.bin , PASS, ap4116 T33 LWR mask test4, 12, 12
+92, bin/T033_7_LWL.mips.bin , PASS, ap4116 T33 LWL mask test1, 18, 18
+93, bin/T033_8_LWL.mips.bin , PASS, ap4116 T33 LWL mask test2, 19, 19
+94, bin/T033_9_LWL.mips.bin , PASS, ap4116 T33 LWL mask test3, 20, 20
+95, bin/T034_0_LWL.mips.bin , PASS, ap4116 T33 LWL mask test4, 21, 21
+96, bin/T034_1_DIV1.mips.bin , PASS, wv116 T34 DIV simple, 3, 3
+97, bin/T034_2_DIV2.mips.bin , PASS, wv116 T34 DIV, 253, 253
+98, bin/T034_3_DIVU1.mips.bin , PASS, wv116 T34 DIVU, 3, 3
+99, bin/T034_4_DIVU2.mips.bin , PASS, wv116 T34 DIVU, 1, 1
+100, bin/T999_Last.mips.bin , PASS, ap4116 T999 LAST, 0, 0
